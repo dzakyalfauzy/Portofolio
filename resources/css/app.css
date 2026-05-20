@@ -1,0 +1,31 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../**/*.jsx';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/*
+ * Centered page column — ensures content is never stuck to the viewport edge
+ * (plain CSS so it always applies even if Tailwind order / flex + w-full quirks).
+ */
+.layout-shell {
+    position: relative;
+    z-index: 10;
+    box-sizing: border-box;
+    width: min(100%, 90rem);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(1.35rem, 5vw, 3.5rem);
+    padding-right: clamp(1.35rem, 5vw, 3.5rem);
+}
+
+.layout-shell.layout-shell--narrow {
+    width: min(100%, 56rem);
+}
