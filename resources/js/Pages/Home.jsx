@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import api from "../api";
 import Hero from "../Components/Hero";
 import About from "../Components/About";
 import Skills from "../Components/Skills";
@@ -10,6 +11,26 @@ import Contact from "../Components/Contact";
 
 export default function Home() {
     const location = useLocation();
+    const [data, setData] = useState({
+        projects: [],
+        certificates: [],
+        experiences: [],
+        skills: [],
+    });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Load dynamic data from the backend portfolio-data endpoint
+        api.get("/portfolio-data")
+            .then((res) => {
+                setData(res.data);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error("Failed to load portfolio data from backend:", err);
+                setLoading(false);
+            });
+    }, []);
 
     useEffect(() => {
         const raw = location.hash?.replace(/^#/, "") ?? "";
@@ -24,10 +45,10 @@ export default function Home() {
         <>
             <Hero />
             <About />
-            <Skills />
-            <Projects />
-            <Certificates />
-            <Experience />
+            <Skills items={data.skills} loading={loading} />
+            <Projects items={data.projects} loading={loading} />
+            <Certificates items={data.certificates} loading={loading} />
+            <Experience items={data.experiences} loading={loading} />
             <Contact />
         </>
     );

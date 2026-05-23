@@ -6,7 +6,7 @@
     position: relative;
     padding-top: 4.5rem;
     padding-bottom: 4.5rem;
-    background-color: #050507;
+    background-color: #020617;
     overflow: hidden;
 }
 
@@ -30,7 +30,7 @@
     right: 0;
     width: 600px;
     height: 600px;
-    background-color: rgb(124 58 237 / 0.05);
+    background-color: rgb(16 185 129 / 0.05);
     filter: blur(120px);
     border-radius: 9999px;
     pointer-events: none;
@@ -42,7 +42,7 @@
     left: 0;
     width: 600px;
     height: 600px;
-    background-color: rgb(79 70 229 / 0.05);
+    background-color: rgb(8 145 178 / 0.05);
     filter: blur(120px);
     border-radius: 9999px;
     pointer-events: none;
@@ -84,7 +84,7 @@
 
 .services__eyebrow {
     display: inline-block;
-    color: #a78bfa;
+    color: #10b981;
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -106,7 +106,7 @@
 }
 
 .services__title-accent {
-    background-image: linear-gradient(to right, #a78bfa, #818cf8);
+    background-image: linear-gradient(to right, #10b981, #22d3ee);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -225,12 +225,12 @@
     opacity: 1;
 }
 
-.services__glow--violet {
-    background-color: rgb(139 92 246 / 0.2);
+.services__glow--emerald {
+    background-color: rgb(16 185 129 / 0.2);
 }
 
 .services__glow--indigo {
-    background-color: rgb(99 102 241 / 0.2);
+    background-color: rgb(34 211 238 / 0.2);
 }
 
 .services__glow--sky {
@@ -277,16 +277,16 @@
     transition: all 300ms ease;
 }
 
-.services__card:hover .services__icon--violet {
-    color: #a78bfa;
-    border-color: rgb(139 92 246 / 0.3);
-    background-color: rgb(139 92 246 / 0.1);
+.services__card:hover .services__icon--emerald {
+    color: #10b981;
+    border-color: rgb(16 185 129 / 0.3);
+    background-color: rgb(16 185 129 / 0.1);
 }
 
 .services__card:hover .services__icon--indigo {
-    color: #818cf8;
-    border-color: rgb(99 102 241 / 0.3);
-    background-color: rgb(99 102 241 / 0.1);
+    color: #22d3ee;
+    border-color: rgb(34 211 238 / 0.3);
+    background-color: rgb(34 211 238 / 0.1);
 }
 
 .services__card:hover .services__icon--sky {

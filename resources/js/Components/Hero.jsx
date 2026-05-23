@@ -78,7 +78,7 @@ export default function Hero() {
                             }}
                             whileHover={{
                                 scale: 1.02,
-                                boxShadow: "0 0 30px rgba(139,92,246,0.45)",
+                                boxShadow: "0 0 30px rgba(16, 185, 129,0.45)",
                             }}
                             whileTap={{ scale: 0.98 }}
                             className="hero__cta-primary"

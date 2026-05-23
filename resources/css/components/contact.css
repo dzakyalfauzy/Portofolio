@@ -7,7 +7,7 @@
     position: relative;
     padding-top: 4.5rem;
     padding-bottom: 4.5rem;
-    background-color: #050507;
+    background-color: #020617;
     overflow: hidden;
 }
 
@@ -48,13 +48,13 @@
 .contact__glow--tr {
     top: 0;
     right: 0;
-    background-color: rgb(124 58 237 / 0.1);
+    background-color: rgb(16 185 129 / 0.1);
 }
 
 .contact__glow--bl {
     bottom: 0;
     left: 0;
-    background-color: rgb(79 70 229 / 0.1);
+    background-color: rgb(8 145 178 / 0.1);
 }
 
 .contact__intro {
@@ -107,7 +107,7 @@
 }
 
 .contact__title-accent {
-    background-image: linear-gradient(to right, #a78bfa, #818cf8, #38bdf8);
+    background-image: linear-gradient(to right, #10b981, #22d3ee, #38bdf8);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -255,8 +255,8 @@
 
 .contact__social-link:hover {
     color: #fff;
-    border-color: rgb(139 92 246 / 0.5);
-    background-color: rgb(139 92 246 / 0.1);
+    border-color: rgb(16 185 129 / 0.5);
+    background-color: rgb(16 185 129 / 0.1);
 }
 
 .contact__social-icon {
@@ -371,7 +371,7 @@
 .contact__input:focus,
 .contact__textarea:focus {
     outline: none;
-    border-color: rgb(139 92 246 / 0.5);
+    border-color: rgb(16 185 129 / 0.5);
     background-color: rgb(255 255 255 / 0.05);
 }
 
@@ -392,7 +392,7 @@
     padding: 1rem 1.5rem;
     border: none;
     border-radius: 0.75rem;
-    background-image: linear-gradient(to right, #9333ea, #4f46e5);
+    background-image: linear-gradient(to right, #10b981, #0891b2);
     color: #fff;
     font-size: 0.875rem;
     font-weight: 700;
@@ -402,7 +402,7 @@
     box-shadow:
         0 20px 25px -5px rgb(0 0 0 / 0.1),
         0 8px 10px -6px rgb(0 0 0 / 0.1),
-        0 0 20px rgb(139 92 246 / 0.2);
+        0 0 20px rgb(16 185 129 / 0.2);
     transition-property: transform, box-shadow;
     transition-duration: 150ms;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);

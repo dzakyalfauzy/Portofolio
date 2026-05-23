@@ -10,7 +10,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background-color: #050507;
+    background-color: #020617;
 }
 
 @media (min-width: 1024px) {
@@ -94,18 +94,18 @@
     padding: 0.375rem 0.875rem;
     margin-bottom: 2.5rem;
     border-radius: 9999px;
-    border: 1px solid rgb(139 92 246 / 0.3);
-    background-color: rgb(139 92 246 / 0.1);
+    border: 1px solid rgb(16 185 129 / 0.3);
+    background-color: rgb(16 185 129 / 0.1);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
 }
 
 .hero__badge-icon {
-    color: #a78bfa;
+    color: #10b981;
 }
 
 .hero__badge-text {
-    color: #c4b5fd;
+    color: #22d3ee;
     font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.1em;
@@ -140,7 +140,7 @@
 }
 
 .hero__name {
-    background-image: linear-gradient(to right, #a78bfa, #818cf8, #38bdf8);
+    background-image: linear-gradient(to right, #10b981, #22d3ee, #38bdf8);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -169,9 +169,9 @@
     height: 1px;
     background: linear-gradient(
         to right,
-        rgb(139 92 246 / 0),
-        rgb(139 92 246 / 0.8),
-        rgb(139 92 246 / 0)
+        rgb(16 185 129 / 0),
+        rgb(16 185 129 / 0.8),
+        rgb(16 185 129 / 0)
     );
 }
 
@@ -257,7 +257,7 @@
     padding: 1rem 2.5rem;
     min-height: 3.25rem;
     border-radius: 1rem;
-    background-image: linear-gradient(to right, #9333ea, #4f46e5);
+    background-image: linear-gradient(to right, #10b981, #0891b2);
     color: #fff;
     font-weight: 600;
     font-size: 0.875rem;
@@ -266,7 +266,7 @@
     box-shadow:
         0 20px 25px -5px rgb(0 0 0 / 0.1),
         0 8px 10px -6px rgb(0 0 0 / 0.1),
-        0 0 20px rgb(139 92 246 / 0.25);
+        0 0 20px rgb(16 185 129 / 0.25);
     transition: all 150ms ease;
 }
 
@@ -378,8 +378,8 @@
 
 .hero__social-link:hover {
     color: #fff;
-    border-color: rgb(139 92 246 / 0.5);
-    background-color: rgb(139 92 246 / 0.1);
+    border-color: rgb(16 185 129 / 0.5);
+    background-color: rgb(16 185 129 / 0.1);
 }
 
 .hero__social-link svg {
@@ -551,8 +551,8 @@
     pointer-events: none;
     background: radial-gradient(
         ellipse 72% 62% at 50% 50%,
-        rgb(139 92 246 / 0.42) 0%,
-        rgb(99 102 241 / 0.18) 44%,
+        rgb(16 185 129 / 0.42) 0%,
+        rgb(34 211 238 / 0.18) 44%,
         transparent 70%
     );
     filter: blur(52px);

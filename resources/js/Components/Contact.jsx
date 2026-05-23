@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Send } from "lucide-react";
+import { Mail, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Github, Linkedin, Instagram } from "./Icons";
+import api from "../api";
 import "../../css/components/contact.css";
 
 const fadeUp = (delay = 0) => ({
@@ -14,6 +15,37 @@ const fadeUp = (delay = 0) => ({
 });
 
 export default function Contact() {
+    const [email, setEmail] = useState("");
+    const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(null);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!email.trim() || !message.trim()) {
+            setError("All fields are required.");
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+        setSuccess(false);
+
+        try {
+            await api.post("/contact", { email, message });
+            setSuccess(true);
+            setEmail("");
+            setMessage("");
+        } catch (err) {
+            console.error("Contact submit error:", err);
+            const msg = err.response?.data?.message || "Something went wrong. Please try again later.";
+            setError(msg);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <section id="contact" className="contact">
             <div className="contact__ambient" aria-hidden>
@@ -81,7 +113,29 @@ export default function Contact() {
                         className="contact__form-shell"
                     >
                         <div className="contact__form-inner">
-                            <form className="contact__form">
+                            <form onSubmit={handleSubmit} className="contact__form">
+                                {success && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        className="mb-4 flex items-center gap-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3 text-sm text-emerald-400"
+                                    >
+                                        <CheckCircle2 size={16} className="shrink-0" />
+                                        <span>Thank you! Your message has been sent successfully.</span>
+                                    </motion.div>
+                                )}
+
+                                {error && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        className="mb-4 flex items-center gap-2 rounded-lg bg-rose-500/10 border border-rose-500/20 p-3 text-sm text-rose-400"
+                                    >
+                                        <AlertCircle size={16} className="shrink-0" />
+                                        <span>{error}</span>
+                                    </motion.div>
+                                )}
+
                                 <div className="contact__field">
                                     <label htmlFor="contact-email" className="contact__label">
                                         Email Address
@@ -89,8 +143,12 @@ export default function Contact() {
                                     <input
                                         id="contact-email"
                                         type="email"
+                                        required
                                         placeholder="email@example.com"
                                         className="contact__input"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        disabled={loading}
                                     />
                                 </div>
                                 <div className="contact__field">
@@ -100,21 +158,30 @@ export default function Contact() {
                                     <textarea
                                         id="contact-message"
                                         rows={5}
+                                        required
                                         placeholder="Tell me about your project..."
                                         className="contact__textarea"
+                                        value={message}
+                                        onChange={(e) => setMessage(e.target.value)}
+                                        disabled={loading}
                                     />
                                 </div>
                                 <motion.button
-                                    whileHover={{
+                                    whileHover={loading ? {} : {
                                         scale: 1.02,
-                                        boxShadow: "0 0 30px rgba(139,92,246,0.5)",
+                                        boxShadow: "0 0 30px rgba(16, 185, 129,0.5)",
                                     }}
-                                    whileTap={{ scale: 0.98 }}
+                                    whileTap={loading ? {} : { scale: 0.98 }}
                                     type="submit"
                                     className="contact__submit"
+                                    disabled={loading}
                                 >
-                                    <Send size={18} className="contact__submit-icon" />
-                                    <span>Send Message</span>
+                                    {loading ? (
+                                        <Loader2 size={18} className="contact__submit-icon animate-spin" />
+                                    ) : (
+                                        <Send size={18} className="contact__submit-icon" />
+                                    )}
+                                    <span>{loading ? "Sending..." : "Send Message"}</span>
                                 </motion.button>
                             </form>
                         </div>

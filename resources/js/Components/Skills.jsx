@@ -12,7 +12,6 @@ const fadeUp = (delay = 0) => ({
     },
 });
 
-/** Local brand icons (public/skills/{slug}.svg) — works offline */
 const skillIconSrc = (slug) => {
     const base = import.meta.env.BASE_URL ?? "/";
     const prefix = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -20,7 +19,19 @@ const skillIconSrc = (slug) => {
     return prefix && prefix !== "." ? `${prefix}${path}` : path;
 };
 
-function TechCell({ name, slug, LucideIcon, delay, isInView }) {
+// Map Lucide icon string to component mapping
+const lucideIconMap = {
+    Webhook,
+    PenTool,
+    LayoutTemplate,
+    Layers,
+    Type,
+    Pipette,
+};
+
+function TechCell({ name, slug, lucide_icon, delay, isInView }) {
+    const LucideIcon = lucide_icon ? lucideIconMap[lucide_icon] : null;
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -40,67 +51,20 @@ function TechCell({ name, slug, LucideIcon, delay, isInView }) {
                     />
                 ) : LucideIcon ? (
                     <LucideIcon className="skills__tech-lucide" strokeWidth={1.35} aria-hidden />
-                ) : null}
+                ) : (
+                    <div style={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)' }} />
+                )}
             </div>
             <span className="skills__tech-name">{name}</span>
         </motion.div>
     );
 }
 
-const categories = [
-    {
-        title: "Frontend",
-        icon: Monitor,
-        color: "violet",
-        items: [
-            { name: "React", slug: "react" },
-            { name: "Tailwind", slug: "tailwindcss" },
-            { name: "JavaScript", slug: "javascript" },
-            { name: "TypeScript", slug: "typescript" },
-            { name: "Next.js", slug: "nextdotjs" },
-            { name: "HTML", slug: "html5" },
-            { name: "CSS", slug: "css3" },
-        ],
-    },
-    {
-        title: "Backend",
-        icon: Server,
-        color: "indigo",
-        items: [
-            { name: "Laravel", slug: "laravel" },
-            { name: "PHP", slug: "php" },
-            { name: "MySQL", slug: "mysql" },
-            { name: "Node.js", slug: "nodedotjs" },
-            { name: "PostgreSQL", slug: "postgresql" },
-            { name: "REST APIs", LucideIcon: Webhook },
-        ],
-    },
-    {
-        title: "Tools",
-        icon: Wrench,
-        color: "sky",
-        items: [
-            { name: "Git", slug: "git" },
-            { name: "Docker", slug: "docker" },
-            { name: "VS Code", slug: "visualstudiocode" },
-            { name: "Linux", slug: "linux" },
-            { name: "Vite", slug: "vite" },
-            { name: "Postman", slug: "postman" },
-        ],
-    },
-    {
-        title: "Design",
-        icon: Palette,
-        color: "rose",
-        items: [
-            { name: "Figma", slug: "figma" },
-            { name: "UI / UX", LucideIcon: PenTool },
-            { name: "Responsive", LucideIcon: LayoutTemplate },
-            { name: "Prototyping", LucideIcon: Layers },
-            { name: "Typography", LucideIcon: Type },
-            { name: "Color", LucideIcon: Pipette },
-        ],
-    },
+const staticCategories = [
+    { title: "Frontend", icon: Monitor, color: "emerald" },
+    { title: "Backend", icon: Server, color: "indigo" },
+    { title: "Tools", icon: Wrench, color: "sky" },
+    { title: "Design", icon: Palette, color: "rose" },
 ];
 
 function SkillCard({ category, index, isInView }) {
@@ -128,10 +92,10 @@ function SkillCard({ category, index, isInView }) {
             <div className="skills__tech-grid" role="list">
                 {category.items.map((item, i) => (
                     <TechCell
-                        key={item.name}
+                        key={item.id || item.name}
                         name={item.name}
                         slug={item.slug}
-                        LucideIcon={item.LucideIcon}
+                        lucide_icon={item.lucide_icon}
                         delay={baseDelay + i * 0.04}
                         isInView={isInView}
                     />
@@ -143,9 +107,34 @@ function SkillCard({ category, index, isInView }) {
     );
 }
 
-export default function Skills() {
+function SkillSkeleton({ mod }) {
+    return (
+        <div className={`skills__card skills__card--${mod}`} style={{ pointerEvents: 'none' }}>
+            <div className="skills__card-head skills__card-head--icons">
+                <div className="skeleton" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />
+                <div className="skeleton" style={{ width: '80px', height: '20px' }} />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginTop: '16px' }}>
+                {Array.from({ length: 6 }).map((_, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div className="skeleton" style={{ width: '20px', height: '20px', borderRadius: '4px' }} />
+                        <div className="skeleton" style={{ width: '60px', height: '14px' }} />
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+export default function Skills({ items = [], loading = false }) {
     const sectionRef = useRef(null);
     const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
+
+    // Group the flat list of dynamic items into static design-system cards
+    const mappedCategories = staticCategories.map((cat) => ({
+        ...cat,
+        items: items.filter((item) => item.category?.toLowerCase() === cat.title.toLowerCase()),
+    }));
 
     return (
         <section id="skills" ref={sectionRef} className="skills">
@@ -171,9 +160,18 @@ export default function Skills() {
                 </motion.div>
 
                 <div className="skills__grid">
-                    {categories.map((cat, i) => (
-                        <SkillCard key={cat.title} category={cat} index={i} isInView={isInView} />
-                    ))}
+                    {loading ? (
+                        <>
+                            <SkillSkeleton mod="emerald" />
+                            <SkillSkeleton mod="indigo" />
+                            <SkillSkeleton mod="sky" />
+                            <SkillSkeleton mod="rose" />
+                        </>
+                    ) : (
+                        mappedCategories.map((cat, i) => (
+                            <SkillCard key={cat.title} category={cat} index={i} isInView={isInView} />
+                        ))
+                    )}
                 </div>
             </div>
         </section>

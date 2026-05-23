@@ -18,7 +18,7 @@ const testimonials = [
         role: "CEO, TechVenture",
         text: "Kualitas kerjanya luar biasa. Website yang dibangun sangat responsif, cepat, dan desainnya modern. Sangat puas dengan hasilnya dan akan bekerja sama lagi di project selanjutnya.",
         rating: 5,
-        color: "violet",
+        color: "emerald",
     },
     {
         name: "Sarah Putri",

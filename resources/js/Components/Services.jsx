@@ -18,7 +18,7 @@ const services = [
         description:
             "Building fast, secure, and SEO-friendly websites using modern frameworks and performance optimization techniques.",
         icon: Globe,
-        color: "violet",
+        color: "emerald",
     },
     {
         title: "UI/UX Design",

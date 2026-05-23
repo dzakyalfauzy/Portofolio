@@ -56,7 +56,7 @@ export default function About() {
                 <div className="about__ambient-glow" />
             </div>
 
-            <div className="layout-shell">
+            <div className="layout-shell max-w-7xl mx-auto px-10 md:px-12 py-16 md:py-20">
                 <motion.div
                     variants={fadeUp(0)}
                     initial="hidden"
@@ -81,9 +81,8 @@ export default function About() {
                             <div className="about__photo-glow" aria-hidden />
                             <div className="about__photo-card">
                                 <div className="about__photo-inner-grad" aria-hidden />
-                                <div className="about__photo-placeholder">
-                                    <div className="about__photo-avatar">D</div>
-                                    <p className="about__photo-hint">Your photo here</p>
+                                <div className="about__photo-placeholder" style={{ padding: 0, overflow: 'hidden' }}>
+                                    <img src="/images/foto_aboutme.png" alt="Dzaky Al Fauzy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 </div>
                                 <motion.div
                                     animate={{ x: ["-100%", "200%"] }}
@@ -121,14 +120,14 @@ export default function About() {
                             variants={fadeUp(0.15)}
                             initial="hidden"
                             animate={isInView ? "visible" : "hidden"}
-                            className="about__bio"
+                            className="about__bio flex flex-col gap-6"
                         >
-                            <p className="about__bio-lead">
+                            <p className="about__bio-lead leading-relaxed">
                                 I&apos;m a full‑stack developer with over 3 years of experience building modern web
                                 applications. I specialize in creating performant, accessible, and visually stunning
                                 digital products that solve real‑world problems.
                             </p>
-                            <p className="about__bio-muted">
+                            <p className="about__bio-muted leading-relaxed">
                                 When I&apos;m not coding, you&apos;ll find me exploring new technologies, contributing to
                                 open‑source, or sketching UI concepts. I believe great software is built at the
                                 intersection of clean engineering and thoughtful design.
@@ -144,7 +143,7 @@ export default function About() {
                             {highlights.map((item, i) => (
                                 <motion.div
                                     key={item.title}
-                                    whileHover={{ y: -2, borderColor: "rgba(139,92,246,0.3)" }}
+                                    whileHover={{ y: -2, borderColor: "rgba(16, 185, 129,0.3)" }}
                                     className="about__highlight"
                                 >
                                     <div className="about__highlight-inner">
@@ -169,7 +168,7 @@ export default function About() {
                                 download
                                 whileHover={{
                                     scale: 1.02,
-                                    boxShadow: "0 0 25px rgba(139,92,246,0.35)",
+                                    boxShadow: "0 0 25px rgba(16, 185, 129,0.35)",
                                 }}
                                 whileTap={{ scale: 0.98 }}
                                 className="about__cv"

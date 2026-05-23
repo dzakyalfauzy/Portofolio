@@ -8,7 +8,7 @@
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
-    background-color: #050507;
+    background-color: #020617;
 }
 
 .bgfx__blob {
@@ -21,7 +21,7 @@
     left: -10%;
     width: 60%;
     height: 60%;
-    background-color: rgb(124 58 237 / 0.1);
+    background-color: rgb(16 185 129 / 0.1);
     filter: blur(140px);
 }
 
@@ -30,7 +30,7 @@
     right: -15%;
     width: 50%;
     height: 50%;
-    background-color: rgb(79 70 229 / 0.1);
+    background-color: rgb(8 145 178 / 0.1);
     filter: blur(130px);
 }
 
@@ -50,7 +50,7 @@
     background: linear-gradient(
         to bottom,
         rgb(255 255 255 / 0),
-        rgb(139 92 246 / 0.2),
+        rgb(16 185 129 / 0.2),
         rgb(255 255 255 / 0)
     );
 }

@@ -169,7 +169,7 @@ export default function Navbar() {
                                 }
                                 setIsOpen(false);
                             }}
-                            whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(139,92,246,0.4)" }}
+                            whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(16, 185, 129,0.4)" }}
                             whileTap={{ scale: 0.96 }}
                             className="navbar__hire"
                         >

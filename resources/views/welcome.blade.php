@@ -32,7 +32,7 @@
     </style>
 </head>
 
-<body class="bg-[#050507] text-white antialiased">
+<body class="bg-[#020617] text-white antialiased">
     <div id="app"></div>
 </body>
 

@@ -1,111 +1,290 @@
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { Briefcase, Calendar, MapPin } from "lucide-react";
+import { useRef, useState } from "react";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { Briefcase, Calendar, MapPin, Users, Terminal, ChevronLeft, ChevronRight } from "lucide-react";
 import "../../css/components/experience.css";
 
-const fadeUp = (delay = 0) => ({
-    hidden: { opacity: 0, y: 28 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] },
-    },
-});
+/* ===== Cyber Kinetic Unfold & Glow Sweep ===== */
+const spring3D = { type: "spring", stiffness: 110, damping: 14, mass: 0.8 };
 
-const experiences = [
+const reveal3D = {
+    hidden: {
+        opacity: 0, y: 120, rotateX: -65, rotateY: -10,
+        scale: 0.75, filter: "blur(8px)",
+    },
+    visible: {
+        opacity: 1, y: 0, rotateX: 0, rotateY: 0,
+        scale: 1, filter: "blur(0px)", transition: spring3D,
+    },
+};
+
+const staggerContainer = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+};
+
+const defaultExperiences = [
     {
-        title: "Senior Full‑Stack Developer",
-        company: "Tech Innovations Inc.",
-        location: "Remote",
-        duration: "Jan 2024 – Present",
-        description:
-            "Leading development of scalable web applications serving 50k+ users. Architecting front‑end systems with React and building robust APIs with Laravel. Mentoring junior developers and conducting code reviews.",
-        stack: ["React", "Laravel", "TypeScript", "PostgreSQL", "AWS"],
-        current: true,
+        id: 'emub',
+        title: "Staff Ahli Kementerian PSDM",
+        company: "Eksekutif Mahasiswa Universitas Brawijaya",
+        location: "Universitas Brawijaya",
+        duration: "2024 – 2025",
+        description: "Mengelola sumber daya mahasiswa tingkat universitas, koordinasi modul kepemimpinan nasional, dan eksekusi media kreatif.",
+        prokers: [
+            "LKMM-TL NASIONAL (Wakil Ketua Pelaksana)",
+            "Garasi Brawijaya (WaCo Creative Design Media)",
+            "PKO & Silabus (Staff Creative)",
+            "Next Brawijaya (Team Creative)",
+            "Internal PSDM 2025 (Team Creative)",
+            "Pancasila (Team Creative)",
+            "Tangan Brawijaya (PJ Fakultas Vokasi)"
+        ],
+        images: ["/images/experience/emub.jpg"],
+        current: true
     },
     {
-        title: "Full‑Stack Developer",
-        company: "Digital Agency Co.",
-        location: "Jakarta, ID",
-        duration: "Jun 2022 – Dec 2023",
-        description:
-            "Built and maintained client‑facing web applications across multiple industries. Collaborated with designers to deliver pixel‑perfect UIs. Improved page load performance by 40% through code optimization.",
-        stack: ["React", "Next.js", "TailwindCSS", "Node.js", "MySQL"],
-        current: false,
+        id: 'penalaran',
+        title: "Wakil Ketua Departemen Pengembangan Keilmiahan dan Daya Kritis Mahasiswa",
+        company: "UAM Penalaran Vokasi",
+        location: "Fakultas Vokasi UB",
+        duration: "2023 – 2024",
+        description: "Mengarahkan iklim ilmiah mahasiswa vokasi, mengontrol kualitas kompetisi karya tulis, dan memimpin berjalannya program kerja penalaran.",
+        prokers: [
+            "FOURSVIA (Wakil Ketua Pelaksana)",
+            "PKM BOOST (Steering Committee)",
+            "VOCUS (Steering Committee)"
+        ],
+        images: ["/images/experience/penalaran.jpg"],
+        current: false
     },
     {
-        title: "Junior Web Developer",
-        company: "StartUp Studio",
-        location: "Jakarta, ID",
-        duration: "Jan 2021 – May 2022",
-        description:
-            "Developed responsive websites and internal tools. Gained deep expertise in PHP, Laravel, and modern JavaScript. Participated in agile sprints and contributed to CI/CD pipeline setup.",
-        stack: ["PHP", "Laravel", "JavaScript", "MySQL", "Git"],
-        current: false,
-    },
-    {
-        title: "Freelance Developer",
-        company: "Self‑Employed",
-        location: "Remote",
-        duration: "2020 – 2021",
-        description:
-            "Delivered custom websites and e‑commerce solutions for small businesses. Managed full project lifecycle from requirements gathering to deployment and maintenance.",
-        stack: ["HTML", "CSS", "JavaScript", "WordPress", "Figma"],
-        current: false,
-    },
+        id: 'hmpsti',
+        title: "Staff Departemen Riset dan Teknologi",
+        company: "HMPSTI Vokasi UB",
+        location: "Malang, ID",
+        duration: "2022 – 2023",
+        description: "Bertanggung jawab atas manajemen rangkaian event IT prodi, serta berkontribusi dalam menyambut mahasiswa baru.",
+        prokers: [
+            "Tech Bridge Academy (Wakil Ketua Pelaksana)",
+            "Tech Fair (Wakil Ketua Pelaksana)",
+            "Tech Hunt (Wakil Ketua Pelaksana)",
+            "PKKMB Prodi TI (Co Acara)"
+        ],
+        images: ["/images/experience/hmpsti.jpg"],
+        current: false
+    }
 ];
 
-function TimelineItem({ exp, index, isInView }) {
+function ImageCarousel({ images, company }) {
+    const scrollRef = useRef(null);
+    const [failedImages, setFailedImages] = useState(new Set());
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(false);
+
+    const validImages = images.filter((_, i) => !failedImages.has(i));
+
+    const checkScroll = () => {
+        const el = scrollRef.current;
+        if (!el) return;
+        setCanScrollLeft(el.scrollLeft > 4);
+        setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+    };
+
+    const scrollTo = (direction) => {
+        const el = scrollRef.current;
+        if (!el) return;
+        const width = el.clientWidth;
+        el.scrollBy({ left: direction === 'left' ? -width : width, behavior: 'smooth' });
+    };
+
+    const handleImageError = (index) => {
+        setFailedImages(prev => new Set([...prev, index]));
+    };
+
+    if (validImages.length === 0) return null;
+
+    return (
+        <div className="experience-carousel">
+            <div
+                ref={scrollRef}
+                className="experience-carousel__track"
+                onScroll={checkScroll}
+            >
+                {images.map((src, i) => (
+                    failedImages.has(i) ? null : (
+                        <div key={i} className="experience-carousel__slide">
+                            <img
+                                src={src}
+                                alt={`${company} ${i + 1}`}
+                                className="experience-carousel__img"
+                                onError={() => handleImageError(i)}
+                            />
+                        </div>
+                    )
+                ))}
+            </div>
+            {validImages.length > 1 && (
+                <>
+                    {canScrollLeft && (
+                        <button
+                            className="experience-carousel__btn experience-carousel__btn--left"
+                            onClick={() => scrollTo('left')}
+                            aria-label="Previous image"
+                        >
+                            <ChevronLeft size={18} />
+                        </button>
+                    )}
+                    {canScrollRight && (
+                        <button
+                            className="experience-carousel__btn experience-carousel__btn--right"
+                            onClick={() => scrollTo('right')}
+                            aria-label="Next image"
+                        >
+                            <ChevronRight size={18} />
+                        </button>
+                    )}
+                    <div className="experience-carousel__dots">
+                        {validImages.length > 0 && images.map((_, i) => {
+                            if (failedImages.has(i)) return null;
+                            return <span key={i} className="experience-carousel__dot" />;
+                        })}
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
+
+function TimelineItem({ exp, index }) {
+    const isCurrent = exp.current === 1 || exp.current === true || exp.is_current === 1 || exp.is_current === true;
+    const durationText = exp.duration || `${exp.start_date} – ${exp.end_date || 'Present'}`;
+
+    const images = Array.isArray(exp.images)
+        ? exp.images
+        : exp.image_path
+            ? [exp.image_path]
+            : [];
+    const hasImages = images.length > 0;
+
+    const containerRef = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start end", "end start"]
+    });
+    const yParallax = useTransform(scrollYProgress, [0, 1], [-30, 30]);
+
+    const FallbackIcon = index % 3 === 0 ? Users : index % 3 === 1 ? Terminal : Briefcase;
+    const isReverse = index % 2 !== 0;
+
     return (
         <motion.div
-            variants={fadeUp(index * 0.12)}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            className="experience-item"
+            ref={containerRef}
+            variants={reveal3D}
+            className={`experience-item ${isReverse ? "reverse" : ""}`}
         >
-            <motion.div whileHover={{ y: -2 }} className="experience-item__card">
-                {exp.current && (
-                    <div className="experience-item__badge-row">
-                        <span className="experience-item__badge">
-                            <span className="experience-item__badge-dot" />
-                            Current
+            {/* Timeline center line node */}
+            <div className="experience-item__timeline-node">
+                <div className={`experience-item__node-dot ${isCurrent ? "active" : ""}`} />
+            </div>
+
+            {/* Info Box */}
+            <div className="experience-item__info">
+                <motion.div whileHover={{ y: -4 }} className="experience-item__card">
+                    {isCurrent && (
+                        <div className="experience-item__badge-row">
+                            <span className="experience-item__badge">
+                                <span className="experience-item__badge-dot" />
+                                Current
+                            </span>
+                        </div>
+                    )}
+
+                    <h3 className="experience-item__title">{exp.title}</h3>
+                    <div className="experience-item__meta">
+                        <span className="experience-item__company">
+                            <Briefcase size={13} />
+                            {exp.company}
+                        </span>
+                        <span className="experience-item__muted">
+                            <MapPin size={12} />
+                            {exp.location}
+                        </span>
+                        <span className="experience-item__muted">
+                            <Calendar size={12} />
+                            {durationText}
                         </span>
                     </div>
-                )}
 
-                <h3 className="experience-item__title">{exp.title}</h3>
-                <div className="experience-item__meta">
-                    <span className="experience-item__company">
-                        <Briefcase size={13} />
-                        {exp.company}
-                    </span>
-                    <span className="experience-item__muted">
-                        <MapPin size={12} />
-                        {exp.location}
-                    </span>
-                    <span className="experience-item__muted">
-                        <Calendar size={12} />
-                        {exp.duration}
-                    </span>
+                    <p className="experience-item__desc">{exp.description}</p>
+
+                    {Array.isArray(exp.prokers) && exp.prokers.length > 0 && (
+                        <div className="experience-item__prokers">
+                            <h4 className="experience-item__prokers-title">Programs & Roles:</h4>
+                            <div className="experience-item__proker-tags">
+                                {exp.prokers.map((proker) => (
+                                    <span key={proker} className="experience-item__proker-tag">
+                                        {proker}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="experience-item__tags">
+                        {Array.isArray(exp.stack) && exp.stack.map((tech) => (
+                            <span key={tech} className="experience-item__tag">
+                                {tech}
+                            </span>
+                        ))}
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* Photo/Visual Box */}
+            <div className="experience-item__media-container">
+                <div className="experience-item__media-inner">
+                    <div className="experience-item__visual-glow" />
+                    <div className="experience-item__visual-grid" aria-hidden="true" />
+                    {hasImages ? (
+                        <ImageCarousel images={images} company={exp.company} />
+                    ) : (
+                        <div className="experience-item__placeholder">
+                            <FallbackIcon size={40} className="experience-item__placeholder-icon" />
+                            <span className="experience-item__placeholder-text">{exp.company}</span>
+                        </div>
+                    )}
                 </div>
-
-                <p className="experience-item__desc">{exp.description}</p>
-
-                <div className="experience-item__tags">
-                    {exp.stack.map((tech) => (
-                        <span key={tech} className="experience-item__tag">
-                            {tech}
-                        </span>
-                    ))}
-                </div>
-            </motion.div>
+            </div>
         </motion.div>
     );
 }
 
-export default function Experience() {
+function ExperienceSkeleton() {
+    return (
+        <div className="experience-item" style={{ pointerEvents: 'none' }}>
+            <div className="experience-item__card space-y-4">
+                <div className="skeleton" style={{ height: '24px', width: '50%' }} />
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                    <div className="skeleton" style={{ height: '14px', width: '100px' }} />
+                    <div className="skeleton" style={{ height: '14px', width: '80px' }} />
+                    <div className="skeleton" style={{ height: '14px', width: '120px' }} />
+                </div>
+                <div className="skeleton" style={{ height: '40px', width: '100%' }} />
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <div className="skeleton" style={{ height: '20px', width: '60px', borderRadius: '4px' }} />
+                    <div className="skeleton" style={{ height: '20px', width: '80px', borderRadius: '4px' }} />
+                    <div className="skeleton" style={{ height: '20px', width: '50px', borderRadius: '4px' }} />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default function Experience({ items = [], loading = false }) {
     const sectionRef = useRef(null);
-    const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
+    const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+
+    const displayItems = items && items.length > 0 ? items : defaultExperiences;
 
     return (
         <section id="experience" ref={sectionRef} className="experience">
@@ -114,27 +293,46 @@ export default function Experience() {
                 <div className="experience__glow-2" />
             </div>
 
-            <div className="layout-shell layout-shell--narrow">
+            <div className="layout-shell">
+                {/* ===== HEADER (staggered 3D reveal) ===== */}
                 <motion.div
-                    variants={fadeUp(0)}
+                    variants={staggerContainer}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
+                    style={{ perspective: 1000 }}
                     className="experience__header"
                 >
-                    <span className="experience__eyebrow">Experience</span>
-                    <h2 className="experience__title">
+                    <motion.span variants={reveal3D} className="experience__eyebrow">
+                        Experience
+                    </motion.span>
+                    <motion.h2 variants={reveal3D} className="experience__title">
                         My professional <span className="experience__title-accent">journey</span>
-                    </h2>
-                    <p className="experience__lead">
+                    </motion.h2>
+                    <motion.p variants={reveal3D} className="experience__lead">
                         A timeline of roles, challenges, and growth across different teams and projects.
-                    </p>
+                    </motion.p>
                 </motion.div>
 
-                <div className="experience__timeline">
-                    {experiences.map((exp, i) => (
-                        <TimelineItem key={exp.company + exp.title} exp={exp} index={i} isInView={isInView} />
-                    ))}
-                </div>
+                {/* ===== TIMELINE (staggered 3D reveal) ===== */}
+                <motion.div
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate={isInView ? "visible" : "hidden"}
+                    style={{ perspective: 1200 }}
+                    className="experience__timeline"
+                >
+                    <div className="experience__timeline-line" />
+                    {loading ? (
+                        <>
+                            <ExperienceSkeleton />
+                            <ExperienceSkeleton />
+                        </>
+                    ) : (
+                        displayItems.map((exp, i) => (
+                            <TimelineItem key={exp.id || `${exp.company}-${exp.title}-${i}`} exp={exp} index={i} />
+                        ))
+                    )}
+                </motion.div>
             </div>
         </section>
     );

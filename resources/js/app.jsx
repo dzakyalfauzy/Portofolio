@@ -1,11 +1,25 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Home from "./Pages/Home";
 import Footer from "./Components/Footer";
 import BackgroundEffects from "./Components/BackgroundEffects";
+import AdminLogin from "./Pages/Admin/Login";
+import AdminDashboard from "./Pages/Admin/Dashboard";
 import "../css/components/app-layout.css";
+
+function PublicLayout() {
+    return (
+        <>
+            <Navbar />
+            <main className="app__main">
+                <Outlet />
+            </main>
+            <Footer />
+        </>
+    );
+}
 
 function App() {
     return (
@@ -13,18 +27,16 @@ function App() {
             <div className="app">
                 <BackgroundEffects />
                 <div className="app__content">
-                    <Navbar />
                     <Routes>
-                        <Route
-                            path="/"
-                            element={
-                                <main className="app__main">
-                                    <Home />
-                                </main>
-                            }
-                        />
+                        {/* Public Route Group with Navbar & Footer */}
+                        <Route element={<PublicLayout />}>
+                            <Route path="/" element={<Home />} />
+                        </Route>
+
+                        {/* Admin Route Group without public Navbar/Footer */}
+                        <Route path="/admin/login" element={<AdminLogin />} />
+                        <Route path="/admin/*" element={<AdminDashboard />} />
                     </Routes>
-                    <Footer />
                 </div>
             </div>
         </BrowserRouter>

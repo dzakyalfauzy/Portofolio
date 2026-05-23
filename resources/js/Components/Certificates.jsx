@@ -2,18 +2,53 @@ import { useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { Layers, ShieldCheck } from "lucide-react";
 import CertificateCard from "./CertificateCard";
-import { certificates, certificateCategories } from "../data/certificates";
 import "../../css/components/certificates.css";
 
-export default function Certificates() {
+/* ===== Premium Reveal Variants ===== */
+const spring3D = { type: "spring", stiffness: 110, damping: 14, mass: 0.8 };
+
+const reveal3D = {
+    hidden: {
+        opacity: 0, y: 120, rotateX: -65, rotateY: -10,
+        scale: 0.75, filter: "blur(8px)",
+    },
+    visible: {
+        opacity: 1, y: 0, rotateX: 0, rotateY: 0,
+        scale: 1, filter: "blur(0px)", transition: spring3D,
+    },
+};
+
+const staggerContainer = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+};
+
+const certificateCategories = ["All", "Frontend", "Backend", "UI/UX", "DevOps", "Mobile"];
+
+function CertificateSkeleton({ span2 }) {
+    return (
+        <div className={span2 ? "cert-bento__item cert-bento__item--wide" : "cert-bento__item"}>
+            <div className="cert-bento__card" style={{ pointerEvents: "none" }}>
+                <div className="skeleton" style={{ height: "20px", width: "50%", borderRadius: "4px" }} />
+                <div className="skeleton" style={{ height: "14px", width: "35%", borderRadius: "4px", marginTop: "12px" }} />
+                <div style={{ display: "flex", gap: "6px", marginTop: "16px" }}>
+                    <div className="skeleton" style={{ height: "20px", width: "50px", borderRadius: "4px" }} />
+                    <div className="skeleton" style={{ height: "20px", width: "70px", borderRadius: "4px" }} />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default function Certificates({ items = [], loading = false }) {
     const sectionRef = useRef(null);
-    const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
+    const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
     const [activeCategory, setActiveCategory] = useState("All");
 
     const filtered = useMemo(() => {
-        if (activeCategory === "All") return certificates;
-        return certificates.filter((c) => c.category === activeCategory);
-    }, [activeCategory]);
+        if (activeCategory === "All") return items;
+        return items.filter((c) => c.category?.toLowerCase() === activeCategory.toLowerCase());
+    }, [items, activeCategory]);
 
     return (
         <section id="certificates" ref={sectionRef} className="certificates">
@@ -23,31 +58,34 @@ export default function Certificates() {
             </div>
 
             <div className="layout-shell">
+                {/* ===== HEADER (staggered 3D reveal) ===== */}
                 <motion.div
-                    initial={{ opacity: 0, y: 28 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                    variants={staggerContainer}
+                    initial="hidden"
+                    animate={isInView ? "visible" : "hidden"}
+                    style={{ perspective: 1000 }}
                     className="certificates__header"
                 >
-                    <div className="certificates__eyebrow-wrap">
+                    <motion.div variants={reveal3D} className="certificates__eyebrow-wrap">
                         <span className="certificates__eyebrow">
                             <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.5} />
                             Credentials
                         </span>
-                    </div>
-                    <h2 className="certificates__title">
+                    </motion.div>
+                    <motion.h2 variants={reveal3D} className="certificates__title">
                         Verified <span className="certificates__title-accent">Certificates</span>
-                    </h2>
-                    <p className="certificates__lead">
+                    </motion.h2>
+                    <motion.p variants={reveal3D} className="certificates__lead">
                         A curated record of courses and certifications across frontend, backend, design, and
                         infrastructure — built to stay transparent and verifiable.
-                    </p>
+                    </motion.p>
                 </motion.div>
 
+                {/* ===== FILTERS ===== */}
                 <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                    variants={reveal3D}
+                    initial="hidden"
+                    animate={isInView ? "visible" : "hidden"}
                     className="certificates__filters"
                     role="tablist"
                     aria-label="Filter certificates by category"
@@ -65,14 +103,14 @@ export default function Certificates() {
                                 whileTap={{ scale: 0.97 }}
                                 className={`relative overflow-hidden rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                                     isActive
-                                        ? "border-violet-400/50 bg-white/10 text-white shadow-[0_0_28px_rgba(139,92,246,0.28)]"
+                                        ? "border-emerald-400/50 bg-white/10 text-white shadow-[0_0_28px_rgba(16, 185, 129,0.28)]"
                                         : "border-white/10 bg-white/[0.03] text-zinc-400 hover:border-white/20 hover:text-zinc-200"
                                 }`}
                             >
                                 {isActive && (
                                     <motion.span
                                         layoutId="cert-filter-pill"
-                                        className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-violet-600/35 via-fuchsia-500/25 to-cyan-500/30"
+                                        className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-emerald-600/35 via-teal-500/25 to-cyan-500/30"
                                         transition={{ type: "spring", stiffness: 380, damping: 32 }}
                                     />
                                 )}
@@ -89,42 +127,57 @@ export default function Certificates() {
                     })}
                 </motion.div>
 
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={isInView ? { opacity: 1 } : {}}
-                    transition={{ delay: 0.15 }}
-                    className="mt-6 text-sm text-zinc-500 text-center lg:text-left"
-                >
-                    Showing{" "}
-                    <span className="font-medium text-zinc-300">{filtered.length}</span>{" "}
-                    {filtered.length === 1 ? "credential" : "credentials"}
-                    {activeCategory !== "All" ? (
-                        <>
-                            {" "}
-                            in <span className="text-zinc-300">{activeCategory}</span>
-                        </>
-                    ) : null}
-                </motion.p>
-
-                <AnimatePresence mode="popLayout">
-                    <motion.ul
-                        key={activeCategory}
-                        layout
-                        initial={{ opacity: 0 }}
-                        animate={isInView ? { opacity: 1 } : {}}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                        className="certificates__grid"
+                {!loading && (
+                    <motion.p
+                        variants={reveal3D}
+                        initial="hidden"
+                        animate={isInView ? "visible" : "hidden"}
+                        className="certificates__count"
                     >
-                        {filtered.map((cert, i) => (
-                            <li key={cert.credential} className="list-none">
-                                <CertificateCard certificate={cert} index={i} />
-                            </li>
-                        ))}
-                    </motion.ul>
+                        Showing{" "}
+                        <span className="font-medium text-zinc-300">{filtered.length}</span>{" "}
+                        {filtered.length === 1 ? "credential" : "credentials"}
+                        {activeCategory !== "All" ? (
+                            <>
+                                {" "}
+                                in <span className="text-zinc-300">{activeCategory}</span>
+                            </>
+                        ) : null}
+                    </motion.p>
+                )}
+
+                {/* ===== BENTO GRID (staggered 3D reveal) ===== */}
+                <AnimatePresence mode="popLayout">
+                    <motion.div
+                        key={activeCategory}
+                        variants={staggerContainer}
+                        initial="hidden"
+                        animate={isInView ? "visible" : "hidden"}
+                        exit={{ opacity: 0 }}
+                        style={{ perspective: 1200 }}
+                        className="cert-bento"
+                    >
+                        {loading ? (
+                            <>
+                                <CertificateSkeleton span2 />
+                                <CertificateSkeleton span2 />
+                                <CertificateSkeleton />
+                                <CertificateSkeleton />
+                            </>
+                        ) : (
+                            filtered.map((cert, i) => (
+                                <CertificateCard
+                                    key={cert.id || cert.credential}
+                                    certificate={cert}
+                                    index={i}
+                                    isWide={i < 2}
+                                />
+                            ))
+                        )}
+                    </motion.div>
                 </AnimatePresence>
 
-                {filtered.length === 0 && (
+                {!loading && filtered.length === 0 && (
                     <p className="mt-20 text-center text-zinc-500">
                         No certificates in this category yet.
                     </p>

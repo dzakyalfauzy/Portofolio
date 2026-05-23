@@ -1,143 +1,200 @@
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { ExternalLink, Folder } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { ExternalLink, Folder, ChevronLeft, ChevronRight } from "lucide-react";
 import { Github } from "./Icons";
 import "../../css/components/projects.css";
 
-const fadeUp = (delay = 0) => ({
-    hidden: { opacity: 0, y: 28 },
+/* ===== Cyber Kinetic Unfold & Glow Sweep ===== */
+const spring3D = { type: "spring", stiffness: 110, damping: 14, mass: 0.8 };
+
+const reveal3D = {
+    hidden: {
+        opacity: 0, y: 120, rotateX: -65, rotateY: -10,
+        scale: 0.75, filter: "blur(8px)",
+    },
     visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] },
+        opacity: 1, y: 0, rotateX: 0, rotateY: 0,
+        scale: 1, filter: "blur(0px)", transition: spring3D,
     },
-});
+};
 
-const projects = [
-    {
-        title: "E‑Commerce Platform",
-        description:
-            "Full‑featured online store with payment integration, real‑time inventory, and an admin dashboard for managing products and orders.",
-        stack: ["React", "Laravel", "MySQL", "Stripe"],
-        github: "https://github.com",
-        demo: "https://example.com",
-        color: "violet",
-    },
-    {
-        title: "Project Management App",
-        description:
-            "Kanban‑style task tracker with drag‑and‑drop, team collaboration, real‑time updates, and deadline notifications.",
-        stack: ["Next.js", "Node.js", "PostgreSQL", "Socket.io"],
-        github: "https://github.com",
-        demo: "https://example.com",
-        color: "indigo",
-    },
-    {
-        title: "AI Content Generator",
-        description:
-            "SaaS tool that uses AI to generate marketing copy, blog posts, and social media content with customizable tone and style.",
-        stack: ["React", "Python", "OpenAI", "TailwindCSS"],
-        github: "https://github.com",
-        demo: "https://example.com",
-        color: "sky",
-    },
-    {
-        title: "Portfolio Website",
-        description:
-            "Modern personal portfolio with dark theme, smooth animations, glassmorphism effects, and a fully responsive design.",
-        stack: ["React", "TailwindCSS", "Framer Motion", "Vite"],
-        github: "https://github.com",
-        demo: "https://example.com",
-        color: "rose",
-    },
-    {
-        title: "Real‑Time Chat App",
-        description:
-            "Instant messaging application with group chats, file sharing, read receipts, and end‑to‑end message encryption.",
-        stack: ["React", "Firebase", "WebRTC", "TailwindCSS"],
-        github: "https://github.com",
-        demo: "https://example.com",
-        color: "amber",
-    },
-    {
-        title: "Analytics Dashboard",
-        description:
-            "Data visualization dashboard with interactive charts, custom filters, CSV export, and role‑based access control.",
-        stack: ["Next.js", "D3.js", "Laravel", "Redis"],
-        github: "https://github.com",
-        demo: "https://example.com",
-        color: "emerald",
-    },
-];
+const staggerContainer = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+};
 
-function ProjectCard({ project, index, isInView }) {
-    const c = project.color;
+const themeColorMap = { violet: "emerald", purple: "emerald", fuchsia: "emerald" };
+const getColor = (project) => themeColorMap[project?.color] || project?.color || "emerald";
+
+/* ======================== FEATURED (HERO) ======================== */
+
+function FeaturedHero({ project }) {
+    if (!project) return null;
+    const c = getColor(project);
+    const hasImage = !!project.image_path;
 
     return (
         <motion.div
-            variants={fadeUp(index * 0.08)}
+            key={project.id || project.title}
+            variants={reveal3D}
             initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            whileHover={{ y: -6 }}
-            className={`projects__card projects__card--${c}`}
+            animate="visible"
+            exit={{ opacity: 0, scale: 0.92, filter: "blur(6px)", transition: { duration: 0.3 } }}
+            style={{ perspective: 1200 }}
+            className={`projects__hero projects__hero--${c}`}
         >
-            <div className="projects__media">
+            <div className="projects__hero-media">
                 <div className={`projects__media-grad projects__media-grad--${c}`} />
                 <div className="projects__media-grid" aria-hidden />
-                <div className="projects__media-icon-wrap">
-                    <div className={`projects__media-icon projects__media-icon--${c}`}>
-                        <Folder size={22} />
+                {hasImage ? (
+                    <img
+                        src={project.image_path}
+                        alt={project.title}
+                        className="projects__hero-img"
+                    />
+                ) : (
+                    <div className="projects__media-icon-wrap projects__media-icon-wrap--featured">
+                        <div className={`projects__media-icon projects__media-icon--${c} projects__media-icon--featured`}>
+                            <Folder size={48} />
+                        </div>
                     </div>
-                </div>
+                )}
                 <div className={`projects__media-glow projects__media-glow--${c}`} aria-hidden />
-                <div className={`projects__media-line projects__media-line--${c}`} aria-hidden />
             </div>
 
-            <div className="projects__body">
-                <h3 className="projects__card-title">{project.title}</h3>
-                <p className="projects__desc">{project.description}</p>
-                <div className="projects__tags">
-                    {project.stack.map((tech) => (
-                        <span key={tech} className="projects__tag">
-                            {tech}
-                        </span>
+            <div className="projects__hero-body">
+                <h3 className="projects__hero-title">{project.title}</h3>
+                <p className="projects__hero-desc">{project.description}</p>
+                <div className="projects__tags projects__tags--left">
+                    {Array.isArray(project.stack) && project.stack.map((tech) => (
+                        <span key={tech} className="projects__tag">{tech}</span>
                     ))}
                 </div>
-                <div className="projects__actions">
-                    <motion.a
-                        href={project.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="projects__btn-secondary"
-                    >
-                        <Github size={16} />
-                        <span>Code</span>
-                    </motion.a>
-                    <motion.a
-                        href={project.demo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{
-                            scale: 1.02,
-                            boxShadow: "0 0 20px rgba(139,92,246,0.3)",
-                        }}
-                        whileTap={{ scale: 0.98 }}
-                        className="projects__btn-primary"
-                    >
-                        <ExternalLink size={16} />
-                        <span>Live Demo</span>
-                    </motion.a>
+                <div className="projects__actions projects__actions--left">
+                    {project.github && (
+                        <motion.a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="projects__btn-secondary"
+                        >
+                            <Github size={16} />
+                            <span>Code</span>
+                        </motion.a>
+                    )}
+                    {project.demo && (
+                        <motion.a
+                            href={project.demo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(16,185,129,0.3)" }}
+                            whileTap={{ scale: 0.98 }}
+                            className="projects__btn-primary"
+                        >
+                            <ExternalLink size={16} />
+                            <span>Live Demo</span>
+                        </motion.a>
+                    )}
                 </div>
             </div>
         </motion.div>
     );
 }
 
-export default function Projects() {
+/* ======================== THUMBNAIL CARD ======================== */
+
+function ThumbnailCard({ project, isActive, onClick, index }) {
+    const c = getColor(project);
+    const hasImage = !!project.image_path;
+
+    return (
+        <motion.div
+            variants={reveal3D}
+            whileHover={{ y: -4 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={onClick}
+            className={`projects__thumb ${isActive ? "projects__thumb--active" : ""}`}
+        >
+            <div className={`projects__thumb-media projects__thumb-media--${c}`}>
+                <div className={`projects__media-grad projects__media-grad--${c}`} />
+                {hasImage ? (
+                    <img src={project.image_path} alt={project.title} className="projects__thumb-img" />
+                ) : (
+                    <div className="projects__thumb-icon">
+                        <Folder size={20} />
+                    </div>
+                )}
+            </div>
+            <div className="projects__thumb-info">
+                <h4 className="projects__thumb-title">{project.title}</h4>
+                <div className="projects__thumb-tags">
+                    {Array.isArray(project.stack) && project.stack.slice(0, 3).map((tech) => (
+                        <span key={tech} className="projects__thumb-tag">{tech}</span>
+                    ))}
+                </div>
+            </div>
+            {isActive && (
+                <motion.div
+                    layoutId="thumb-indicator"
+                    className="projects__thumb-indicator"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+            )}
+        </motion.div>
+    );
+}
+
+/* ======================== SKELETON ======================== */
+
+function ProjectSkeleton() {
+    return (
+        <div className="projects__hero" style={{ pointerEvents: "none" }}>
+            <div className="projects__hero-media">
+                <div className="skeleton" style={{ width: "100%", height: "100%" }} />
+            </div>
+            <div className="projects__hero-body" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <div className="skeleton" style={{ height: "28px", width: "50%" }} />
+                <div className="skeleton" style={{ height: "48px", width: "100%" }} />
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    <div className="skeleton" style={{ height: "18px", width: "60px", borderRadius: "4px" }} />
+                    <div className="skeleton" style={{ height: "18px", width: "80px", borderRadius: "4px" }} />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ======================== MAIN COMPONENT ======================== */
+
+export default function Projects({ items = [], loading = false }) {
     const sectionRef = useRef(null);
-    const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
+    const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+    const carouselRef = useRef(null);
+    const [activeProject, setActiveProject] = useState(items[0] || null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(false);
+
+    useEffect(() => {
+        if (items.length > 0 && !activeProject) {
+            setActiveProject(items[0]);
+        }
+    }, [items]);
+
+    const checkCarouselScroll = () => {
+        const el = carouselRef.current;
+        if (!el) return;
+        setCanScrollLeft(el.scrollLeft > 4);
+        setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+    };
+
+    const scrollCarousel = (direction) => {
+        const el = carouselRef.current;
+        if (!el) return;
+        const amount = el.clientWidth * 0.6;
+        el.scrollBy({ left: direction === "left" ? -amount : amount, behavior: "smooth" });
+    };
 
     return (
         <section id="projects" ref={sectionRef} className="projects">
@@ -147,27 +204,80 @@ export default function Projects() {
             </div>
 
             <div className="layout-shell">
+                {/* ===== HEADER (staggered 3D reveal) ===== */}
                 <motion.div
-                    variants={fadeUp(0)}
+                    variants={staggerContainer}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
+                    style={{ perspective: 1000 }}
                     className="projects__header"
                 >
-                    <span className="projects__eyebrow">Projects</span>
-                    <h2 className="projects__title">
+                    <motion.span variants={reveal3D} className="projects__eyebrow">
+                        Projects
+                    </motion.span>
+                    <motion.h2 variants={reveal3D} className="projects__title">
                         Featured <span className="projects__title-accent">work</span>
-                    </h2>
-                    <p className="projects__lead">
-                        A selection of projects I&apos;ve built — from full‑stack apps to polished front‑end
-                        experiences.
-                    </p>
+                    </motion.h2>
+                    <motion.p variants={reveal3D} className="projects__lead">
+                        A selection of projects I&apos;ve built — from full-stack apps to polished front-end experiences.
+                    </motion.p>
                 </motion.div>
 
-                <div className="projects__grid">
-                    {projects.map((project, i) => (
-                        <ProjectCard key={project.title} project={project} index={i} isInView={isInView} />
-                    ))}
-                </div>
+                {loading ? (
+                    <ProjectSkeleton />
+                ) : (
+                    <>
+                        {/* ===== HERO / FEATURED ===== */}
+                        <AnimatePresence mode="wait">
+                            <FeaturedHero project={activeProject} />
+                        </AnimatePresence>
+
+                        {/* ===== THUMBNAIL CAROUSEL (staggered 3D reveal) ===== */}
+                        {items.length > 1 && (
+                            <div className="projects__carousel-wrap">
+                                {canScrollLeft && (
+                                    <button
+                                        className="projects__carousel-btn projects__carousel-btn--left"
+                                        onClick={() => scrollCarousel("left")}
+                                        aria-label="Scroll left"
+                                    >
+                                        <ChevronLeft size={18} />
+                                    </button>
+                                )}
+
+                                <motion.div
+                                    ref={carouselRef}
+                                    variants={staggerContainer}
+                                    initial="hidden"
+                                    animate={isInView ? "visible" : "hidden"}
+                                    style={{ perspective: 1000 }}
+                                    className="projects__carousel"
+                                    onScroll={checkCarouselScroll}
+                                >
+                                    {items.map((project, i) => (
+                                        <ThumbnailCard
+                                            key={project.id || project.title}
+                                            project={project}
+                                            index={i}
+                                            isActive={activeProject?.id === project.id}
+                                            onClick={() => setActiveProject(project)}
+                                        />
+                                    ))}
+                                </motion.div>
+
+                                {canScrollRight && (
+                                    <button
+                                        className="projects__carousel-btn projects__carousel-btn--right"
+                                        onClick={() => scrollCarousel("right")}
+                                        aria-label="Scroll right"
+                                    >
+                                        <ChevronRight size={18} />
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </>
+                )}
             </div>
         </section>
     );
