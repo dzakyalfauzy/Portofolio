@@ -1,26 +1,8 @@
 import { useRef, useState } from "react";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Briefcase, Calendar, MapPin, Users, Terminal, ChevronLeft, ChevronRight } from "lucide-react";
+import { ScrollReveal } from "../utils/scroll";
 import "../../css/components/experience.css";
-
-/* ===== Cyber Kinetic Unfold & Glow Sweep ===== */
-const spring3D = { type: "spring", stiffness: 110, damping: 14, mass: 0.8 };
-
-const reveal3D = {
-    hidden: {
-        opacity: 0, y: 120, rotateX: -65, rotateY: -10,
-        scale: 0.75, filter: "blur(8px)",
-    },
-    visible: {
-        opacity: 1, y: 0, rotateX: 0, rotateY: 0,
-        scale: 1, filter: "blur(0px)", transition: spring3D,
-    },
-};
-
-const staggerContainer = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
-};
 
 const defaultExperiences = [
     {
@@ -166,20 +148,12 @@ function TimelineItem({ exp, index }) {
             : [];
     const hasImages = images.length > 0;
 
-    const containerRef = useRef(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start end", "end start"]
-    });
-    const yParallax = useTransform(scrollYProgress, [0, 1], [-30, 30]);
-
     const FallbackIcon = index % 3 === 0 ? Users : index % 3 === 1 ? Terminal : Briefcase;
     const isReverse = index % 2 !== 0;
 
     return (
-        <motion.div
-            ref={containerRef}
-            variants={reveal3D}
+        <ScrollReveal
+            perspective
             className={`experience-item ${isReverse ? "reverse" : ""}`}
         >
             {/* Timeline center line node */}
@@ -243,8 +217,6 @@ function TimelineItem({ exp, index }) {
             {/* Photo/Visual Box */}
             <div className="experience-item__media-container">
                 <div className="experience-item__media-inner">
-                    <div className="experience-item__visual-glow" />
-                    <div className="experience-item__visual-grid" aria-hidden="true" />
                     {hasImages ? (
                         <ImageCarousel images={images} company={exp.company} />
                     ) : (
@@ -255,7 +227,7 @@ function TimelineItem({ exp, index }) {
                     )}
                 </div>
             </div>
-        </motion.div>
+        </ScrollReveal>
     );
 }
 
@@ -282,45 +254,24 @@ function ExperienceSkeleton() {
 
 export default function Experience({ items = [], loading = false }) {
     const sectionRef = useRef(null);
-    const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
-
     const displayItems = items && items.length > 0 ? items : defaultExperiences;
 
     return (
         <section id="experience" ref={sectionRef} className="experience">
-            <div className="experience__ambient" aria-hidden>
-                <div className="experience__glow-1" />
-                <div className="experience__glow-2" />
-            </div>
-
             <div className="layout-shell">
-                {/* ===== HEADER (staggered 3D reveal) ===== */}
-                <motion.div
-                    variants={staggerContainer}
-                    initial="hidden"
-                    animate={isInView ? "visible" : "hidden"}
-                    style={{ perspective: 1000 }}
-                    className="experience__header"
-                >
-                    <motion.span variants={reveal3D} className="experience__eyebrow">
-                        Experience
-                    </motion.span>
-                    <motion.h2 variants={reveal3D} className="experience__title">
+                {/* ===== HEADER ===== */}
+                <ScrollReveal className="experience__header">
+                    <span className="experience__eyebrow">Experience</span>
+                    <h2 className="experience__title">
                         My professional <span className="experience__title-accent">journey</span>
-                    </motion.h2>
-                    <motion.p variants={reveal3D} className="experience__lead">
+                    </h2>
+                    <p className="experience__lead">
                         A timeline of roles, challenges, and growth across different teams and projects.
-                    </motion.p>
-                </motion.div>
+                    </p>
+                </ScrollReveal>
 
-                {/* ===== TIMELINE (staggered 3D reveal) ===== */}
-                <motion.div
-                    variants={staggerContainer}
-                    initial="hidden"
-                    animate={isInView ? "visible" : "hidden"}
-                    style={{ perspective: 1200 }}
-                    className="experience__timeline"
-                >
+                {/* ===== TIMELINE ===== */}
+                <div className="experience__timeline">
                     <div className="experience__timeline-line" />
                     {loading ? (
                         <>
@@ -329,10 +280,14 @@ export default function Experience({ items = [], loading = false }) {
                         </>
                     ) : (
                         displayItems.map((exp, i) => (
-                            <TimelineItem key={exp.id || `${exp.company}-${exp.title}-${i}`} exp={exp} index={i} />
+                            <TimelineItem
+                                key={exp.id || `${exp.company}-${exp.title}-${i}`}
+                                exp={exp}
+                                index={i}
+                            />
                         ))
                     )}
-                </motion.div>
+                </div>
             </div>
         </section>
     );

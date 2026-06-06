@@ -1,30 +1,32 @@
 import { useRef, useState, useEffect } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Folder, ChevronLeft, ChevronRight } from "lucide-react";
 import { Github } from "./Icons";
+import { ScrollReveal } from "../utils/scroll";
 import "../../css/components/projects.css";
 
-/* ===== Cyber Kinetic Unfold & Glow Sweep ===== */
-const spring3D = { type: "spring", stiffness: 110, damping: 14, mass: 0.8 };
+/* ===== Obsidian Canvas Reveal Variants ===== */
+const revealEase = [0.16, 1, 0.3, 1];
 
 const reveal3D = {
     hidden: {
-        opacity: 0, y: 120, rotateX: -65, rotateY: -10,
-        scale: 0.75, filter: "blur(8px)",
+        opacity: 0, y: 60, rotateX: -15,
+        scale: 0.95, filter: "blur(4px)",
     },
     visible: {
-        opacity: 1, y: 0, rotateX: 0, rotateY: 0,
-        scale: 1, filter: "blur(0px)", transition: spring3D,
+        opacity: 1, y: 0, rotateX: 0,
+        scale: 1, filter: "blur(0px)",
+        transition: { duration: 0.6, ease: revealEase },
     },
 };
 
 const staggerContainer = {
     hidden: {},
-    visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+    visible: { transition: { staggerChildren: 0.12, delayChildren: 0.08 } },
 };
 
-const themeColorMap = { violet: "emerald", purple: "emerald", fuchsia: "emerald" };
-const getColor = (project) => themeColorMap[project?.color] || project?.color || "emerald";
+const themeColorMap = { violet: "indigo", purple: "indigo", fuchsia: "rose" };
+const getColor = (project) => themeColorMap[project?.color] || project?.color || "indigo";
 
 /* ======================== FEATURED (HERO) ======================== */
 
@@ -39,7 +41,7 @@ function FeaturedHero({ project }) {
             variants={reveal3D}
             initial="hidden"
             animate="visible"
-            exit={{ opacity: 0, scale: 0.92, filter: "blur(6px)", transition: { duration: 0.3 } }}
+            exit={{ opacity: 0, scale: 0.95, filter: "blur(4px)", transition: { duration: 0.3, ease: revealEase } }}
             style={{ perspective: 1200 }}
             className={`projects__hero projects__hero--${c}`}
         >
@@ -89,7 +91,7 @@ function FeaturedHero({ project }) {
                             href={project.demo}
                             target="_blank"
                             rel="noopener noreferrer"
-                            whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(16,185,129,0.3)" }}
+                            whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             className="projects__btn-primary"
                         >
@@ -139,7 +141,7 @@ function ThumbnailCard({ project, isActive, onClick, index }) {
                 <motion.div
                     layoutId="thumb-indicator"
                     className="projects__thumb-indicator"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 />
             )}
         </motion.div>
@@ -170,7 +172,6 @@ function ProjectSkeleton() {
 
 export default function Projects({ items = [], loading = false }) {
     const sectionRef = useRef(null);
-    const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
     const carouselRef = useRef(null);
     const [activeProject, setActiveProject] = useState(items[0] || null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -204,24 +205,16 @@ export default function Projects({ items = [], loading = false }) {
             </div>
 
             <div className="layout-shell">
-                {/* ===== HEADER (staggered 3D reveal) ===== */}
-                <motion.div
-                    variants={staggerContainer}
-                    initial="hidden"
-                    animate={isInView ? "visible" : "hidden"}
-                    style={{ perspective: 1000 }}
-                    className="projects__header"
-                >
-                    <motion.span variants={reveal3D} className="projects__eyebrow">
-                        Projects
-                    </motion.span>
-                    <motion.h2 variants={reveal3D} className="projects__title">
+                {/* ===== HEADER ===== */}
+                <ScrollReveal className="projects__header">
+                    <span className="projects__eyebrow">Projects</span>
+                    <h2 className="projects__title">
                         Featured <span className="projects__title-accent">work</span>
-                    </motion.h2>
-                    <motion.p variants={reveal3D} className="projects__lead">
+                    </h2>
+                    <p className="projects__lead">
                         A selection of projects I&apos;ve built — from full-stack apps to polished front-end experiences.
-                    </motion.p>
-                </motion.div>
+                    </p>
+                </ScrollReveal>
 
                 {loading ? (
                     <ProjectSkeleton />
@@ -245,12 +238,9 @@ export default function Projects({ items = [], loading = false }) {
                                     </button>
                                 )}
 
-                                <motion.div
+                                <ScrollReveal
+                                    as="div"
                                     ref={carouselRef}
-                                    variants={staggerContainer}
-                                    initial="hidden"
-                                    animate={isInView ? "visible" : "hidden"}
-                                    style={{ perspective: 1000 }}
                                     className="projects__carousel"
                                     onScroll={checkCarouselScroll}
                                 >
@@ -263,7 +253,7 @@ export default function Projects({ items = [], loading = false }) {
                                             onClick={() => setActiveProject(project)}
                                         />
                                     ))}
-                                </motion.div>
+                                </ScrollReveal>
 
                                 {canScrollRight && (
                                     <button

@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
-import { ArrowRight, Mail, Sparkles } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { motion, useMotionValue, useTransform, useSpring, useScroll, AnimatePresence } from "framer-motion";
+import { ArrowRight, Mail } from "lucide-react";
 import { Github, Linkedin, Instagram } from "./Icons";
 import "../../css/components/hero.css";
 
@@ -15,7 +16,7 @@ const fadeUp = {
     visible: {
         opacity: 1,
         y: 0,
-        transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+        transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
     },
 };
 
@@ -42,16 +43,125 @@ const socials = [
     { icon: Mail, href: "mailto:hello@example.com", label: "Email" },
 ];
 
-export default function Hero() {
+const roles = [
+    "Full‑Stack Developer",
+    "UI/UX Designer",
+    "Creative Coder",
+    "Problem Solver",
+];
+
+/* ===== Rotating Text Slider ===== */
+function RotatingText() {
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setIndex((prev) => (prev + 1) % roles.length);
+        }, 2800);
+        return () => clearInterval(timer);
+    }, []);
+
     return (
-        <section id="home" className="hero">
+        <span className="hero__role-slider">
+            <AnimatePresence mode="wait">
+                <motion.span
+                    key={index}
+                    initial={{ y: 24, opacity: 0, filter: "blur(4px)" }}
+                    animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                    exit={{ y: -24, opacity: 0, filter: "blur(4px)" }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    className="hero__role-text"
+                >
+                    {roles[index]}
+                </motion.span>
+            </AnimatePresence>
+        </span>
+    );
+}
+
+/* ===== 3D Mouse Tracking Tilt ===== */
+function TiltPortrait({ children }) {
+    const ref = useRef(null);
+    const x = useMotionValue(0.5);
+    const y = useMotionValue(0.5);
+
+    const rotateX = useSpring(useTransform(y, [0, 1], [8, -8]), {
+        stiffness: 200,
+        damping: 20,
+    });
+    const rotateY = useSpring(useTransform(x, [0, 1], [-8, 8]), {
+        stiffness: 200,
+        damping: 20,
+    });
+
+    /* Dynamic drop-shadow opposite to tilt direction */
+    const shadowX = useSpring(useTransform(x, [0, 1], [12, -12]), {
+        stiffness: 200,
+        damping: 20,
+    });
+    const shadowY = useSpring(useTransform(y, [0, 1], [-8, 8]), {
+        stiffness: 200,
+        damping: 20,
+    });
+    const dropShadow = useTransform(
+        [shadowX, shadowY],
+        ([sx, sy]) => `drop-shadow(${sx}px ${sy}px 28px rgba(79,70,229,0.18))`
+    );
+
+    const handleMouseMove = (e) => {
+        const rect = ref.current?.getBoundingClientRect();
+        if (!rect) return;
+        x.set((e.clientX - rect.left) / rect.width);
+        y.set((e.clientY - rect.top) / rect.height);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0.5);
+        y.set(0.5);
+    };
+
+    return (
+        <motion.div
+            ref={ref}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{
+                perspective: 1000,
+                rotateX,
+                rotateY,
+                filter: dropShadow,
+                transformStyle: "preserve-3d",
+            }}
+            className="hero__tilt-container"
+        >
+            {children}
+        </motion.div>
+    );
+}
+
+export default function Hero() {
+    const sectionRef = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: sectionRef,
+        offset: ["start start", "end start"],
+    });
+
+    /* Scroll-driven parallax: content moves slower, portrait moves faster */
+    const contentY = useTransform(scrollYProgress, [0, 1], [0, -60]);
+    const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+    const portraitY = useTransform(scrollYProgress, [0, 1], [0, -120]);
+    const portraitScale = useTransform(scrollYProgress, [0, 0.8], [1, 0.92]);
+    const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+
+    return (
+        <section id="home" ref={sectionRef} className="hero">
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
                 className="layout-shell hero__inner"
             >
-                <div className="hero__content">
+                <motion.div className="hero__content" style={{ y: contentY, opacity: contentOpacity }}>
 
                     <motion.h1 variants={fadeUp} className="hero__title">
                         Hi, I&apos;m{" "}
@@ -60,8 +170,7 @@ export default function Hero() {
                             <span className="hero__name-line" aria-hidden />
                         </span>
                         <br />
-                        <span className="hero__role-strong">Full‑Stack</span>{" "}
-                        <span className="hero__role-muted">Developer</span>
+                        <RotatingText />
                     </motion.h1>
 
                     <motion.p variants={fadeUp} className="hero__sub">
@@ -76,10 +185,7 @@ export default function Hero() {
                                 e.preventDefault();
                                 document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
                             }}
-                            whileHover={{
-                                scale: 1.02,
-                                boxShadow: "0 0 30px rgba(16, 185, 129,0.45)",
-                            }}
+                            whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             className="hero__cta-primary"
                         >
@@ -121,44 +227,44 @@ export default function Hero() {
                             ))}
                         </div>
                     </motion.div>
-                </div>
+                </motion.div>
 
-                <motion.div variants={fadeIn} className="hero__visual">
+                <motion.div variants={fadeIn} className="hero__visual" style={{ y: portraitY, scale: portraitScale }}>
                     <div className="hero__portrait-wrap">
-                        <div className="hero__portrait-glow" aria-hidden />
-                        <motion.div
-                            whileHover={{ scale: 1.012 }}
-                            transition={{ type: "spring", stiffness: 280, damping: 24 }}
-                            className="hero__portrait"
-                        >
-                            <img
-                                src={publicAsset(PROFILE_PHOTO)}
-                                alt="Dzaky Al Fauzy"
-                                className="hero__portrait-img"
-                                width={520}
-                                height={680}
-                                loading="eager"
-                                decoding="async"
-                            />
-                        </motion.div>
-                        <div className="hero__portrait-overlay">
-                            <div className="hero__portrait-meta">
-                                <p className="hero__card-name">Dzaky Al Fauzy</p>
-                                <p className="hero__card-role">Full‑Stack Developer</p>
+                        <TiltPortrait>
+                            <div className="hero__portrait-glow" aria-hidden />
+                            <motion.div
+                                className="hero__portrait"
+                            >
+                                <img
+                                    src={publicAsset(PROFILE_PHOTO)}
+                                    alt="Dzaky Al Fauzy"
+                                    className="hero__portrait-img"
+                                    width={520}
+                                    height={680}
+                                    loading="eager"
+                                    decoding="async"
+                                />
+                            </motion.div>
+                            <div className="hero__portrait-overlay">
+                                <div className="hero__portrait-meta">
+                                    <p className="hero__card-name">Dzaky Al Fauzy</p>
+                                    <p className="hero__card-role">Full‑Stack Developer</p>
+                                </div>
+                                <div className="hero__stats hero__stats--overlay">
+                                    {[
+                                        { label: "Projects", value: "30+" },
+                                        { label: "Clients", value: "15+" },
+                                        { label: "Years", value: "3+" },
+                                    ].map(({ label, value }) => (
+                                        <div key={label} className="hero__stat">
+                                            <span className="hero__stat-value">{value}</span>
+                                            <span className="hero__stat-label">{label}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="hero__stats hero__stats--overlay">
-                                {[
-                                    { label: "Projects", value: "30+" },
-                                    { label: "Clients", value: "15+" },
-                                    { label: "Years", value: "3+" },
-                                ].map(({ label, value }) => (
-                                    <div key={label} className="hero__stat">
-                                        <span className="hero__stat-value">{value}</span>
-                                        <span className="hero__stat-label">{label}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        </TiltPortrait>
                     </div>
                 </motion.div>
             </motion.div>
@@ -167,6 +273,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.4, duration: 0.6 }}
+                style={{ opacity: scrollIndicatorOpacity }}
                 className="hero__scroll"
             >
                 <span className="hero__scroll-text">Scroll</span>

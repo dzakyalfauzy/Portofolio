@@ -1,20 +1,13 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Github, Linkedin, Instagram } from "./Icons";
+import { ScrollReveal } from "../utils/scroll";
 import api from "../api";
 import "../../css/components/contact.css";
 
-const fadeUp = (delay = 0) => ({
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
-    },
-});
-
 export default function Contact() {
+    const sectionRef = useRef(null);
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -47,34 +40,22 @@ export default function Contact() {
     };
 
     return (
-        <section id="contact" className="contact">
+        <section id="contact" ref={sectionRef} className="contact">
             <div className="contact__ambient" aria-hidden>
                 <div className="contact__glow contact__glow--tr" />
                 <div className="contact__glow contact__glow--bl" />
             </div>
 
             <div className="layout-shell">
-                <div className="contact__intro">
-                    <motion.h2
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        variants={fadeUp(0)}
-                        className="contact__title"
-                    >
+                <ScrollReveal className="contact__intro">
+                    <h2 className="contact__title">
                         Ready to start a{" "}
                         <span className="contact__title-accent">new project?</span>
-                    </motion.h2>
-                </div>
+                    </h2>
+                </ScrollReveal>
 
                 <div className="contact__grid">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        variants={fadeUp(0.2)}
-                        className="contact__info"
-                    >
+                    <ScrollReveal className="contact__info">
                         <div className="contact__info-text">
                             <h3 className="contact__subtitle">Let&apos;s connect</h3>
                             <p className="contact__description">
@@ -103,22 +84,16 @@ export default function Contact() {
                                 </motion.a>
                             ))}
                         </div>
-                    </motion.div>
+                    </ScrollReveal>
 
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        variants={fadeUp(0.3)}
-                        className="contact__form-shell"
-                    >
+                    <ScrollReveal className="contact__form-shell">
                         <div className="contact__form-inner">
                             <form onSubmit={handleSubmit} className="contact__form">
                                 {success && (
                                     <motion.div
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: "auto" }}
-                                        className="mb-4 flex items-center gap-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3 text-sm text-emerald-400"
+                                        className="mb-4 flex items-center gap-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20 p-3 text-sm text-indigo-600"
                                     >
                                         <CheckCircle2 size={16} className="shrink-0" />
                                         <span>Thank you! Your message has been sent successfully.</span>
@@ -129,7 +104,7 @@ export default function Contact() {
                                     <motion.div
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: "auto" }}
-                                        className="mb-4 flex items-center gap-2 rounded-lg bg-rose-500/10 border border-rose-500/20 p-3 text-sm text-rose-400"
+                                        className="mb-4 flex items-center gap-2 rounded-lg bg-rose-500/10 border border-rose-500/20 p-3 text-sm text-rose-500"
                                     >
                                         <AlertCircle size={16} className="shrink-0" />
                                         <span>{error}</span>
@@ -167,10 +142,7 @@ export default function Contact() {
                                     />
                                 </div>
                                 <motion.button
-                                    whileHover={loading ? {} : {
-                                        scale: 1.02,
-                                        boxShadow: "0 0 30px rgba(16, 185, 129,0.5)",
-                                    }}
+                                    whileHover={loading ? {} : { scale: 1.02 }}
                                     whileTap={loading ? {} : { scale: 0.98 }}
                                     type="submit"
                                     className="contact__submit"
@@ -185,7 +157,7 @@ export default function Contact() {
                                 </motion.button>
                             </form>
                         </div>
-                    </motion.div>
+                    </ScrollReveal>
                 </div>
             </div>
         </section>

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import "../../css/components/navbar.css";
 
-const MotionLink = motion(Link);
+const MotionLink = motion.create(Link);
 
 const sectionItems = [
     { label: "Home", id: "home" },
@@ -169,7 +169,7 @@ export default function Navbar() {
                                 }
                                 setIsOpen(false);
                             }}
-                            whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(16, 185, 129,0.4)" }}
+                            whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.96 }}
                             className="navbar__hire"
                         >

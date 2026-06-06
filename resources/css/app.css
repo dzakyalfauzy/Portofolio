@@ -9,6 +9,15 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Vibrant Light accent palette */
+    --color-accent-blue: #2563eb;
+    --color-accent-orange: #f97316;
+    --color-accent-pink: #ec4899;
+    --color-surface: #fdfbf7;
+    --color-surface-alt: #f5f3ef;
+    --color-ink: #0f172a;
+    --color-ink-muted: #64748b;
 }
 
 /*
@@ -34,21 +43,21 @@
 @keyframes skeleton-pulse {
     0% {
         opacity: 0.6;
-        background-color: rgba(255, 255, 255, 0.03);
+        background-color: rgba(0, 0, 0, 0.04);
     }
     50% {
         opacity: 0.3;
-        background-color: rgba(255, 255, 255, 0.08);
+        background-color: rgba(0, 0, 0, 0.08);
     }
     100% {
         opacity: 0.6;
-        background-color: rgba(255, 255, 255, 0.03);
+        background-color: rgba(0, 0, 0, 0.04);
     }
 }
 
 .skeleton {
     animation: skeleton-pulse 1.8s infinite ease-in-out;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(0, 0, 0, 0.06);
     border-radius: 8px;
     display: inline-block;
     width: 100%;

@@ -2,16 +2,17 @@ import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Award, Building2, Calendar, Hash, ExternalLink, Sparkles } from "lucide-react";
 
-const spring3D = { type: "spring", stiffness: 110, damping: 14, mass: 0.8 };
+const revealEase = [0.16, 1, 0.3, 1];
 
 const reveal3D = {
     hidden: {
-        opacity: 0, y: 120, rotateX: -65, rotateY: -10,
-        scale: 0.75, filter: "blur(8px)",
+        opacity: 0, y: 60, rotateX: -15,
+        scale: 0.95, filter: "blur(4px)",
     },
     visible: {
-        opacity: 1, y: 0, rotateX: 0, rotateY: 0,
-        scale: 1, filter: "blur(0px)", transition: spring3D,
+        opacity: 1, y: 0, rotateX: 0,
+        scale: 1, filter: "blur(0px)",
+        transition: { duration: 0.6, ease: revealEase },
     },
 };
 
@@ -29,8 +30,15 @@ export default function CertificateCard({ certificate, index = 0, isWide = false
 
     const handleMouseMove = useCallback((e) => {
         const rect = e.currentTarget.getBoundingClientRect();
-        e.currentTarget.style.setProperty("--x", `${e.clientX - rect.left}px`);
-        e.currentTarget.style.setProperty("--y", `${e.clientY - rect.top}px`);
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        const rotateX = (y - 0.5) * -8;
+        const rotateY = (x - 0.5) * 8;
+        e.currentTarget.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    }, []);
+
+    const handleMouseLeave = useCallback((e) => {
+        e.currentTarget.style.transform = "perspective(800px) rotateX(0deg) rotateY(0deg)";
     }, []);
 
     return (
@@ -42,10 +50,8 @@ export default function CertificateCard({ certificate, index = 0, isWide = false
             <div
                 className="cert-bento__card group"
                 onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
             >
-                {/* Mouse-tracking spotlight */}
-                <div className="cert-bento__spotlight" aria-hidden />
-
                 {/* Certificate image as background */}
                 {displayImage && !imgError ? (
                     <img
