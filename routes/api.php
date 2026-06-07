@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::get('/portfolio-data', [PortfolioController::class, 'index']);
+Route::get('/projects/{id}', [PortfolioController::class, 'show']);
 Route::post('/contact', [ContactController::class, 'store']);
 
 // Authentication route (Sanctum Session-based login)

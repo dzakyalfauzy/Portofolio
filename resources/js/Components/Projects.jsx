@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { ExternalLink, Folder, ChevronLeft, ChevronRight } from "lucide-react";
 import { Github } from "./Icons";
 import { ScrollReveal } from "../utils/scroll";
@@ -30,7 +31,7 @@ const getColor = (project) => themeColorMap[project?.color] || project?.color ||
 
 /* ======================== FEATURED (HERO) ======================== */
 
-function FeaturedHero({ project }) {
+function FeaturedHero({ project, onViewDetail }) {
     if (!project) return null;
     const c = getColor(project);
     const hasImage = !!project.image_path;
@@ -73,6 +74,16 @@ function FeaturedHero({ project }) {
                     ))}
                 </div>
                 <div className="projects__actions projects__actions--left">
+                    <motion.button
+                        onClick={() => onViewDetail(project)}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="projects__btn-primary"
+                        style={{ cursor: "pointer" }}
+                    >
+                        <ExternalLink size={16} />
+                        <span>View Details</span>
+                    </motion.button>
                     {project.github && (
                         <motion.a
                             href={project.github}
@@ -84,19 +95,6 @@ function FeaturedHero({ project }) {
                         >
                             <Github size={16} />
                             <span>Code</span>
-                        </motion.a>
-                    )}
-                    {project.demo && (
-                        <motion.a
-                            href={project.demo}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="projects__btn-primary"
-                        >
-                            <ExternalLink size={16} />
-                            <span>Live Demo</span>
                         </motion.a>
                     )}
                 </div>
@@ -173,9 +171,14 @@ function ProjectSkeleton() {
 export default function Projects({ items = [], loading = false }) {
     const sectionRef = useRef(null);
     const carouselRef = useRef(null);
+    const navigate = useNavigate();
     const [activeProject, setActiveProject] = useState(items[0] || null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
+
+    const handleViewDetail = (project) => {
+        navigate(`/project/${project.id}`);
+    };
 
     useEffect(() => {
         if (items.length > 0 && !activeProject) {
@@ -223,7 +226,7 @@ export default function Projects({ items = [], loading = false }) {
                         {/* ===== HERO / FEATURED ===== */}
                         <ScrollReveal>
                             <AnimatePresence mode="wait">
-                                <FeaturedHero project={activeProject} />
+                                <FeaturedHero project={activeProject} onViewDetail={handleViewDetail} />
                             </AnimatePresence>
                         </ScrollReveal>
 

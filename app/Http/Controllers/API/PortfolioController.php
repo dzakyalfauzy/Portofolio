@@ -23,4 +23,18 @@ class PortfolioController extends Controller
             'skills' => Skill::orderBy('order')->orderBy('id')->get(),
         ]);
     }
+
+    /**
+     * Get a single project by ID (public).
+     */
+    public function show($id): JsonResponse
+    {
+        $project = Project::find($id);
+
+        if (!$project) {
+            return response()->json(['message' => 'Project not found'], 404);
+        }
+
+        return response()->json($project);
+    }
 }

@@ -1,48 +1,109 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollReveal } from "../utils/scroll";
 
 const ICON = (icon) => `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${icon}.svg`;
 
-/* ===== Skills data — harmonized colors ===== */
-const skillsData = [
-    // Frontend
-    { name: "React", label: "React", color: "#5aabbd", icon: "react/react-original", desc: "Frontend UI library", prof: 90 },
-    { name: "Next.js", label: "Next", color: "#555555", icon: "nextjs/nextjs-original", desc: "React meta-framework", prof: 80 },
-    { name: "Vue.js", label: "Vue", color: "#5a9e6f", icon: "vuejs/vuejs-original", desc: "Progressive framework", prof: 75 },
-    { name: "HTML5", label: "HTML", color: "#c46a3c", icon: "html5/html5-original", desc: "Markup language", prof: 95 },
-    { name: "CSS3", label: "CSS", color: "#3a7bbf", icon: "css3/css3-original", desc: "Styling language", prof: 90 },
-    { name: "Tailwind", label: "Tailwind", color: "#4a9eab", icon: "tailwindcss/tailwindcss-original", desc: "Utility-first CSS", prof: 92 },
-    { name: "JavaScript", label: "JS", color: "#a88a30", icon: "javascript/javascript-original", desc: "Core web language", prof: 92 },
-    { name: "TypeScript", label: "TS", color: "#4a7ab5", icon: "typescript/typescript-original", desc: "Typed JavaScript", prof: 85 },
-    // Backend
-    { name: "Laravel", label: "Laravel", color: "#c43a31", icon: "laravel/laravel-original", desc: "PHP web framework", prof: 88 },
-    { name: "PHP", label: "PHP", color: "#6b6fa3", icon: "php/php-original", desc: "Backend language", prof: 85 },
-    { name: "Python", label: "Python", color: "#4a7a9e", icon: "python/python-original", desc: "General-purpose language", prof: 72 },
-    { name: "Node.js", label: "Node", color: "#4a8a4a", icon: "nodejs/nodejs-original", desc: "Server-side JS runtime", prof: 82 },
-    { name: "MySQL", label: "MySQL", color: "#3a6a8a", icon: "mysql/mysql-original", desc: "Relational database", prof: 85 },
-    { name: "PostgreSQL", label: "Postgres", color: "#3a5a9e", icon: "postgresql/postgresql-original", desc: "Advanced SQL database", prof: 78 },
-    // Tools
-    { name: "Git", label: "Git", color: "#c44a32", icon: "git/git-original", desc: "Version control", prof: 90 },
-    { name: "Docker", label: "Docker", color: "#3a7ac0", icon: "docker/docker-original", desc: "Container platform", prof: 75 },
-    { name: "VS Code", label: "VSCode", color: "#3a8ac0", icon: "vscode/vscode-original", desc: "Code editor", prof: 95 },
-    { name: "Postman", label: "Postman", color: "#c46a3c", icon: "postman/postman-original", desc: "API testing tool", prof: 80 },
-    { name: "Nginx", label: "Nginx", color: "#3a7a3a", icon: "nginx/nginx-original", desc: "Web server", prof: 68 },
-    // Design
-    { name: "Figma", label: "Figma", color: "#a84a3a", icon: "figma/figma-original", desc: "UI design tool", prof: 70 },
-    { name: "Adobe XD", label: "XD", color: "#4a3a7a", icon: "xd/xd-plain", desc: "Design & prototyping", prof: 65 },
-];
+/* ===== Visual map for skills (color, icon, desc, prof) ===== */
+const visualMap = {
+    react: { label: "React", color: "#5aabbd", icon: "react/react-original", desc: "Frontend UI library", prof: 90 },
+    nextdotjs: { label: "Next", color: "#555555", icon: "nextjs/nextjs-original", desc: "React meta-framework", prof: 80 },
+    vuejs: { label: "Vue", color: "#5a9e6f", icon: "vuejs/vuejs-original", desc: "Progressive framework", prof: 75 },
+    html5: { label: "HTML", color: "#c46a3c", icon: "html5/html5-original", desc: "Markup language", prof: 95 },
+    css3: { label: "CSS", color: "#3a7bbf", icon: "css3/css3-original", desc: "Styling language", prof: 90 },
+    tailwindcss: { label: "Tailwind", color: "#4a9eab", icon: "tailwindcss/tailwindcss-original", desc: "Utility-first CSS", prof: 92 },
+    javascript: { label: "JS", color: "#a88a30", icon: "javascript/javascript-original", desc: "Core web language", prof: 92 },
+    typescript: { label: "TS", color: "#4a7ab5", icon: "typescript/typescript-original", desc: "Typed JavaScript", prof: 85 },
+    laravel: { label: "Laravel", color: "#c43a31", icon: "laravel/laravel-original", desc: "PHP web framework", prof: 88 },
+    php: { label: "PHP", color: "#6b6fa3", icon: "php/php-original", desc: "Backend language", prof: 85 },
+    python: { label: "Python", color: "#4a7a9e", icon: "python/python-original", desc: "General-purpose language", prof: 72 },
+    nodedotjs: { label: "Node", color: "#4a8a4a", icon: "nodejs/nodejs-original", desc: "Server-side JS runtime", prof: 82 },
+    mysql: { label: "MySQL", color: "#3a6a8a", icon: "mysql/mysql-original", desc: "Relational database", prof: 85 },
+    postgresql: { label: "Postgres", color: "#3a5a9e", icon: "postgresql/postgresql-original", desc: "Advanced SQL database", prof: 78 },
+    git: { label: "Git", color: "#c44a32", icon: "git/git-original", desc: "Version control", prof: 90 },
+    docker: { label: "Docker", color: "#3a7ac0", icon: "docker/docker-original", desc: "Container platform", prof: 75 },
+    visualstudiocode: { label: "VSCode", color: "#3a8ac0", icon: "vscode/vscode-original", desc: "Code editor", prof: 95 },
+    postman: { label: "Postman", color: "#c46a3c", icon: "postman/postman-original", desc: "API testing tool", prof: 80 },
+    nginx: { label: "Nginx", color: "#3a7a3a", icon: "nginx/nginx-original", desc: "Web server", prof: 68 },
+    figma: { label: "Figma", color: "#a84a3a", icon: "figma/figma-original", desc: "UI design tool", prof: 70 },
+    linux: { label: "Linux", color: "#c9a84c", icon: "linux/linux-original", desc: "Operating system", prof: 78 },
+    redis: { label: "Redis", color: "#c43a31", icon: "redis/redis-original", desc: "In-memory cache", prof: 65 },
+    mongodb: { label: "Mongo", color: "#4a8a4a", icon: "mongodb/mongodb-original", desc: "NoSQL database", prof: 70 },
+    vite: { label: "Vite", color: "#a84a3a", icon: "vitejs/vitejs-original", desc: "Build tool", prof: 85 },
+};
 
-/* ===== Keyboard row layout (standard keyboard-like) ===== */
+/* Lucide icon names → fallback colors */
+const lucideDefaults = {
+    Webhook: { label: "API", color: "#6b6fa3", desc: "REST APIs", prof: 80 },
+    PenTool: { label: "UI/UX", color: "#a84a3a", desc: "UI/UX Design", prof: 75 },
+    LayoutTemplate: { label: "Layout", color: "#4a9eab", desc: "Responsive design", prof: 80 },
+    Layers: { label: "Proto", color: "#5a9e6f", desc: "Prototyping", prof: 70 },
+    Type: { label: "Type", color: "#555555", desc: "Typography", prof: 65 },
+    Pipette: { label: "Color", color: "#c46a3c", desc: "Color theory", prof: 65 },
+};
+
+/* Fallback colors by category */
+const categoryColors = {
+    frontend: "#5aabbd",
+    backend: "#4a8a4a",
+    tools: "#c44a32",
+    design: "#a84a3a",
+};
+
+/* Map backend skill → keycap format */
+function mapSkill(skill) {
+    const slug = skill.slug?.toLowerCase();
+    const visual = visualMap[slug];
+
+    if (visual) {
+        return {
+            name: skill.name,
+            label: visual.label,
+            color: visual.color,
+            icon: visual.icon,
+            desc: visual.desc,
+            prof: visual.prof,
+            category: skill.category || "Frontend",
+        };
+    }
+
+    /* Lucide icon fallback */
+    if (skill.lucide_icon && lucideDefaults[skill.lucide_icon]) {
+        const d = lucideDefaults[skill.lucide_icon];
+        return {
+            name: skill.name,
+            label: d.label,
+            color: d.color,
+            icon: null,
+            desc: d.desc,
+            prof: d.prof,
+            category: skill.category || "Design",
+        };
+    }
+
+    /* Generic fallback */
+    const cat = skill.category || "Frontend";
+    return {
+        name: skill.name,
+        label: skill.name.slice(0, 6).toUpperCase(),
+        color: categoryColors[cat.toLowerCase()] || "#5aabbd",
+        icon: slug ? `${slug}/${slug}-original` : null,
+        desc: cat,
+        prof: 70,
+        category: cat,
+    };
+}
+
+/* ===== Keyboard layout config ===== */
 const keySize = 54;
 const keyGap = 5;
 const rowGap = 5;
 
 const keyboardRows = [
-    skillsData.slice(0, 6),   // Row 0: React, Next, Vue, HTML, CSS, Tailwind
-    skillsData.slice(6, 12),  // Row 1: JS, TS, Laravel, PHP, Python, Node
-    skillsData.slice(12, 18), // Row 2: MySQL, Postgres, Git, Docker, VSCode, Postman
-    skillsData.slice(18, 21), // Row 3: Nginx, Figma, XD
+    [6, 380], // Row 0: 6 keys
+    [6, 310], // Row 1: 6 keys
+    [6, 240], // Row 2: 6 keys
+    [6, 170], // Row 3: 6 keys
 ];
 
 /* ===== Color helpers ===== */
@@ -63,7 +124,7 @@ function isLight(hex) {
     return ((n >> 16) & 255) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114 > 160;
 }
 
-/* ===== 3D Keycap Component ===== */
+/* ===== 3D Keycap ===== */
 function Keycap({ skill, index, onPopup }) {
     const [hovered, setHovered] = useState(false);
     const [pressed, setPressed] = useState(false);
@@ -104,7 +165,7 @@ function Keycap({ skill, index, onPopup }) {
                 </div>
             )}
 
-            {/* === 3D Bottom face (base) === */}
+            {/* Bottom face */}
             <div style={{
                 position: "absolute", bottom: 0, left: 0,
                 width: keySize, height: depth,
@@ -113,7 +174,7 @@ function Keycap({ skill, index, onPopup }) {
                 transition: "height 0.12s ease",
             }} />
 
-            {/* === 3D Right side face === */}
+            {/* Right side face */}
             <div style={{
                 position: "absolute", right: 0, top: (keySize - depth) + 4,
                 width: 6, height: depth,
@@ -122,7 +183,7 @@ function Keycap({ skill, index, onPopup }) {
                 transition: "height 0.12s ease, top 0.12s ease",
             }} />
 
-            {/* === 3D Left side face === */}
+            {/* Left side face */}
             <div style={{
                 position: "absolute", left: 0, top: (keySize - depth) + 4,
                 width: 3, height: depth,
@@ -132,7 +193,7 @@ function Keycap({ skill, index, onPopup }) {
                 transition: "height 0.12s ease, top 0.12s ease",
             }} />
 
-            {/* === Top face (keycap surface) === */}
+            {/* Top face */}
             <motion.div
                 animate={{ y: faceY }}
                 transition={{ type: "spring", stiffness: 700, damping: 25, mass: 0.3 }}
@@ -144,25 +205,20 @@ function Keycap({ skill, index, onPopup }) {
                     display: "flex", flexDirection: "column",
                     alignItems: "center", justifyContent: "center", gap: 3,
                     zIndex: 2,
-                    boxShadow: `
-                        inset 0 1px 0 rgba(255,255,255,0.35),
-                        inset 0 -1px 2px rgba(0,0,0,0.15),
-                        ${glow}
-                    `,
+                    boxShadow: `inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 2px rgba(0,0,0,0.15), ${glow}`,
                     filter: hovered ? "brightness(1.12)" : "none",
                     transition: "filter 0.12s ease, box-shadow 0.12s ease",
                     overflow: "hidden",
                 }}
             >
-                {/* Top highlight (plastic reflection) */}
+                {/* Highlight */}
                 <div style={{
                     position: "absolute", top: 0, left: 0, right: 0, height: "42%",
                     borderRadius: "8px 8px 50% 50%",
                     background: "linear-gradient(180deg, rgba(255,255,255,0.28) 0%, transparent 100%)",
                     pointerEvents: "none",
                 }} />
-
-                {/* Bottom shadow (inner depth) */}
+                {/* Inner shadow */}
                 <div style={{
                     position: "absolute", bottom: 0, left: 0, right: 0, height: "20%",
                     borderRadius: "0 0 8px 8px",
@@ -171,7 +227,7 @@ function Keycap({ skill, index, onPopup }) {
                 }} />
 
                 {/* Icon */}
-                {!imgErr ? (
+                {icon && !imgErr ? (
                     <img
                         src={ICON(icon)} alt={name} draggable={false}
                         style={{
@@ -185,8 +241,14 @@ function Keycap({ skill, index, onPopup }) {
                     <div style={{
                         width: 26, height: 26, borderRadius: 6,
                         backgroundColor: "rgba(255,255,255,0.12)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
                         position: "relative", zIndex: 1,
-                    }} />
+                        fontSize: 10, fontWeight: 700,
+                        color: light ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.6)",
+                        fontFamily: "monospace",
+                    }}>
+                        {label.slice(0, 2)}
+                    </div>
                 )}
 
                 {/* Label */}
@@ -204,7 +266,7 @@ function Keycap({ skill, index, onPopup }) {
     );
 }
 
-/* ===== Popup Detail Card ===== */
+/* ===== Popup Card ===== */
 function PopupCard({ skill, onClose }) {
     if (!skill) return null;
     return (
@@ -230,13 +292,22 @@ function PopupCard({ skill, onClose }) {
                 alignItems: "center", justifyContent: "center",
                 boxShadow: `0 0 30px ${skill.color}44`,
             }}>
-                <img
-                    src={ICON(skill.icon)} alt={skill.name} draggable={false}
-                    style={{
-                        width: 36, height: 36, objectFit: "contain",
-                        filter: isLight(skill.color) ? "brightness(0.15)" : "none",
-                    }}
-                />
+                {skill.icon ? (
+                    <img
+                        src={ICON(skill.icon)} alt={skill.name} draggable={false}
+                        style={{
+                            width: 36, height: 36, objectFit: "contain",
+                            filter: isLight(skill.color) ? "brightness(0.15)" : "none",
+                        }}
+                    />
+                ) : (
+                    <span style={{
+                        fontSize: 18, fontWeight: 800, color: "#fff",
+                        fontFamily: "monospace",
+                    }}>
+                        {skill.label}
+                    </span>
+                )}
             </div>
 
             <div style={{ textAlign: "center" }}>
@@ -268,7 +339,7 @@ function PopupCard({ skill, onClose }) {
     );
 }
 
-/* ===== Left: Typing Terminal ===== */
+/* ===== Typing Terminal (Left Panel) ===== */
 const codeSnippets = [
     "$ git commit -m 'feat: build keyboard UI'",
     "const skills = await loadSkills();",
@@ -344,16 +415,21 @@ function TypingTerminal() {
     );
 }
 
-/* ===== Right: Category Stats ===== */
-const categories = [
-    { name: "Frontend", count: 8, color: "#5aabbd", icon: "⟨/⟩" },
-    { name: "Backend", count: 6, color: "#4a8a4a", icon: "{ }" },
-    { name: "Tools", count: 5, color: "#c44a32", icon: "⚙" },
-    { name: "Design", count: 2, color: "#6b6fa3", icon: "◆" },
-];
-
-function CategoryStats() {
+/* ===== Category Stats (Right Panel) ===== */
+function CategoryStats({ skills }) {
     const [hoveredIdx, setHoveredIdx] = useState(null);
+
+    const categories = useMemo(() => {
+        const cats = {};
+        skills.forEach(s => {
+            const cat = s.category || "Other";
+            if (!cats[cat]) cats[cat] = { name: cat, count: 0, color: categoryColors[cat.toLowerCase()] || "#5aabbd" };
+            cats[cat].count++;
+        });
+        return Object.values(cats);
+    }, [skills]);
+
+    const icons = { Frontend: "⟨/⟩", Backend: "{ }", Tools: "⚙", Design: "◆" };
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 10, width: 200 }}>
@@ -375,7 +451,7 @@ function CategoryStats() {
                 >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span style={{ fontSize: 14, color: cat.color, fontFamily: "monospace" }}>{cat.icon}</span>
+                            <span style={{ fontSize: 14, color: cat.color, fontFamily: "monospace" }}>{icons[cat.name] || "●"}</span>
                             <span style={{ fontSize: 12, fontWeight: 600, color: "#aaa", letterSpacing: 0.5 }}>{cat.name}</span>
                         </div>
                         <span style={{ fontSize: 18, fontWeight: 800, color: cat.color, fontFamily: "'Courier New', monospace" }}>{cat.count}</span>
@@ -386,7 +462,8 @@ function CategoryStats() {
                     }}>
                         <motion.div
                             initial={{ width: 0 }}
-                            animate={{ width: `${(cat.count / 21) * 100}%` }}
+                            whileInView={{ width: `${(cat.count / skills.length) * 100}%` }}
+                            viewport={{ once: true }}
                             transition={{ duration: 0.8, delay: 0.8 + i * 0.15, ease: [0.16, 1, 0.3, 1] }}
                             style={{
                                 height: "100%", borderRadius: 2,
@@ -411,16 +488,39 @@ function CategoryStats() {
                 }}
             >
                 <span style={{ fontSize: 10, color: "#555", letterSpacing: 2, textTransform: "uppercase", fontFamily: "monospace" }}>Total Skills</span>
-                <div style={{ fontSize: 28, fontWeight: 900, color: "#e8e8e8", fontFamily: "'Courier New', monospace", lineHeight: 1.2 }}>21</div>
+                <div style={{ fontSize: 28, fontWeight: 900, color: "#e8e8e8", fontFamily: "'Courier New', monospace", lineHeight: 1.2 }}>{skills.length}</div>
             </motion.div>
         </div>
     );
 }
 
 /* ===== Main Component ===== */
-export default function Skills() {
+export default function Skills({ items = [], loading = false }) {
     const sectionRef = useRef(null);
     const [activeSkill, setActiveSkill] = useState(null);
+
+    /* Map backend data to keycap format, fallback to hardcoded */
+    const mappedSkills = useMemo(() => {
+        if (items && items.length > 0) {
+            return items.map(mapSkill);
+        }
+        /* Fallback: use visualMap values */
+        return Object.entries(visualMap).map(([slug, v]) => ({
+            name: v.label, label: v.label, color: v.color,
+            icon: v.icon, desc: v.desc, prof: v.prof,
+        }));
+    }, [items]);
+
+    /* Build keyboard rows dynamically */
+    const rows = useMemo(() => {
+        const result = [];
+        let idx = 0;
+        keyboardRows.forEach(([count]) => {
+            result.push(mappedSkills.slice(idx, idx + count));
+            idx += count;
+        });
+        return result;
+    }, [mappedSkills]);
 
     return (
         <section id="skills" ref={sectionRef} style={{
@@ -453,7 +553,7 @@ export default function Skills() {
 
                 {/* Keyboard + Side Panels */}
                 <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "3rem" }}>
-                    {/* Left: Typing Terminal */}
+                    {/* Left: Terminal */}
                     <div style={{ display: "none" }} className="skills-side-panel">
                         <TypingTerminal />
                     </div>
@@ -471,7 +571,7 @@ export default function Skills() {
                             border: "1px solid rgba(255,255,255,0.04)",
                             boxShadow: "0 60px 100px -30px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.02) inset",
                         }}>
-                            {keyboardRows.map((row, rowIdx) => (
+                            {rows.map((row, rowIdx) => (
                                 <div key={rowIdx} style={{
                                     display: "flex", gap: keyGap,
                                     paddingLeft: rowIdx * 8,
@@ -491,7 +591,7 @@ export default function Skills() {
 
                     {/* Right: Category Stats */}
                     <div style={{ display: "none" }} className="skills-side-panel">
-                        <CategoryStats />
+                        <CategoryStats skills={mappedSkills} />
                     </div>
                 </div>
             </ScrollReveal>

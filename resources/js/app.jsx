@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Home from "./Pages/Home";
+import ProjectDetail from "./Pages/ProjectDetail";
 import Footer from "./Components/Footer";
 import BackgroundEffects from "./Components/BackgroundEffects";
 import AdminLogin from "./Pages/Admin/Login";
@@ -31,6 +32,7 @@ function App() {
                         {/* Public Route Group with Navbar & Footer */}
                         <Route element={<PublicLayout />}>
                             <Route path="/" element={<Home />} />
+                            <Route path="/project/:id" element={<ProjectDetail />} />
                         </Route>
 
                         {/* Admin Route Group without public Navbar/Footer */}
