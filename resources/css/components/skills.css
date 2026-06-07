@@ -1,5 +1,5 @@
 /**
- * Skills — Vibrant Light + Cyber-Candy
+ * Skills — 3D Isometric Mechanical Keypad
  */
 
 .skills {
@@ -17,30 +17,15 @@
     .skills { padding-top: 7.5rem; padding-bottom: 7.5rem; }
 }
 
-.skills__ambient { pointer-events: none; position: absolute; inset: 0; }
-.skills__glow-tr {
-    position: absolute; top: 0; right: 25%;
-    width: 500px; height: 500px; border-radius: 9999px;
-    background-color: rgb(79 70 229 / 0.05);
-    filter: blur(160px);
-}
-.skills__glow-bl {
-    position: absolute; bottom: 0; left: 25%;
-    width: 400px; height: 400px; border-radius: 9999px;
-    background-color: rgb(244 63 94 / 0.04);
-    filter: blur(140px);
-}
-
 /* ===== HEADER ===== */
 .skills__header {
-    text-align: center; margin-bottom: 4rem;
+    text-align: center; margin-bottom: 3.5rem;
     max-width: 42rem; margin-left: auto; margin-right: auto;
 }
-@media (min-width: 768px) { .skills__header { margin-bottom: 5rem; } }
+@media (min-width: 768px) { .skills__header { margin-bottom: 4.5rem; } }
 @media (min-width: 1024px) {
-    .skills__header { text-align: left; margin-bottom: 6.5rem; margin-left: 0; margin-right: 0; }
+    .skills__header { text-align: left; margin-bottom: 5rem; margin-left: 0; margin-right: 0; }
 }
-@media (min-width: 1280px) { .skills__header { margin-bottom: 7.5rem; } }
 .skills__header > * + * { margin-top: 1.25rem; }
 
 .skills__eyebrow {
@@ -67,163 +52,283 @@
 @media (min-width: 640px) { .skills__lead { font-size: 1.125rem; } }
 @media (min-width: 1024px) { .skills__lead { margin-left: 0; margin-right: 0; } }
 
-/* ===== GRID ===== */
-.skills__grid {
-    display: grid; grid-template-columns: 1fr; gap: 2.5rem;
-}
-@media (min-width: 640px) { .skills__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 768px) { .skills__grid { gap: 3rem; } }
-@media (min-width: 1024px) { .skills__grid { gap: 3.5rem; } }
-@media (min-width: 1280px) { .skills__grid { gap: 4rem; } }
-
-/* ===== CARD ===== */
-.skills__card {
-    position: relative; border-radius: 1rem;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    background-color: #ffffff;
-    padding: 2rem; text-align: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    transition: all 300ms ease;
-}
-@media (min-width: 640px) { .skills__card { padding: 2.5rem; } }
-@media (min-width: 1024px) { .skills__card { padding: 2.75rem; } }
-@media (min-width: 1280px) { .skills__card { padding: 3rem; } }
-
-.skills__card:hover {
-    border-color: rgba(79, 70, 229, 0.15);
-    box-shadow: 0 8px 24px -8px rgba(79, 70, 229, 0.08);
+/* ===== WORKSPACE LAYOUT ===== */
+.skills__workspace {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: center;
 }
 
-.skills__card-glow { display: none; }
-
-.skills__card-head {
-    position: relative; display: flex; flex-direction: column;
-    align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;
-}
-.skills__card-head--icons { margin-bottom: 1.25rem; }
-
-.skills__badge {
-    width: 3rem; height: 3rem; border-radius: 0.75rem;
-    display: flex; align-items: center; justify-content: center;
-    border-width: 1px; border-style: solid; flex-shrink: 0;
+@media (min-width: 1024px) {
+    .skills__workspace {
+        grid-template-columns: 1fr 1.1fr;
+        gap: 4rem;
+    }
 }
 
-.skills__badge--emerald,
-.skills__badge--indigo {
-    background-color: rgba(79, 70, 229, 0.08);
-    color: #4f46e5;
-    border-color: rgba(79, 70, 229, 0.15);
+@media (min-width: 1280px) {
+    .skills__workspace {
+        gap: 5rem;
+    }
 }
 
-.skills__badge--sky {
-    background-color: rgba(244, 63, 94, 0.08);
-    color: #f43f5e;
-    border-color: rgba(244, 63, 94, 0.15);
-}
+/* ============================================
+   LEFT: CODE OUTPUT PANEL (Terminal Style)
+   ============================================ */
 
-.skills__badge--rose {
-    background-color: rgba(244, 63, 94, 0.08);
-    color: #f43f5e;
-    border-color: rgba(244, 63, 94, 0.15);
-}
-
-.skills__badge svg { flex-shrink: 0; }
-
-.skills__card-title {
-    color: #0f172a; font-weight: 600; font-size: 1rem; letter-spacing: -0.025em;
-}
-
-/* ===== TECH GRID ===== */
-.skills__tech-grid {
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.25rem 0.5rem; position: relative; width: 100%;
-}
-@media (min-width: 480px) { .skills__tech-grid { gap: 1.35rem 0.75rem; } }
-@media (min-width: 640px) { .skills__tech-grid { gap: 1.5rem 1rem; } }
-
-.skills__tech-cell {
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: flex-start; gap: 0.5rem; text-align: center; min-width: 0;
-}
-
-.skills__tech-icon-wrap {
-    width: 2.75rem; height: 2.75rem;
-    display: flex; align-items: center; justify-content: center;
-}
-@media (min-width: 640px) { .skills__tech-icon-wrap { width: 3rem; height: 3rem; } }
-
-.skills__tech-brand {
-    width: 1.75rem; height: 1.75rem; object-fit: contain;
-    opacity: 0.7;
-    filter: brightness(0) invert(0.35);
-}
-@media (min-width: 640px) { .skills__tech-brand { width: 2rem; height: 2rem; } }
-
-.skills__tech-lucide {
-    width: 1.75rem; height: 1.75rem; color: #64748b;
-}
-@media (min-width: 640px) { .skills__tech-lucide { width: 2rem; height: 2rem; } }
-
-.skills__tech-name {
-    font-size: 0.65rem; line-height: 1.25; color: #64748b;
-    max-width: 100%; word-break: break-word; hyphens: auto;
-}
-@media (min-width: 640px) { .skills__tech-name { font-size: 0.7rem; } }
-
-/* ===== DOT ===== */
-.skills__dot {
-    position: absolute; top: 0.75rem; right: 0.75rem;
-    width: 0.375rem; height: 0.375rem; border-radius: 9999px;
-    opacity: 0.4; transition: opacity 150ms ease;
-}
-.skills__card:hover .skills__dot { opacity: 0.8; }
-
-.skills__dot--emerald,
-.skills__dot--indigo { background-color: #4f46e5; }
-.skills__dot--sky,
-.skills__dot--rose { background-color: #f43f5e; }
-
-/* ===== INFINITE TECH MARQUEE ===== */
-.skills__marquee-wrap {
-    margin-top: 4rem;
+.skills__panel {
+    background-color: #1e1e2e;
+    border-radius: 1rem;
     overflow: hidden;
-    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    box-shadow:
+        0 20px 40px -12px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(0, 0, 0, 0.08);
 }
 
-.skills__marquee {
-    overflow: hidden;
-    padding: 0.5rem 0;
-}
-
-.skills__marquee-track {
+.skills__panel-header {
     display: flex;
-    gap: 1.5rem;
-    animation: marquee-scroll 30s linear infinite;
-    width: max-content;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    background-color: #181825;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.skills__marquee-item {
-    flex-shrink: 0;
-    padding: 0.625rem 1.5rem;
-    border-radius: 9999px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    background-color: #ffffff;
-    color: #475569;
+.skills__panel-dots {
+    display: flex;
+    gap: 0.375rem;
+}
+
+.skills__panel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.skills__panel-dot--red { background-color: #f38ba8; }
+.skills__panel-dot--yellow { background-color: #f9e2af; }
+.skills__panel-dot--green { background-color: #a6e3a1; }
+
+.skills__panel-title {
+    color: #6c7086;
+    font-size: 0.75rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.skills__panel-cursor {
+    width: 8px;
+    height: 14px;
+    background-color: #cdd6f4;
+    border-radius: 1px;
+    margin-left: auto;
+    animation: cursor-blink 1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.skills__panel-body {
+    padding: 1.5rem 1.25rem;
+    min-height: 16rem;
+    max-height: 22rem;
+    overflow-y: auto;
+}
+
+@media (min-width: 640px) {
+    .skills__panel-body {
+        padding: 2rem 1.5rem;
+        min-height: 18rem;
+    }
+}
+
+.skills__panel-code {
+    margin: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    white-space: nowrap;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
-    transition: border-color 200ms ease, color 200ms ease;
+    line-height: 1.75;
+    color: #cdd6f4;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
-.skills__marquee-item:hover {
-    border-color: rgba(79, 70, 229, 0.2);
-    color: #4f46e5;
+@media (min-width: 640px) {
+    .skills__panel-code {
+        font-size: 0.875rem;
+    }
 }
 
-@keyframes marquee-scroll {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
+.skills__panel-footer {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.skills__panel-hint {
+    color: #585b70;
+    font-size: 0.75rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ============================================
+   RIGHT: 3D ISOMETRIC KEYPAD
+   ============================================ */
+
+.skills__keypad-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+}
+
+@media (min-width: 1024px) {
+    .skills__keypad-container {
+        padding: 0;
+    }
+}
+
+.skills__keypad {
+    perspective: 900px;
+    perspective-origin: 50% 40%;
+}
+
+.skills__keypad-plate {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    padding: 1.75rem;
+    background: linear-gradient(
+        145deg,
+        #e8e6e1 0%,
+        #d4d2cd 50%,
+        #c8c6c1 100%
+    );
+    border-radius: 1.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow:
+        0 30px 60px -15px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+        0 -2px 0 0 rgba(0, 0, 0, 0.08) inset;
+    transform: rotateX(25deg) rotateZ(-5deg) rotateY(5deg);
+    transform-style: preserve-3d;
+    transition: transform 400ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.skills__keypad-plate:hover {
+    transform: rotateX(22deg) rotateZ(-3deg) rotateY(3deg);
+}
+
+/* ============================================
+   TACTILE 3D KEYCAP
+   ============================================ */
+
+.skills__keycap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--key-color) 12%, #ffffff) 0%,
+        color-mix(in srgb, var(--key-color) 6%, #f8f8f8) 100%
+    );
+    color: var(--key-text);
+    cursor: pointer;
+    outline: none;
+    font-family: inherit;
+    box-shadow:
+        0 8px 0 0 color-mix(in srgb, var(--key-color) 40%, #888),
+        0 12px 20px -4px rgba(0, 0, 0, 0.12);
+    transform-style: preserve-3d;
+    transition: background 150ms ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    padding: 0;
+}
+
+@media (min-width: 640px) {
+    .skills__keycap {
+        width: 5.5rem;
+        height: 5.5rem;
+    }
+}
+
+/* Top highlight (light reflection) */
+.skills__keycap::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 6px;
+    right: 6px;
+    height: 40%;
+    border-radius: 0.5rem 0.5rem 50% 50%;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.5) 0%,
+        transparent 100%
+    );
+    pointer-events: none;
+}
+
+/* Bottom edge (3D depth) */
+.skills__keycap::after {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 4px;
+    right: 4px;
+    height: 6px;
+    border-radius: 0 0 0.5rem 0.5rem;
+    background: color-mix(in srgb, var(--key-color) 25%, #aaa);
+    pointer-events: none;
+}
+
+.skills__keycap-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    z-index: 1;
+}
+
+@media (min-width: 640px) {
+    .skills__keycap-label {
+        font-size: 0.8125rem;
+    }
+}
+
+.skills__keycap-key {
+    font-size: 0.5625rem;
+    font-weight: 500;
+    opacity: 0.5;
+    text-transform: uppercase;
+    z-index: 1;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+@media (min-width: 640px) {
+    .skills__keycap-key {
+        font-size: 0.625rem;
+    }
+}
+
+/* Hover: lift slightly */
+.skills__keycap:hover {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--key-color) 18%, #ffffff) 0%,
+        color-mix(in srgb, var(--key-color) 10%, #f8f8f8) 100%
+    );
+}
+
+/* Focus visible ring */
+.skills__keycap:focus-visible {
+    outline: 2px solid #4f46e5;
+    outline-offset: 2px;
 }
