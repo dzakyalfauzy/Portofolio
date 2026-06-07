@@ -221,9 +221,11 @@ export default function Projects({ items = [], loading = false }) {
                 ) : (
                     <>
                         {/* ===== HERO / FEATURED ===== */}
-                        <AnimatePresence mode="wait">
-                            <FeaturedHero project={activeProject} />
-                        </AnimatePresence>
+                        <ScrollReveal>
+                            <AnimatePresence mode="wait">
+                                <FeaturedHero project={activeProject} />
+                            </AnimatePresence>
+                        </ScrollReveal>
 
                         {/* ===== THUMBNAIL CAROUSEL (staggered 3D reveal) ===== */}
                         {items.length > 1 && (

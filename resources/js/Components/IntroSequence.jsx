@@ -12,8 +12,7 @@ export default function IntroSequence() {
     const imagesRef = useRef([]);
     const currentFrame = useRef(0);
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [pct, setPct] = useState(0);
+    const [isReady, setIsReady] = useState(false);
 
     /* ── 1. Preload 191 frames ── */
     useEffect(() => {
@@ -27,14 +26,12 @@ export default function IntroSequence() {
 
             img.onload = () => {
                 loaded++;
-                setPct(loaded / TOTAL);
-                if (loaded === TOTAL) setIsLoading(false);
+                if (loaded === TOTAL) setIsReady(true);
             };
 
             img.onerror = () => {
                 loaded++;
-                setPct(loaded / TOTAL);
-                if (loaded === TOTAL) setIsLoading(false);
+                if (loaded === TOTAL) setIsReady(true);
             };
 
             imgs[i] = img;
@@ -53,7 +50,7 @@ export default function IntroSequence() {
     };
 
     useEffect(() => {
-        if (isLoading) return;
+        if (!isReady) return;
         updateCanvasSize();
 
         const img = imagesRef.current[0];
@@ -62,10 +59,10 @@ export default function IntroSequence() {
             drawCover(ctx, canvasRef.current, img);
             currentFrame.current = 0;
         }
-    }, [isLoading]);
+    }, [isReady]);
 
     useEffect(() => {
-        if (isLoading) return;
+        if (!isReady) return;
 
         const onResize = () => {
             updateCanvasSize();
@@ -78,7 +75,7 @@ export default function IntroSequence() {
 
         window.addEventListener("resize", onResize);
         return () => window.removeEventListener("resize", onResize);
-    }, [isLoading]);
+    }, [isReady]);
 
     /* ── 3. Scroll → frame rendering ── */
     const { scrollYProgress } = useScroll({
@@ -87,7 +84,7 @@ export default function IntroSequence() {
     });
 
     useEffect(() => {
-        if (isLoading) return;
+        if (!isReady) return;
 
         const renderFrame = (progress) => {
             const idx = Math.min(TOTAL - 1, Math.max(0, Math.floor(progress * TOTAL)));
@@ -128,13 +125,11 @@ export default function IntroSequence() {
         });
 
         return () => unsub();
-    }, [scrollYProgress, isLoading]);
+    }, [scrollYProgress, isReady]);
 
-    /* ── 4. Text reveal (single block) ── */
-    const textOp = useTransform(scrollYProgress, [0.05, 0.15, 0.85, 0.95], [0, 1, 1, 0]);
-    const textY = useTransform(scrollYProgress, [0.05, 0.15, 0.85, 0.95], [60, 0, 0, -40]);
-    const textScale = useTransform(scrollYProgress, [0.05, 0.15, 0.85, 0.95], [0.9, 1, 1, 1.05]);
-    const textSpacing = useTransform(scrollYProgress, [0.05, 0.15], ["0.3em", "0.05em"]);
+    /* ── 4. Text exit (fade out at end of scroll) ── */
+    const textExitOp = useTransform(scrollYProgress, [0.85, 0.95], [1, 0]);
+    const textExitY = useTransform(scrollYProgress, [0.85, 0.95], [0, -40]);
 
     /* Scroll hint */
     const hintOp = useTransform(scrollYProgress, [0.92, 0.97], [0, 1]);
@@ -163,54 +158,6 @@ export default function IntroSequence() {
                     backgroundColor: "#000"
                 }}
             >
-                {/* Loading overlay */}
-                {isLoading && (
-                    <div
-                        style={{
-                            position: "absolute",
-                            inset: 0,
-                            zIndex: 100,
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "1.5rem",
-                            backgroundColor: "#000",
-                        }}
-                    >
-                        <div
-                            style={{
-                                width: "12rem",
-                                height: "3px",
-                                borderRadius: "2px",
-                                backgroundColor: "rgba(239,68,68,0.15)",
-                                overflow: "hidden",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    height: "100%",
-                                    borderRadius: "2px",
-                                    background: "linear-gradient(90deg, #ef4444, #f97316)",
-                                    width: `${pct * 100}%`,
-                                    transition: "width 0.15s ease",
-                                }}
-                            />
-                        </div>
-                        <span
-                            style={{
-                                color: "rgba(239,68,68,0.5)",
-                                fontSize: "0.6875rem",
-                                fontFamily: "ui-monospace, monospace",
-                                letterSpacing: "0.2em",
-                                textTransform: "uppercase",
-                            }}
-                        >
-                            Loading {Math.round(pct * 100)}%
-                        </span>
-                    </div>
-                )}
-
                 {/* Canvas */}
                 <canvas
                     ref={canvasRef}
@@ -255,8 +202,11 @@ export default function IntroSequence() {
                         }}
                     />
 
-                    {/* ── Text Block (single reveal) ── */}
+                    {/* ── Text Block — mount animation + scroll exit ── */}
                     <motion.div
+                        initial={{ opacity: 0, y: 80, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         style={{
                             position: "absolute",
                             inset: 0,
@@ -267,17 +217,19 @@ export default function IntroSequence() {
                             paddingBottom: "15vh",
                             padding: "2rem",
                             textAlign: "center",
-                            opacity: textOp,
-                            y: textY,
-                            scale: textScale,
+                            opacity: textExitOp,
+                            y: textExitY,
                         }}
                     >
                         <motion.p
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
                             style={{
                                 fontSize: "clamp(1.25rem, 2.5vw, 2rem)",
                                 fontWeight: 800,
                                 color: "rgba(255,255,255,0.85)",
-                                letterSpacing: textSpacing,
+                                letterSpacing: "0.05em",
                                 lineHeight: 1.5,
                                 maxWidth: "48rem",
                                 margin: 0,
@@ -291,6 +243,9 @@ export default function IntroSequence() {
                         </motion.p>
 
                         <motion.p
+                            initial={{ opacity: 0, y: 50, scale: 0.85 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 1, delay: 1, ease: [0.16, 1, 0.3, 1] }}
                             style={{
                                 fontSize: "clamp(4rem, 12vw, 10rem)",
                                 fontWeight: 900,
@@ -308,7 +263,10 @@ export default function IntroSequence() {
                             Welcome
                         </motion.p>
 
-                        <span
+                        <motion.span
+                            initial={{ opacity: 0, scaleX: 0 }}
+                            animate={{ opacity: 1, scaleX: 1 }}
+                            transition={{ duration: 0.6, delay: 1.4, ease: [0.16, 1, 0.3, 1] }}
                             style={{
                                 display: "block",
                                 marginTop: "1.5rem",
@@ -329,33 +287,34 @@ export default function IntroSequence() {
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
-                            gap: "0.625rem",
+                            gap: "1rem",
                             opacity: hintOp,
                             y: hintY,
                         }}
                     >
                         <p
                             style={{
-                                fontSize: "0.6875rem",
-                                fontWeight: 500,
-                                color: "rgba(255,255,255,0.45)",
-                                letterSpacing: "0.2em",
+                                fontWeight: 600,
+                                color: "rgba(239,68,68,0.6)",
+                                letterSpacing: "0.35em",
                                 textTransform: "uppercase",
                                 margin: 0,
-                                textShadow: "0 0 8px rgba(239,68,68,0.2)",
+                                fontFamily: "'Bebas Neue', 'Oswald', 'Impact', sans-serif",
+                                fontSize: "1rem",
+                                textShadow: "0 0 12px rgba(239,68,68,0.3)",
                             }}
                         >
-                            Scroll down
+                            Descend Into The Abyss
                         </p>
                         <motion.div
-                            animate={{ y: [0, 6, 0] }}
+                            animate={{ y: [0, 10, 0] }}
                             transition={{
-                                duration: 1.5,
+                                duration: 2.5,
                                 repeat: Infinity,
                                 ease: "easeInOut",
                             }}
                         >
-                            <ChevronDown size={20} color="rgba(239,68,68,0.5)" />
+                            <ChevronDown size={22} color="rgba(239,68,68,0.5)" />
                         </motion.div>
                     </motion.div>
 

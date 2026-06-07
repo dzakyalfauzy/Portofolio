@@ -22,7 +22,7 @@ class PortfolioSeeder extends Seeder
             ['email' => 'admin@example.com'],
             [
                 'name' => 'Amelia Admin',
-                'password' => Hash::make('password'),
+                'password' => 'password',
             ]
         );
 
@@ -40,6 +40,7 @@ class PortfolioSeeder extends Seeder
                 'stack' => ['React', 'Laravel', 'MySQL', 'Stripe'],
                 'github' => 'https://github.com',
                 'demo' => 'https://example.com',
+                'image_path' => '/images/projects/project-1.svg',
                 'color' => 'emerald',
                 'order' => 1,
             ],
@@ -49,6 +50,7 @@ class PortfolioSeeder extends Seeder
                 'stack' => ['Next.js', 'Node.js', 'PostgreSQL', 'Socket.io'],
                 'github' => 'https://github.com',
                 'demo' => 'https://example.com',
+                'image_path' => '/images/projects/project-2.svg',
                 'color' => 'indigo',
                 'order' => 2,
             ],
@@ -58,6 +60,7 @@ class PortfolioSeeder extends Seeder
                 'stack' => ['React', 'Python', 'OpenAI', 'TailwindCSS'],
                 'github' => 'https://github.com',
                 'demo' => 'https://example.com',
+                'image_path' => '/images/projects/project-3.svg',
                 'color' => 'sky',
                 'order' => 3,
             ],
@@ -67,6 +70,7 @@ class PortfolioSeeder extends Seeder
                 'stack' => ['React', 'TailwindCSS', 'Framer Motion', 'Vite'],
                 'github' => 'https://github.com',
                 'demo' => 'https://example.com',
+                'image_path' => '/images/projects/project-4.svg',
                 'color' => 'rose',
                 'order' => 4,
             ],
@@ -76,6 +80,7 @@ class PortfolioSeeder extends Seeder
                 'stack' => ['React', 'Firebase', 'WebRTC', 'TailwindCSS'],
                 'github' => 'https://github.com',
                 'demo' => 'https://example.com',
+                'image_path' => '/images/projects/project-5.svg',
                 'color' => 'amber',
                 'order' => 5,
             ],
@@ -85,6 +90,7 @@ class PortfolioSeeder extends Seeder
                 'stack' => ['Next.js', 'D3.js', 'Laravel', 'Redis'],
                 'github' => 'https://github.com',
                 'demo' => 'https://example.com',
+                'image_path' => '/images/projects/project-6.svg',
                 'color' => 'emerald',
                 'order' => 6,
             ],

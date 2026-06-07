@@ -1,338 +1,514 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollReveal } from "../utils/scroll";
-import "../../css/components/skills.css";
 
-/* ===== Brand SVG Icons ===== */
+const ICON = (icon) => `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${icon}.svg`;
 
-const IconReact = () => (
-    <svg viewBox="-11.5 -10.232 23 20.463" fill="none">
-        <circle r="2.05" fill="#fff"/>
-        <g stroke="#fff" strokeWidth="1" fill="none">
-            <ellipse rx="11" ry="4.2"/>
-            <ellipse rx="11" ry="4.2" transform="rotate(60)"/>
-            <ellipse rx="11" ry="4.2" transform="rotate(120)"/>
-        </g>
-    </svg>
-);
-
-const IconJS = () => (
-    <svg viewBox="0 0 32 32">
-        <rect width="32" height="32" rx="3" fill="#F7DF1E"/>
-        <text x="16" y="23" textAnchor="middle" fontFamily="Arial,sans-serif" fontWeight="900" fontSize="16" fill="#323330">JS</text>
-    </svg>
-);
-
-const IconTS = () => (
-    <svg viewBox="0 0 32 32">
-        <rect width="32" height="32" rx="3" fill="#3178C6"/>
-        <text x="16" y="23" textAnchor="middle" fontFamily="Arial,sans-serif" fontWeight="900" fontSize="16" fill="#fff">TS</text>
-    </svg>
-);
-
-const IconNode = () => (
-    <svg viewBox="0 0 32 32">
-        <path d="M16 2L28.66 9.5V24.5L16 32L3.34 24.5V9.5L16 2Z" fill="#339933"/>
-        <path d="M16 6L25.66 11.5V22.5L16 28L6.34 22.5V11.5L16 6Z" fill="#2D7D3A"/>
-        <text x="16" y="21" textAnchor="middle" fontFamily="Arial,sans-serif" fontWeight="900" fontSize="11" fill="#fff">N</text>
-    </svg>
-);
-
-const IconTailwind = () => (
-    <svg viewBox="0 0 32 32">
-        <path d="M16 6C11.2 6 8.4 8 7.5 12C9 10 10.8 8.7 12.9 8.1C14.3 7.7 15.7 8.1 16.7 9.1C18 10.4 18.3 12.4 17.3 14C15.5 16.8 12.5 17.5 10 18.5C7.5 19.5 6 21 6 24C8.8 24 10.5 22.7 11.7 21.3C13.2 19.5 14.3 18 17.5 17C20.3 16.1 22.5 14.5 23.3 11.5C24.3 7.5 21.8 6 16 6Z" fill="#fff"/>
-        <path d="M16 10C20.8 10 23.6 12 24.5 16C23 14 21.2 12.7 19.1 12.1C17.7 11.7 16.3 12.1 15.3 13.1C14 14.4 13.7 16.4 14.7 18C16.5 20.8 19.5 21.5 22 22.5C24.5 23.5 26 25 26 28C23.2 28 21.5 26.7 20.3 25.3C18.8 23.5 17.7 22 14.5 21C11.7 20.1 9.5 18.5 8.7 15.5C7.7 11.5 10.2 10 16 10Z" fill="#06B6D4"/>
-    </svg>
-);
-
-const IconGit = () => (
-    <svg viewBox="0 0 32 32">
-        <path d="M31.5 15.1L16.9 0.5C16.4 0 15.6 0 15.1 0.5L12.7 2.9L16.3 6.5C17 6.4 17.7 6.6 18.2 7.1C18.7 7.6 18.9 8.3 18.8 9L22.2 12.4C22.9 12.3 23.6 12.5 24.1 13C24.8 13.7 24.8 14.8 24.1 15.5C23.4 16.2 22.3 16.2 21.6 15.5C21.1 15 20.9 14.3 21 13.6L17.8 10.4V20.2L21 17.6C21.1 16.9 21.5 16.3 22.2 15.8C22.9 15.1 24 15.1 24.7 15.8C25.4 16.5 25.4 17.6 24.7 18.3C24.2 18.8 23.5 19 22.8 18.9L19.4 22.5C19.4 23.2 19.2 23.9 18.7 24.4C18 25.1 16.9 25.1 16.2 24.4C15.7 23.9 15.5 23.2 15.6 22.5L12.4 19.3V12.7L9.2 15.9C9.3 16.6 9.1 17.3 8.6 17.8C7.9 18.5 6.8 18.5 6.1 17.8C5.4 17.1 5.4 16 6.1 15.3C6.6 14.8 7.3 14.6 8 14.7L11.2 11.5V10.9L7.6 7.3C6.9 7.4 6.2 7.2 5.7 6.7C5.2 6.2 5 5.5 5.1 4.8L0.5 15.1C0 15.6 0 16.4 0.5 16.9L15.1 31.5C15.6 32 16.4 32 16.9 31.5L31.5 16.9C32 16.4 32 15.6 31.5 15.1Z" fill="#fff"/>
-    </svg>
-);
-
-const IconLaravel = () => (
-    <svg viewBox="0 0 32 32">
-        <path d="M2 22.5L8 19V8.5L16 13.5V24L8 19.5V28L2 24.5V22.5Z" fill="#fff"/>
-        <path d="M16 13.5L24 8.5V19L16 24V13.5Z" fill="#fff"/>
-        <path d="M24 8.5L30 12V22.5L24 19V8.5Z" fill="#fff" opacity="0.7"/>
-    </svg>
-);
-
-const IconPHP = () => (
-    <svg viewBox="0 0 32 32">
-        <ellipse cx="16" cy="16" rx="14" ry="10" fill="#fff"/>
-        <text x="16" y="20" textAnchor="middle" fontFamily="Arial,sans-serif" fontWeight="900" fontSize="10" fill="#777BB4">PHP</text>
-    </svg>
-);
-
-const IconFigma = () => (
-    <svg viewBox="0 0 32 32">
-        <rect x="6" y="2" width="9" height="12" rx="4.5" fill="#F24E1E"/>
-        <rect x="17" y="2" width="9" height="12" rx="4.5" fill="#FF7262"/>
-        <rect x="6" y="14" width="9" height="12" rx="4.5" fill="#A259FF"/>
-        <circle cx="21.5" cy="10" r="4.5" fill="#1ABCFE"/>
-        <rect x="6" y="2" width="9" height="12" rx="4.5" fill="#0ACF83"/>
-    </svg>
-);
-
-const IconPostgres = () => (
-    <svg viewBox="0 0 32 32">
-        <ellipse cx="16" cy="10" rx="10" ry="5" fill="#fff"/>
-        <path d="M6 10V22C6 24.8 10.5 27 16 27C21.5 27 26 24.8 26 22V10" fill="#4169E1"/>
-        <ellipse cx="16" cy="10" rx="7" ry="3.5" fill="#fff" opacity="0.3"/>
-        <text x="16" y="20" textAnchor="middle" fontFamily="Arial,sans-serif" fontWeight="900" fontSize="7" fill="#fff">PG</text>
-    </svg>
-);
-
-const IconDocker = () => (
-    <svg viewBox="0 0 32 32">
-        <path d="M28.5 12.5C28 11.5 26.8 11 25.5 11H25V10C25 9.4 24.6 9 24 9H8C7.4 9 7 9.4 7 10V11H6.5C5.2 11 4 11.5 3.5 12.5C3 13.5 3.2 14.8 4 15.5C3.2 16 2.8 17 3 18C3.2 19 4 19.8 5 20C5.5 21.5 7 22.5 9 22.5C10.5 22.5 12 22 13 21.5L16 23L19 21.5C20 22 21.5 22.5 23 22.5C25 22.5 26.5 21.5 27 20C28 19.8 28.8 19 29 18C29.2 17 28.8 16 28 15.5C28.8 14.8 29 13.5 28.5 12.5Z" fill="#fff"/>
-        <rect x="8" y="13" width="3" height="2.5" rx="0.5" fill="#2496ED"/>
-        <rect x="12" y="13" width="3" height="2.5" rx="0.5" fill="#2496ED"/>
-        <rect x="16" y="13" width="3" height="2.5" rx="0.5" fill="#2496ED"/>
-        <rect x="12" y="9.5" width="3" height="2.5" rx="0.5" fill="#2496ED"/>
-        <rect x="16" y="9.5" width="3" height="2.5" rx="0.5" fill="#2496ED"/>
-        <rect x="8" y="16.5" width="3" height="2.5" rx="0.5" fill="#2496ED" opacity="0.7"/>
-        <rect x="12" y="16.5" width="3" height="2.5" rx="0.5" fill="#2496ED" opacity="0.7"/>
-    </svg>
-);
-
-const IconNext = () => (
-    <svg viewBox="0 0 32 32">
-        <circle cx="16" cy="16" r="14" fill="#fff"/>
-        <path d="M12 10L22 24H18L8 10H12Z" fill="#000"/>
-        <rect x="20" y="10" width="2" height="14" rx="1" fill="#000" opacity="0.6"/>
-    </svg>
-);
-
-/* ===== Skills Data ===== */
-const skills = [
-    {
-        id: "react", key: "r", label: "React", icon: IconReact,
-        face: "#61DAFB", wall: "#4AB8DB",
-        snippet: `const app = useReact({\n  expertise: "Advanced",\n  hooks: ["useState", "useEffect", "useMotionValue"],\n  components: ["Framer Motion", "React Router"],\n  render: () => <MagicExperience />\n});`,
-    },
-    {
-        id: "js", key: "j", label: "JavaScript", icon: IconJS,
-        face: "#F7DF1E", wall: "#D4BF0B",
-        snippet: `const language = "JavaScript";\nconst features = [\n  "ES6+", "Async/Await", "Destructuring",\n  "Modules", "Promises", "Arrow Functions"\n];\nconsole.log(\`\${language} is life 🚀\`);`,
-    },
-    {
-        id: "ts", key: "t", label: "TypeScript", icon: IconTS,
-        face: "#3178C6", wall: "#2A66A7",
-        snippet: `interface Developer {\n  name: string;\n  skills: string[];\n  level: "Senior" | "Staff";\n}\nconst me: Developer = {\n  name: "Dzaky", skills: ["TS", "React"], level: "Senior"\n};`,
-    },
-    {
-        id: "node", key: "n", label: "Node.js", icon: IconNode,
-        face: "#339933", wall: "#2B802B",
-        snippet: `const server = express();\nserver.use(cors());\nserver.use(helmet());\n\nserver.get("/api/skills", (req, res) => {\n  res.json({ status: "🔥 on fire" });\n});\n\nserver.listen(3000);`,
-    },
-    {
-        id: "tailwind", key: "w", label: "Tailwind", icon: IconTailwind,
-        face: "#06B6D4", wall: "#059BAD",
-        snippet: `<!-- Tailwind Magic -->\n<div className="flex items-center gap-4\n  bg-gradient-to-r from-indigo-500 to-rose-500\n  rounded-2xl p-8 shadow-2xl\n  hover:scale-105 transition-all">\n  <span className="text-white font-bold">✨</span>\n</div>`,
-    },
-    {
-        id: "git", key: "g", label: "Git", icon: IconGit,
-        face: "#F05032", wall: "#CF4429",
-        snippet: `$ git log --oneline\n* a1b2c3d feat: add 3D keypad\n* d4e5f6g fix: scroll scrub smooth\n* h7i8j9k refactor: Cyber-Candy theme\n* k0l1m2n chore: clean up legacy CSS`,
-    },
-    {
-        id: "laravel", key: "l", label: "Laravel", icon: IconLaravel,
-        face: "#FF2D20", wall: "#DB261A",
-        snippet: `Route::middleware('auth:sanctum')\n  ->group(function () {\n    Route::get('/projects', [ProjectController::class, 'index']);\n    Route::post('/upload', [UploadController::class, 'store']);\n  });\n\n// Elegant, isn't it? 🎩`,
-    },
-    {
-        id: "php", key: "p", label: "PHP", icon: IconPHP,
-        face: "#777BB4", wall: "#656A9C",
-        snippet: `class Developer extends Human {\n  public string $name = "Dzaky";\n  public array $stack = ["PHP", "Laravel"];\n\n  public function build(): Project {\n    return new Project($this->stack);\n  }\n}`,
-    },
-    {
-        id: "figma", key: "f", label: "Figma", icon: IconFigma,
-        face: "#A259FF", wall: "#8B4ADB",
-        snippet: `// Design → Code Pipeline\nconst design = figma.getFile("portfolio");\nconst tokens = extractDesignTokens(design);\nconst components = generateReact(tokens);\n\nexport { design, tokens, components };`,
-    },
-    {
-        id: "postgres", key: "q", label: "PostgreSQL", icon: IconPostgres,
-        face: "#4169E1", wall: "#3759C0",
-        snippet: `SELECT s.name, s.level,\n  COUNT(p.id) as projects_built\nFROM skills s\nJOIN project_skills ps ON s.id = ps.skill_id\nJOIN projects p ON ps.project_id = p.id\nWHERE s.level >= 8\nORDER BY projects_built DESC;`,
-    },
-    {
-        id: "docker", key: "d", label: "Docker", icon: IconDocker,
-        face: "#2496ED", wall: "#1E80CC",
-        snippet: `FROM node:20-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --production\nCOPY . .\nEXPOSE 3000\nCMD ["node", "server.js"]\n# Shipping containers 📦`,
-    },
-    {
-        id: "next", key: "x", label: "Next.js", icon: IconNext,
-        face: "#000000", wall: "#1a1a1a",
-        snippet: `// app/page.tsx — Server Component\nexport default async function Home() {\n  const data = await fetch("https://api.dev",\n    { next: { revalidate: 3600 } }\n  );\n  return <Hero data={data} />;\n}`,
-    },
+/* ===== Skills data — harmonized colors ===== */
+const skillsData = [
+    // Frontend
+    { name: "React", label: "React", color: "#5aabbd", icon: "react/react-original", desc: "Frontend UI library", prof: 90 },
+    { name: "Next.js", label: "Next", color: "#555555", icon: "nextjs/nextjs-original", desc: "React meta-framework", prof: 80 },
+    { name: "Vue.js", label: "Vue", color: "#5a9e6f", icon: "vuejs/vuejs-original", desc: "Progressive framework", prof: 75 },
+    { name: "HTML5", label: "HTML", color: "#c46a3c", icon: "html5/html5-original", desc: "Markup language", prof: 95 },
+    { name: "CSS3", label: "CSS", color: "#3a7bbf", icon: "css3/css3-original", desc: "Styling language", prof: 90 },
+    { name: "Tailwind", label: "Tailwind", color: "#4a9eab", icon: "tailwindcss/tailwindcss-original", desc: "Utility-first CSS", prof: 92 },
+    { name: "JavaScript", label: "JS", color: "#a88a30", icon: "javascript/javascript-original", desc: "Core web language", prof: 92 },
+    { name: "TypeScript", label: "TS", color: "#4a7ab5", icon: "typescript/typescript-original", desc: "Typed JavaScript", prof: 85 },
+    // Backend
+    { name: "Laravel", label: "Laravel", color: "#c43a31", icon: "laravel/laravel-original", desc: "PHP web framework", prof: 88 },
+    { name: "PHP", label: "PHP", color: "#6b6fa3", icon: "php/php-original", desc: "Backend language", prof: 85 },
+    { name: "Python", label: "Python", color: "#4a7a9e", icon: "python/python-original", desc: "General-purpose language", prof: 72 },
+    { name: "Node.js", label: "Node", color: "#4a8a4a", icon: "nodejs/nodejs-original", desc: "Server-side JS runtime", prof: 82 },
+    { name: "MySQL", label: "MySQL", color: "#3a6a8a", icon: "mysql/mysql-original", desc: "Relational database", prof: 85 },
+    { name: "PostgreSQL", label: "Postgres", color: "#3a5a9e", icon: "postgresql/postgresql-original", desc: "Advanced SQL database", prof: 78 },
+    // Tools
+    { name: "Git", label: "Git", color: "#c44a32", icon: "git/git-original", desc: "Version control", prof: 90 },
+    { name: "Docker", label: "Docker", color: "#3a7ac0", icon: "docker/docker-original", desc: "Container platform", prof: 75 },
+    { name: "VS Code", label: "VSCode", color: "#3a8ac0", icon: "vscode/vscode-original", desc: "Code editor", prof: 95 },
+    { name: "Postman", label: "Postman", color: "#c46a3c", icon: "postman/postman-original", desc: "API testing tool", prof: 80 },
+    { name: "Nginx", label: "Nginx", color: "#3a7a3a", icon: "nginx/nginx-original", desc: "Web server", prof: 68 },
+    // Design
+    { name: "Figma", label: "Figma", color: "#a84a3a", icon: "figma/figma-original", desc: "UI design tool", prof: 70 },
+    { name: "Adobe XD", label: "XD", color: "#4a3a7a", icon: "xd/xd-plain", desc: "Design & prototyping", prof: 65 },
 ];
 
-/* ===== Default terminal output ===== */
-const defaultOutput = `// Welcome to my interactive skill pad! 🎹
-// Click a keycap or press a key on your keyboard
-// to see code snippets for each skill.
+/* ===== Keyboard row layout (standard keyboard-like) ===== */
+const keySize = 54;
+const keyGap = 5;
+const rowGap = 5;
 
-const portfolio = {
-  developer: "Dzaky Al Fauzy",
-  university: "Universitas Brawijaya",
-  passion: "Building beautiful digital experiences",
-  status: "Ready to collaborate ✨"
-};`;
+const keyboardRows = [
+    skillsData.slice(0, 6),   // Row 0: React, Next, Vue, HTML, CSS, Tailwind
+    skillsData.slice(6, 12),  // Row 1: JS, TS, Laravel, PHP, Python, Node
+    skillsData.slice(12, 18), // Row 2: MySQL, Postgres, Git, Docker, VSCode, Postman
+    skillsData.slice(18, 21), // Row 3: Nginx, Figma, XD
+];
 
-/* ===== Keycap Component ===== */
-function Keycap({ skill, isActive, onPress }) {
-    const Icon = skill.icon;
+/* ===== Color helpers ===== */
+function darken(hex, amt) {
+    hex = hex.replace("#", "");
+    if (hex.length === 3) hex = hex.split("").map(c => c + c).join("");
+    const n = parseInt(hex, 16);
+    const r = Math.max(0, ((n >> 16) & 255) * (1 - amt));
+    const g = Math.max(0, ((n >> 8) & 255) * (1 - amt));
+    const b = Math.max(0, (n & 255) * (1 - amt));
+    return `rgb(${Math.round(r)},${Math.round(g)},${Math.round(b)})`;
+}
+
+function isLight(hex) {
+    hex = hex.replace("#", "");
+    if (hex.length === 3) hex = hex.split("").map(c => c + c).join("");
+    const n = parseInt(hex, 16);
+    return ((n >> 16) & 255) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114 > 160;
+}
+
+/* ===== 3D Keycap Component ===== */
+function Keycap({ skill, index, onPopup }) {
+    const [hovered, setHovered] = useState(false);
+    const [pressed, setPressed] = useState(false);
+    const [imgErr, setImgErr] = useState(false);
+
+    const { name, label, color, icon, desc, prof } = skill;
+    const sideColor = darken(color, 0.5);
+    const bottomColor = darken(color, 0.65);
+    const light = isLight(color);
+
+    const depth = pressed ? 3 : hovered ? 14 : 10;
+    const faceY = pressed ? 3 : hovered ? -8 : 0;
+    const glow = hovered ? `0 0 24px ${color}55, 0 0 48px ${color}22` : "none";
 
     return (
-        <motion.button
-            className={`skills__keycap ${isActive ? "skills__keycap--pressed" : ""}`}
-            style={{
-                "--key-face": skill.face,
-                "--key-wall": skill.wall,
-            }}
-            animate={{
-                z: isActive ? -8 : 0,
-            }}
-            transition={{ type: "spring", stiffness: 800, damping: 30, mass: 0.3 }}
-            whileHover={{ z: -2 }}
-            whileTap={{ z: -8 }}
-            onClick={() => onPress(skill)}
+        <motion.div
+            initial={{ opacity: 0, y: 40, scale: 0.85 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.4, delay: index * 0.03, ease: [0.16, 1, 0.3, 1] }}
+            style={{ position: "relative", width: keySize, height: keySize + 14, cursor: "pointer" }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => { setHovered(false); setPressed(false); }}
+            onMouseDown={() => { setPressed(true); onPopup(skill); }}
+            onMouseUp={() => setPressed(false)}
         >
-            <span className="skills__keycap-icon">
-                <Icon />
-            </span>
-            <span className="skills__keycap-key">{skill.key.toUpperCase()}</span>
-        </motion.button>
+            {/* Tooltip */}
+            {hovered && (
+                <div style={{
+                    position: "absolute", bottom: "100%", left: "50%",
+                    transform: "translateX(-50%)", marginBottom: 10,
+                    padding: "5px 12px", borderRadius: 20,
+                    backgroundColor: "#111", border: `1px solid ${color}44`,
+                    color: "#fff", fontSize: 11, fontWeight: 600,
+                    whiteSpace: "nowrap", letterSpacing: 0.5, pointerEvents: "none", zIndex: 100,
+                }}>
+                    {name}
+                </div>
+            )}
+
+            {/* === 3D Bottom face (base) === */}
+            <div style={{
+                position: "absolute", bottom: 0, left: 0,
+                width: keySize, height: depth,
+                backgroundColor: bottomColor,
+                borderRadius: "0 0 6px 6px",
+                transition: "height 0.12s ease",
+            }} />
+
+            {/* === 3D Right side face === */}
+            <div style={{
+                position: "absolute", right: 0, top: (keySize - depth) + 4,
+                width: 6, height: depth,
+                backgroundColor: sideColor,
+                borderRadius: "0 3px 3px 0",
+                transition: "height 0.12s ease, top 0.12s ease",
+            }} />
+
+            {/* === 3D Left side face === */}
+            <div style={{
+                position: "absolute", left: 0, top: (keySize - depth) + 4,
+                width: 3, height: depth,
+                backgroundColor: sideColor,
+                borderRadius: "3px 0 0 3px",
+                opacity: 0.5,
+                transition: "height 0.12s ease, top 0.12s ease",
+            }} />
+
+            {/* === Top face (keycap surface) === */}
+            <motion.div
+                animate={{ y: faceY }}
+                transition={{ type: "spring", stiffness: 700, damping: 25, mass: 0.3 }}
+                style={{
+                    position: "absolute", top: 0, left: 0,
+                    width: keySize, height: keySize,
+                    borderRadius: 8,
+                    backgroundColor: color,
+                    display: "flex", flexDirection: "column",
+                    alignItems: "center", justifyContent: "center", gap: 3,
+                    zIndex: 2,
+                    boxShadow: `
+                        inset 0 1px 0 rgba(255,255,255,0.35),
+                        inset 0 -1px 2px rgba(0,0,0,0.15),
+                        ${glow}
+                    `,
+                    filter: hovered ? "brightness(1.12)" : "none",
+                    transition: "filter 0.12s ease, box-shadow 0.12s ease",
+                    overflow: "hidden",
+                }}
+            >
+                {/* Top highlight (plastic reflection) */}
+                <div style={{
+                    position: "absolute", top: 0, left: 0, right: 0, height: "42%",
+                    borderRadius: "8px 8px 50% 50%",
+                    background: "linear-gradient(180deg, rgba(255,255,255,0.28) 0%, transparent 100%)",
+                    pointerEvents: "none",
+                }} />
+
+                {/* Bottom shadow (inner depth) */}
+                <div style={{
+                    position: "absolute", bottom: 0, left: 0, right: 0, height: "20%",
+                    borderRadius: "0 0 8px 8px",
+                    background: "linear-gradient(0deg, rgba(0,0,0,0.12) 0%, transparent 100%)",
+                    pointerEvents: "none",
+                }} />
+
+                {/* Icon */}
+                {!imgErr ? (
+                    <img
+                        src={ICON(icon)} alt={name} draggable={false}
+                        style={{
+                            width: 26, height: 26, objectFit: "contain",
+                            position: "relative", zIndex: 1,
+                            filter: light ? "brightness(0.15) contrast(1.2)" : "none",
+                        }}
+                        onError={() => setImgErr(true)}
+                    />
+                ) : (
+                    <div style={{
+                        width: 26, height: 26, borderRadius: 6,
+                        backgroundColor: "rgba(255,255,255,0.12)",
+                        position: "relative", zIndex: 1,
+                    }} />
+                )}
+
+                {/* Label */}
+                <span style={{
+                    fontSize: 7.5, fontWeight: 800,
+                    color: light ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.85)",
+                    textTransform: "uppercase", letterSpacing: 1.5, lineHeight: 1,
+                    position: "relative", zIndex: 1,
+                    fontFamily: "'Courier New', monospace",
+                }}>
+                    {label}
+                </span>
+            </motion.div>
+        </motion.div>
     );
 }
 
-/* ===== Typewriter Hook ===== */
-function useTypewriter(text, speed = 18) {
-    const [displayed, setDisplayed] = useState("");
-    const [isTyping, setIsTyping] = useState(false);
-    const timeoutRef = useRef(null);
+/* ===== Popup Detail Card ===== */
+function PopupCard({ skill, onClose }) {
+    if (!skill) return null;
+    return (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+                position: "fixed", top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)", zIndex: 1000,
+                width: 300, backgroundColor: "#111118",
+                border: `1px solid ${skill.color}55`, borderRadius: 16,
+                padding: 24, display: "flex", flexDirection: "column",
+                alignItems: "center", gap: 14,
+                boxShadow: `0 0 60px ${skill.color}22, 0 30px 80px rgba(0,0,0,0.6)`,
+            }}
+            onClick={onClose}
+        >
+            <div style={{
+                width: 64, height: 64, borderRadius: 16,
+                backgroundColor: skill.color, display: "flex",
+                alignItems: "center", justifyContent: "center",
+                boxShadow: `0 0 30px ${skill.color}44`,
+            }}>
+                <img
+                    src={ICON(skill.icon)} alt={skill.name} draggable={false}
+                    style={{
+                        width: 36, height: 36, objectFit: "contain",
+                        filter: isLight(skill.color) ? "brightness(0.15)" : "none",
+                    }}
+                />
+            </div>
 
-    const start = useCallback((newText) => {
-        setDisplayed("");
-        setIsTyping(true);
-        let i = 0;
-        const type = () => {
-            if (i < newText.length) {
-                setDisplayed(newText.slice(0, i + 1));
-                i++;
-                timeoutRef.current = setTimeout(type, speed);
-            } else {
-                setIsTyping(false);
-            }
-        };
-        type();
-    }, [speed]);
+            <div style={{ textAlign: "center" }}>
+                <div style={{ color: "#fff", fontSize: 18, fontWeight: 700, letterSpacing: 0.5 }}>{skill.name}</div>
+                <div style={{ color: "#666", fontSize: 12, marginTop: 4 }}>{skill.desc}</div>
+            </div>
+
+            <div style={{ width: "100%" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                    <span style={{ color: "#555", fontSize: 10, letterSpacing: 1, textTransform: "uppercase" }}>Proficiency</span>
+                    <span style={{ color: skill.color, fontSize: 13, fontWeight: 700 }}>{skill.prof}%</span>
+                </div>
+                <div style={{
+                    width: "100%", height: 5, borderRadius: 3,
+                    backgroundColor: "rgba(255,255,255,0.06)", overflow: "hidden",
+                }}>
+                    <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${skill.prof}%` }}
+                        transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                        style={{
+                            height: "100%", borderRadius: 3,
+                            background: `linear-gradient(90deg, ${skill.color}, ${darken(skill.color, 0.3)})`,
+                        }}
+                    />
+                </div>
+            </div>
+        </motion.div>
+    );
+}
+
+/* ===== Left: Typing Terminal ===== */
+const codeSnippets = [
+    "$ git commit -m 'feat: build keyboard UI'",
+    "const skills = await loadSkills();",
+    "app.use(cors(), helmet(), compression());",
+    "docker compose up -d --build",
+    "SELECT * FROM skills ORDER BY level DESC;",
+    "npm run build && npm run preview",
+];
+
+function TypingTerminal() {
+    const [lineIdx, setLineIdx] = useState(0);
+    const [charIdx, setCharIdx] = useState(0);
+    const [showCursor, setShowCursor] = useState(true);
 
     useEffect(() => {
-        return () => {
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        };
+        const line = codeSnippets[lineIdx];
+        if (charIdx < line.length) {
+            const t = setTimeout(() => setCharIdx(c => c + 1), 35 + Math.random() * 25);
+            return () => clearTimeout(t);
+        }
+        const t = setTimeout(() => {
+            setCharIdx(0);
+            setLineIdx((i) => (i + 1) % codeSnippets.length);
+        }, 1800);
+        return () => clearTimeout(t);
+    }, [charIdx, lineIdx]);
+
+    useEffect(() => {
+        const t = setInterval(() => setShowCursor(c => !c), 530);
+        return () => clearInterval(t);
     }, []);
 
-    return { displayed, isTyping, start };
+    return (
+        <div style={{
+            width: 260, backgroundColor: "#0d0d14", borderRadius: 12,
+            border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+        }}>
+            <div style={{
+                display: "flex", gap: 5, padding: "10px 14px",
+                borderBottom: "1px solid rgba(255,255,255,0.04)",
+            }}>
+                <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#f87171" }} />
+                <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#fbbf24" }} />
+                <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#4ade80" }} />
+            </div>
+            <div style={{ padding: "14px 16px", minHeight: 120 }}>
+                {codeSnippets.slice(0, 3).map((_, i) => {
+                    const idx = (lineIdx + i) % codeSnippets.length;
+                    const snippet = codeSnippets[idx];
+                    const isActive = i === 0;
+                    return (
+                        <div key={`${idx}-${i}`} style={{
+                            fontFamily: "'Courier New', monospace",
+                            fontSize: 11, lineHeight: 1.8,
+                            color: isActive ? "#c9a84c" : "rgba(255,255,255,0.15)",
+                            whiteSpace: "nowrap", overflow: "hidden",
+                        }}>
+                            {isActive ? snippet.slice(0, charIdx) : snippet}
+                            {isActive && (
+                                <span style={{
+                                    display: "inline-block", width: 6, height: 13,
+                                    backgroundColor: showCursor ? "#c9a84c" : "transparent",
+                                    marginLeft: 1, verticalAlign: "middle",
+                                    transition: "background-color 0.1s",
+                                }} />
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+/* ===== Right: Category Stats ===== */
+const categories = [
+    { name: "Frontend", count: 8, color: "#5aabbd", icon: "⟨/⟩" },
+    { name: "Backend", count: 6, color: "#4a8a4a", icon: "{ }" },
+    { name: "Tools", count: 5, color: "#c44a32", icon: "⚙" },
+    { name: "Design", count: 2, color: "#6b6fa3", icon: "◆" },
+];
+
+function CategoryStats() {
+    const [hoveredIdx, setHoveredIdx] = useState(null);
+
+    return (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, width: 200 }}>
+            {categories.map((cat, i) => (
+                <motion.div
+                    key={cat.name}
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5 + i * 0.12, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    onMouseEnter={() => setHoveredIdx(i)}
+                    onMouseLeave={() => setHoveredIdx(null)}
+                    style={{
+                        padding: "12px 16px", borderRadius: 10,
+                        backgroundColor: hoveredIdx === i ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.02)",
+                        border: `1px solid ${hoveredIdx === i ? cat.color + "33" : "rgba(255,255,255,0.04)"}`,
+                        transition: "all 0.2s ease", cursor: "default",
+                    }}
+                >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ fontSize: 14, color: cat.color, fontFamily: "monospace" }}>{cat.icon}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: "#aaa", letterSpacing: 0.5 }}>{cat.name}</span>
+                        </div>
+                        <span style={{ fontSize: 18, fontWeight: 800, color: cat.color, fontFamily: "'Courier New', monospace" }}>{cat.count}</span>
+                    </div>
+                    <div style={{
+                        width: "100%", height: 3, borderRadius: 2,
+                        backgroundColor: "rgba(255,255,255,0.04)", overflow: "hidden",
+                    }}>
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${(cat.count / 21) * 100}%` }}
+                            transition={{ duration: 0.8, delay: 0.8 + i * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                            style={{
+                                height: "100%", borderRadius: 2,
+                                background: `linear-gradient(90deg, ${cat.color}88, ${cat.color})`,
+                            }}
+                        />
+                    </div>
+                </motion.div>
+            ))}
+
+            {/* Total badge */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 1.2, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                    marginTop: 4, padding: "10px 16px", borderRadius: 10,
+                    backgroundColor: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    textAlign: "center",
+                }}
+            >
+                <span style={{ fontSize: 10, color: "#555", letterSpacing: 2, textTransform: "uppercase", fontFamily: "monospace" }}>Total Skills</span>
+                <div style={{ fontSize: 28, fontWeight: 900, color: "#e8e8e8", fontFamily: "'Courier New', monospace", lineHeight: 1.2 }}>21</div>
+            </motion.div>
+        </div>
+    );
 }
 
 /* ===== Main Component ===== */
 export default function Skills() {
-    const [activeKey, setActiveKey] = useState(null);
-    const [currentLabel, setCurrentLabel] = useState(null);
-    const { displayed, isTyping, start: startTyping } = useTypewriter(14);
-
-    const handleKeyPress = useCallback((skill) => {
-        setActiveKey(skill.id);
-        setCurrentLabel(skill.label);
-        startTyping(skill.snippet);
-        setTimeout(() => setActiveKey(null), 200);
-    }, [startTyping]);
-
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
-            const skill = skills.find((s) => s.key === e.key.toLowerCase());
-            if (skill) {
-                e.preventDefault();
-                handleKeyPress(skill);
-            }
-        };
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [handleKeyPress]);
+    const sectionRef = useRef(null);
+    const [activeSkill, setActiveSkill] = useState(null);
 
     return (
-        <section id="skills" className="skills">
-            <div className="layout-shell">
-                <ScrollReveal className="skills__header">
-                    <span className="skills__eyebrow">Skills & Tools</span>
-                    <h2 className="skills__title">
-                        Technologies I <span className="skills__title-accent">work with</span>
+        <section id="skills" ref={sectionRef} style={{
+            position: "relative", minHeight: "100vh",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            backgroundColor: "#000", overflow: "hidden", padding: "4rem 0",
+        }}>
+            {/* Ambient glow */}
+            <div style={{
+                position: "absolute", top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 700, height: 500, borderRadius: "50%",
+                background: "radial-gradient(ellipse, rgba(30,30,100,0.2) 0%, transparent 65%)",
+                pointerEvents: "none",
+            }} />
+
+            <ScrollReveal>
+                {/* Title */}
+                <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+                    <h2 style={{
+                        fontSize: "clamp(2.5rem, 5vw, 3.5rem)", fontWeight: 900,
+                        color: "#ccc", fontFamily: "'Courier New', monospace",
+                        letterSpacing: 12, textTransform: "uppercase", margin: 0,
+                        textShadow: "0 2px 0 #999, 0 4px 0 #777, 0 6px 12px rgba(0,0,0,0.4)",
+                    }}>
+                        Skills
                     </h2>
-                    <p className="skills__lead">
-                        Click a keycap or press a key on your keyboard to see it in action.
-                    </p>
-                </ScrollReveal>
+                </div>
 
-                <ScrollReveal className="skills__workspace">
-                    {/* ===== LEFT: Terminal Panel ===== */}
-                    <div className="skills__panel">
-                        <div className="skills__panel-header">
-                            <div className="skills__panel-dots">
-                                <span className="skills__panel-dot skills__panel-dot--red" />
-                                <span className="skills__panel-dot skills__panel-dot--yellow" />
-                                <span className="skills__panel-dot skills__panel-dot--green" />
-                            </div>
-                            <span className="skills__panel-title">
-                                {currentLabel ? `${currentLabel.toLowerCase()}.js` : "portfolio.js"}
-                            </span>
-                            {isTyping && <span className="skills__panel-cursor" />}
-                        </div>
+                {/* Keyboard + Side Panels */}
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "3rem" }}>
+                    {/* Left: Typing Terminal */}
+                    <div style={{ display: "none" }} className="skills-side-panel">
+                        <TypingTerminal />
+                    </div>
+                    <style>{`@media (min-width: 1024px) { .skills-side-panel { display: block !important; } }`}</style>
 
-                        <div className="skills__panel-body">
-                            <AnimatePresence mode="wait">
-                                <motion.pre
-                                    key={currentLabel || "default"}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="skills__panel-code"
-                                >
-                                    <code>{displayed}</code>
-                                </motion.pre>
-                            </AnimatePresence>
-                        </div>
-
-                        <div className="skills__panel-footer">
-                            <span className="skills__panel-hint">
-                                💡 hint: press a key
-                            </span>
+                    <div style={{ perspective: 1200, perspectiveOrigin: "50% 35%" }}>
+                        <div style={{
+                            transform: "rotateX(18deg) rotateY(-3deg)",
+                            transformStyle: "preserve-3d",
+                            display: "inline-flex", flexDirection: "column",
+                            alignItems: "center", gap: rowGap,
+                            padding: "24px 28px",
+                            backgroundColor: "#0a0a0f",
+                            borderRadius: 16,
+                            border: "1px solid rgba(255,255,255,0.04)",
+                            boxShadow: "0 60px 100px -30px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.02) inset",
+                        }}>
+                            {keyboardRows.map((row, rowIdx) => (
+                                <div key={rowIdx} style={{
+                                    display: "flex", gap: keyGap,
+                                    paddingLeft: rowIdx * 8,
+                                }}>
+                                    {row.map((skill, keyIdx) => (
+                                        <Keycap
+                                            key={skill.name}
+                                            skill={skill}
+                                            index={rowIdx * 6 + keyIdx}
+                                            onPopup={setActiveSkill}
+                                        />
+                                    ))}
+                                </div>
+                            ))}
                         </div>
                     </div>
 
-                    {/* ===== RIGHT: Isometric Macropad ===== */}
-                    <div className="skills__keypad-container">
-                        <div className="skills__keypad">
-                            <div className="skills__keypad-plate">
-                                {skills.map((skill) => (
-                                    <Keycap
-                                        key={skill.id}
-                                        skill={skill}
-                                        isActive={activeKey === skill.id}
-                                        onPress={handleKeyPress}
-                                    />
-                                ))}
-                            </div>
-                        </div>
+                    {/* Right: Category Stats */}
+                    <div style={{ display: "none" }} className="skills-side-panel">
+                        <CategoryStats />
                     </div>
-                </ScrollReveal>
-            </div>
+                </div>
+            </ScrollReveal>
+
+            {/* Popup */}
+            <AnimatePresence>
+                {activeSkill && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.6)", zIndex: 999 }}
+                            onClick={() => setActiveSkill(null)}
+                        />
+                        <PopupCard skill={activeSkill} onClose={() => setActiveSkill(null)} />
+                    </>
+                )}
+            </AnimatePresence>
         </section>
     );
 }

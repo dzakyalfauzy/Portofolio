@@ -292,11 +292,11 @@
     padding: 1rem 2.5rem;
     min-height: 3.25rem;
     border-radius: 1rem;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    background-color: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background-color: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    color: #334155;
+    color: #a1a1aa;
     font-weight: 600;
     font-size: 0.875rem;
     line-height: 1;
@@ -305,9 +305,9 @@
 }
 
 .hero__cta-secondary:hover {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-color: rgba(0, 0, 0, 0.15);
-    color: #f5f5f5;
+    color: #EF4444;
+    border-color: rgba(79, 70, 229, 0.3);
+    background-color: rgba(79, 70, 229, 0.06);
 }
 
 .hero__cta-secondary svg {
