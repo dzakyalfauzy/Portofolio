@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import api from "../api";
+import IntroSequence from "../Components/IntroSequence";
 import Hero from "../Components/Hero";
 import About from "../Components/About";
 import Skills from "../Components/Skills";
@@ -43,6 +44,7 @@ export default function Home() {
 
     return (
         <>
+            <IntroSequence />
             <Hero />
             <About />
             <Skills items={data.skills} loading={loading} />

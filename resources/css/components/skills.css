@@ -1,5 +1,5 @@
 /**
- * Skills — 3D Isometric Mechanical Keypad
+ * Skills — True 3D Isometric Mechanical Keypad
  */
 
 .skills {
@@ -52,7 +52,7 @@
 @media (min-width: 640px) { .skills__lead { font-size: 1.125rem; } }
 @media (min-width: 1024px) { .skills__lead { margin-left: 0; margin-right: 0; } }
 
-/* ===== WORKSPACE LAYOUT ===== */
+/* ===== WORKSPACE SPLIT ===== */
 .skills__workspace {
     display: grid;
     grid-template-columns: 1fr;
@@ -62,19 +62,17 @@
 
 @media (min-width: 1024px) {
     .skills__workspace {
-        grid-template-columns: 1fr 1.1fr;
+        grid-template-columns: 1fr 1.15fr;
         gap: 4rem;
     }
 }
 
 @media (min-width: 1280px) {
-    .skills__workspace {
-        gap: 5rem;
-    }
+    .skills__workspace { gap: 5rem; }
 }
 
 /* ============================================
-   LEFT: CODE OUTPUT PANEL (Terminal Style)
+   LEFT: CODE OUTPUT PANEL (Catppuccin Mocha)
    ============================================ */
 
 .skills__panel {
@@ -87,39 +85,29 @@
 }
 
 .skills__panel-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    display: flex; align-items: center; gap: 0.75rem;
     padding: 0.875rem 1.25rem;
     background-color: #181825;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.skills__panel-dots {
-    display: flex;
-    gap: 0.375rem;
-}
+.skills__panel-dots { display: flex; gap: 0.375rem; }
 
 .skills__panel-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+    width: 10px; height: 10px; border-radius: 50%;
 }
 .skills__panel-dot--red { background-color: #f38ba8; }
 .skills__panel-dot--yellow { background-color: #f9e2af; }
 .skills__panel-dot--green { background-color: #a6e3a1; }
 
 .skills__panel-title {
-    color: #6c7086;
-    font-size: 0.75rem;
+    color: #6c7086; font-size: 0.75rem;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 .skills__panel-cursor {
-    width: 8px;
-    height: 14px;
-    background-color: #cdd6f4;
-    border-radius: 1px;
+    width: 8px; height: 14px;
+    background-color: #cdd6f4; border-radius: 1px;
     margin-left: auto;
     animation: cursor-blink 1s step-end infinite;
 }
@@ -131,33 +119,20 @@
 
 .skills__panel-body {
     padding: 1.5rem 1.25rem;
-    min-height: 16rem;
-    max-height: 22rem;
+    min-height: 16rem; max-height: 22rem;
     overflow-y: auto;
 }
-
 @media (min-width: 640px) {
-    .skills__panel-body {
-        padding: 2rem 1.5rem;
-        min-height: 18rem;
-    }
+    .skills__panel-body { padding: 2rem 1.5rem; min-height: 18rem; }
 }
 
 .skills__panel-code {
     margin: 0;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.8125rem;
-    line-height: 1.75;
-    color: #cdd6f4;
-    white-space: pre-wrap;
-    word-break: break-word;
+    font-size: 0.8125rem; line-height: 1.75;
+    color: #cdd6f4; white-space: pre-wrap; word-break: break-word;
 }
-
-@media (min-width: 640px) {
-    .skills__panel-code {
-        font-size: 0.875rem;
-    }
-}
+@media (min-width: 640px) { .skills__panel-code { font-size: 0.875rem; } }
 
 .skills__panel-footer {
     padding: 0.75rem 1.25rem;
@@ -165,91 +140,105 @@
 }
 
 .skills__panel-hint {
-    color: #585b70;
-    font-size: 0.75rem;
+    color: #585b70; font-size: 0.75rem;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 /* ============================================
-   RIGHT: 3D ISOMETRIC KEYPAD
+   RIGHT: TRUE ISOMETRIC MACROPAD
    ============================================ */
 
 .skills__keypad-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2rem 0;
+    padding: 4rem 0;
+    perspective: 1000px;
 }
 
 @media (min-width: 1024px) {
-    .skills__keypad-container {
-        padding: 0;
-    }
+    .skills__keypad-container { padding: 2rem 0; }
 }
 
+/* ===== MACROPAD CASING (thick 3D bezel) ===== */
 .skills__keypad {
-    perspective: 900px;
-    perspective-origin: 50% 40%;
+    transform-style: preserve-3d;
+    transform: rotateX(60deg) rotateY(0deg) rotateZ(-45deg);
+    position: relative;
 }
 
+/* Casing body — the thick slab */
 .skills__keypad-plate {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.75rem;
-    padding: 1.75rem;
-    background: linear-gradient(
-        145deg,
-        #e8e6e1 0%,
-        #d4d2cd 50%,
-        #c8c6c1 100%
-    );
-    border-radius: 1.25rem;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow:
-        0 30px 60px -15px rgba(0, 0, 0, 0.15),
-        0 0 0 1px rgba(255, 255, 255, 0.5) inset,
-        0 -2px 0 0 rgba(0, 0, 0, 0.08) inset;
-    transform: rotateX(25deg) rotateZ(-5deg) rotateY(5deg);
+    gap: 6px;
+    padding: 14px;
+    background: #c8c6c0;
+    border-radius: 6px;
+    position: relative;
     transform-style: preserve-3d;
-    transition: transform 400ms cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-.skills__keypad-plate:hover {
-    transform: rotateX(22deg) rotateZ(-3deg) rotateY(3deg);
+/* Casing top face highlight */
+.skills__keypad-plate::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        transparent 50%,
+        rgba(0, 0, 0, 0.03) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Casing side wall (thick 16px extrusion) */
+.skills__keypad-plate::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 16px;
+    background: #a8a6a0;
+    border-radius: 0 0 6px 6px;
+    transform: translateY(0) translateZ(-16px);
+    transform-origin: bottom center;
 }
 
 /* ============================================
-   TACTILE 3D KEYCAP
+   3D KEYCAP — SOLID BLOCK ARCHITECTURE
    ============================================ */
 
 .skills__keycap {
     position: relative;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
-    width: 5rem;
-    height: 5rem;
-    border-radius: 0.75rem;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--key-color) 12%, #ffffff) 0%,
-        color-mix(in srgb, var(--key-color) 6%, #f8f8f8) 100%
-    );
-    color: var(--key-text);
-    cursor: pointer;
-    outline: none;
+
+    /* Solid brand color face */
+    background-color: var(--key-face);
+    color: #fff;
     font-family: inherit;
-    box-shadow:
-        0 8px 0 0 color-mix(in srgb, var(--key-color) 40%, #888),
-        0 12px 20px -4px rgba(0, 0, 0, 0.12);
-    transform-style: preserve-3d;
-    transition: background 150ms ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    padding: 0;
+
+    /* 3D positioning */
+    transform-style: preserve-3d;
+    transform: translateZ(0px);
+    transition: transform 80ms ease-out;
 }
 
 @media (min-width: 640px) {
@@ -259,75 +248,91 @@
     }
 }
 
-/* Top highlight (light reflection) */
+/* ===== TOP PLASTIC SHINE (reflection band) ===== */
 .skills__keycap::before {
     content: "";
     position: absolute;
-    top: 3px;
-    left: 6px;
-    right: 6px;
+    top: 1px;
+    left: 2px;
+    right: 2px;
     height: 40%;
-    border-radius: 0.5rem 0.5rem 50% 50%;
+    border-radius: 3px 3px 0 0;
     background: linear-gradient(
         180deg,
-        rgba(255, 255, 255, 0.5) 0%,
+        rgba(255, 255, 255, 0.30) 0%,
+        rgba(255, 255, 255, 0.08) 50%,
         transparent 100%
     );
     pointer-events: none;
+    z-index: 2;
 }
 
-/* Bottom edge (3D depth) */
+/* ===== SIDE WALLS (solid 12px extrusion) ===== */
 .skills__keycap::after {
     content: "";
     position: absolute;
-    bottom: -3px;
-    left: 4px;
-    right: 4px;
-    height: 6px;
-    border-radius: 0 0 0.5rem 0.5rem;
-    background: color-mix(in srgb, var(--key-color) 25%, #aaa);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 12px;
+    border-radius: 0 0 4px 4px;
+    background-color: var(--key-wall);
     pointer-events: none;
+    z-index: -1;
 }
 
-.skills__keycap-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    z-index: 1;
+/* ===== ICON ===== */
+.skills__keycap-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    position: relative;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15));
 }
 
 @media (min-width: 640px) {
-    .skills__keycap-label {
-        font-size: 0.8125rem;
-    }
+    .skills__keycap-icon { width: 2rem; height: 2rem; }
 }
 
+.skills__keycap-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* ===== KEY LABEL (tiny letter hint) ===== */
 .skills__keycap-key {
-    font-size: 0.5625rem;
-    font-weight: 500;
-    opacity: 0.5;
+    font-size: 0.5rem;
+    font-weight: 700;
     text-transform: uppercase;
-    z-index: 1;
+    opacity: 0.55;
+    z-index: 3;
+    position: relative;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.02em;
 }
 
 @media (min-width: 640px) {
-    .skills__keycap-key {
-        font-size: 0.625rem;
-    }
+    .skills__keycap-key { font-size: 0.5625rem; }
 }
 
-/* Hover: lift slightly */
-.skills__keycap:hover {
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--key-color) 18%, #ffffff) 0%,
-        color-mix(in srgb, var(--key-color) 10%, #f8f8f8) 100%
-    );
+/* ===== PRESS STATE — Mechanical Click ===== */
+.skills__keycap--pressed,
+.skills__keycap:active {
+    transform: translateZ(-8px);
 }
 
-/* Focus visible ring */
+.skills__keycap--pressed::after,
+.skills__keycap:active::after {
+    height: 4px;
+}
+
+/* ===== FOCUS ===== */
 .skills__keycap:focus-visible {
     outline: 2px solid #4f46e5;
     outline-offset: 2px;
