@@ -97,7 +97,9 @@ export default function IntroSequence() {
             const img = imagesRef.current[idx];
 
             if (ctx && img && img.complete) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#000000";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
                 const imgRatio = img.width / img.height;
                 const canvasRatio = canvas.width / canvas.height;
                 let w, h, x, y;
@@ -128,23 +130,18 @@ export default function IntroSequence() {
         return () => unsub();
     }, [scrollYProgress, isLoading]);
 
-    /* ── 4. Text transforms ── */
+    /* ── 4. Text reveal (single block) ── */
+    const textOp = useTransform(scrollYProgress, [0.05, 0.15, 0.85, 0.95], [0, 1, 1, 0]);
+    const textY = useTransform(scrollYProgress, [0.05, 0.15, 0.85, 0.95], [60, 0, 0, -40]);
+    const textScale = useTransform(scrollYProgress, [0.05, 0.15, 0.85, 0.95], [0.9, 1, 1, 1.05]);
+    const textSpacing = useTransform(scrollYProgress, [0.05, 0.15], ["0.3em", "0.05em"]);
 
-    /* Welcome text: early in the sequence */
-    const welcomeOp = useTransform(scrollYProgress, [0.03, 0.10, 0.18, 0.25], [0, 1, 1, 0]);
-    const welcomeY = useTransform(scrollYProgress, [0.03, 0.10, 0.18, 0.25], [40, 0, 0, -30]);
+    /* Scroll hint */
+    const hintOp = useTransform(scrollYProgress, [0.92, 0.97], [0, 1]);
+    const hintY = useTransform(scrollYProgress, [0.92, 0.97], [10, 0]);
 
-    /* Tagline: mid sequence */
-    const taglineOp = useTransform(scrollYProgress, [0.35, 0.42, 0.52, 0.58], [0, 1, 1, 0]);
-    const taglineY = useTransform(scrollYProgress, [0.35, 0.42, 0.52, 0.58], [40, 0, 0, -30]);
-    const taglineX = useTransform(scrollYProgress, [0.35, 0.42], [-50, 0]);
-
-    /* Scroll down hint: appears at the end (last ~10% of scroll) */
-    const scrollHintOp = useTransform(scrollYProgress, [0.88, 0.94, 0.99, 1.0], [0, 1, 1, 0.3]);
-    const scrollHintY = useTransform(scrollYProgress, [0.88, 0.94], [20, 0]);
-
-    /* Bottom gradient fade */
-    const bottomGrad = useTransform(scrollYProgress, [0.85, 0.95], [0, 1]);
+    /* Bottom fire gradient */
+    const fireGrad = useTransform(scrollYProgress, [0.88, 0.98], [0, 1]);
 
     return (
         <section
@@ -153,9 +150,9 @@ export default function IntroSequence() {
                 position: "relative",
                 height: "400vh",
                 backgroundColor: "#000",
+                zIndex: 99, // Blokir Navbar bawaan awal
             }}
         >
-            {/* Sticky viewport */}
             <div
                 style={{
                     position: "sticky",
@@ -163,6 +160,7 @@ export default function IntroSequence() {
                     height: "100vh",
                     width: "100%",
                     overflow: "hidden",
+                    backgroundColor: "#000"
                 }}
             >
                 {/* Loading overlay */}
@@ -185,7 +183,7 @@ export default function IntroSequence() {
                                 width: "12rem",
                                 height: "3px",
                                 borderRadius: "2px",
-                                backgroundColor: "rgba(255,255,255,0.08)",
+                                backgroundColor: "rgba(239,68,68,0.15)",
                                 overflow: "hidden",
                             }}
                         >
@@ -193,7 +191,7 @@ export default function IntroSequence() {
                                 style={{
                                     height: "100%",
                                     borderRadius: "2px",
-                                    background: "linear-gradient(135deg, #4f46e5, #f43f5e)",
+                                    background: "linear-gradient(90deg, #ef4444, #f97316)",
                                     width: `${pct * 100}%`,
                                     transition: "width 0.15s ease",
                                 }}
@@ -201,10 +199,11 @@ export default function IntroSequence() {
                         </div>
                         <span
                             style={{
-                                color: "rgba(255,255,255,0.35)",
+                                color: "rgba(239,68,68,0.5)",
                                 fontSize: "0.6875rem",
                                 fontFamily: "ui-monospace, monospace",
-                                letterSpacing: "0.15em",
+                                letterSpacing: "0.2em",
+                                textTransform: "uppercase",
                             }}
                         >
                             Loading {Math.round(pct * 100)}%
@@ -233,17 +232,30 @@ export default function IntroSequence() {
                         pointerEvents: "none",
                     }}
                 >
-                    {/* Subtle vignette */}
+                    {/* Cinematic vignette */}
                     <div
                         style={{
                             position: "absolute",
                             inset: 0,
                             background:
-                                "linear-gradient(180deg, rgba(0,0,0,0.15) 0%, transparent 25%, transparent 75%, rgba(0,0,0,0.25) 100%)",
+                                "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)",
                         }}
                     />
 
-                    {/* Welcome */}
+                    {/* Fire glow at bottom */}
+                    <div
+                        style={{
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            height: "30%",
+                            background:
+                                "radial-gradient(ellipse at 50% 100%, rgba(239,68,68,0.08) 0%, transparent 70%)",
+                        }}
+                    />
+
+                    {/* ── Text Block (single reveal) ── */}
                     <motion.div
                         style={{
                             position: "absolute",
@@ -251,141 +263,113 @@ export default function IntroSequence() {
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
-                            justifyContent: "center",
+                            justifyContent: "flex-end",
+                            paddingBottom: "15vh",
                             padding: "2rem",
                             textAlign: "center",
-                            opacity: welcomeOp,
-                            y: welcomeY,
+                            opacity: textOp,
+                            y: textY,
+                            scale: textScale,
                         }}
                     >
-                        <p
+                        <motion.p
                             style={{
-                                fontSize: "clamp(0.875rem, 1.5vw, 1rem)",
-                                fontWeight: 500,
-                                color: "rgba(255,255,255,0.5)",
-                                letterSpacing: "0.2em",
+                                fontSize: "clamp(1.25rem, 2.5vw, 2rem)",
+                                fontWeight: 800,
+                                color: "rgba(255,255,255,0.85)",
+                                letterSpacing: textSpacing,
+                                lineHeight: 1.5,
+                                maxWidth: "48rem",
+                                margin: 0,
                                 textTransform: "uppercase",
-                                margin: "0 0 1rem 0",
+                                fontFamily: "'Bebas Neue', 'Oswald', 'Impact', sans-serif",
+                                textShadow: "0 0 10px rgba(239, 68, 68, 0.4), 0 0 25px rgba(249, 115, 22, 0.2)",
+                            }}
+                        >
+                            <span style={{ color: "#EF4444" }}>Chaos</span> is tamed, and{" "}
+                            <span style={{ color: "#F97316" }}>ideas</span> are forged.
+                        </motion.p>
+
+                        <motion.p
+                            style={{
+                                fontSize: "clamp(4rem, 12vw, 10rem)",
+                                fontWeight: 900,
+                                color: "#fff",
+                                letterSpacing: "0.08em",
+                                lineHeight: 0.9,
+                                maxWidth: "56rem",
+                                margin: "1.5rem 0 0 0",
+                                textTransform: "uppercase",
+                                fontFamily: "'Bebas Neue', 'Oswald', 'Impact', sans-serif",
+                                textShadow:
+                                    "0 0 20px rgba(239, 68, 68, 0.7), 0 0 50px rgba(239, 68, 68, 0.4), 0 0 80px rgba(249, 115, 22, 0.25)",
                             }}
                         >
                             Welcome
-                        </p>
-                        <h1
+                        </motion.p>
+
+                        <span
                             style={{
-                                fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
-                                fontWeight: 800,
-                                color: "#fff",
-                                letterSpacing: "-0.04em",
-                                lineHeight: 1.05,
-                                maxWidth: "60rem",
-                                margin: 0,
-                                textShadow: "0 4px 30px rgba(0,0,0,0.4)",
+                                display: "block",
+                                marginTop: "1.5rem",
+                                width: "6rem",
+                                height: "3px",
+                                background: "linear-gradient(90deg, transparent, #EF4444, #F97316, transparent)",
                             }}
-                        >
-                            to my{" "}
-                            <span
-                                style={{
-                                    background: "linear-gradient(135deg, #818cf8, #c084fc, #f472b6)",
-                                    WebkitBackgroundClip: "text",
-                                    WebkitTextFillColor: "transparent",
-                                }}
-                            >
-                                digital world
-                            </span>
-                        </h1>
+                        />
                     </motion.div>
 
-                    {/* Tagline */}
+                    {/* ── Scroll hint ── */}
                     <motion.div
                         style={{
                             position: "absolute",
-                            inset: 0,
-                            display: "flex",
-                            alignItems: "center",
-                            padding: "2rem clamp(2rem, 5vw, 5rem)",
-                            opacity: taglineOp,
-                            y: taglineY,
-                            x: taglineX,
-                        }}
-                    >
-                        <p
-                            style={{
-                                fontSize: "clamp(1.25rem, 2.8vw, 2.25rem)",
-                                fontWeight: 500,
-                                color: "rgba(255,255,255,0.85)",
-                                letterSpacing: "-0.02em",
-                                lineHeight: 1.4,
-                                maxWidth: "38rem",
-                                margin: 0,
-                                textShadow: "0 2px 20px rgba(0,0,0,0.3)",
-                            }}
-                        >
-                            Crafting immersive experiences
-                            <br />
-                            through{" "}
-                            <span
-                                style={{
-                                    background: "linear-gradient(135deg, #818cf8, #f472b6)",
-                                    WebkitBackgroundClip: "text",
-                                    WebkitTextFillColor: "transparent",
-                                    fontWeight: 700,
-                                }}
-                            >
-                                code & design
-                            </span>
-                            .
-                        </p>
-                    </motion.div>
-
-                    {/* Scroll down hint — appears at the end */}
-                    <motion.div
-                        style={{
-                            position: "absolute",
-                            bottom: "3rem",
+                            bottom: "2.5rem",
                             left: 0,
                             right: 0,
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
-                            gap: "0.75rem",
-                            opacity: scrollHintOp,
-                            y: scrollHintY,
+                            gap: "0.625rem",
+                            opacity: hintOp,
+                            y: hintY,
                         }}
                     >
                         <p
                             style={{
-                                fontSize: "0.8125rem",
+                                fontSize: "0.6875rem",
                                 fontWeight: 500,
-                                color: "rgba(255,255,255,0.6)",
-                                letterSpacing: "0.15em",
+                                color: "rgba(255,255,255,0.45)",
+                                letterSpacing: "0.2em",
                                 textTransform: "uppercase",
                                 margin: 0,
+                                textShadow: "0 0 8px rgba(239,68,68,0.2)",
                             }}
                         >
-                            Scroll down to explore
+                            Scroll down
                         </p>
                         <motion.div
-                            animate={{ y: [0, 8, 0] }}
+                            animate={{ y: [0, 6, 0] }}
                             transition={{
                                 duration: 1.5,
                                 repeat: Infinity,
                                 ease: "easeInOut",
                             }}
                         >
-                            <ChevronDown size={24} color="rgba(255,255,255,0.5)" />
+                            <ChevronDown size={20} color="rgba(239,68,68,0.5)" />
                         </motion.div>
                     </motion.div>
 
-                    {/* Bottom fade */}
+                    {/* Bottom fire fade */}
                     <motion.div
                         style={{
                             position: "absolute",
                             bottom: 0,
                             left: 0,
                             right: 0,
-                            height: "40%",
-                            background: "linear-gradient(to bottom, transparent, #000)",
-                            opacity: bottomGrad,
+                            height: "35%",
+                            background:
+                                "linear-gradient(to bottom, transparent, rgba(0,0,0,0.8))",
+                            opacity: fireGrad,
                         }}
                     />
                 </div>
