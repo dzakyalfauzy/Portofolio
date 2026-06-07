@@ -4,17 +4,17 @@
 
 .app {
     position: relative;
-    background-color: #fdfbf7;
+    background-color: #0a0a0a;
     min-height: 100vh;
     overflow-x: clip;
     width: 100%;
     min-width: 0;
-    color: #334155;
+    color: #d4d4d8;
 }
 
 .app *::selection {
-    background-color: rgb(37 99 235 / 0.2);
-    color: #0f172a;
+    background-color: rgba(239, 68, 68, 0.25);
+    color: #0a0a0a;
 }
 
 .app__content {

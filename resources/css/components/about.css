@@ -6,7 +6,7 @@
     position: relative;
     padding-top: 3rem;
     padding-bottom: 4.5rem;
-    background-color: #fdfbf7;
+    background-color: #0a0a0a;
     overflow: hidden;
 }
 
@@ -38,19 +38,19 @@
 .about__header > * + * { margin-top: 1.25rem; }
 
 .about__eyebrow {
-    display: inline-block; color: #4f46e5;
+    display: inline-block; color: #EF4444;
     font-size: 0.75rem; font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.2em;
 }
 
 .about__title {
-    font-size: 2.25rem; font-weight: 700; color: #0f172a;
+    font-size: 2.25rem; font-weight: 700; color: #f5f5f5;
     letter-spacing: -0.025em; line-height: 1.25;
 }
 @media (min-width: 640px) { .about__title { font-size: 3rem; } }
 
 .about__title-accent {
-    background-image: linear-gradient(135deg, #4f46e5, #f43f5e);
+    background-image: linear-gradient(135deg, #EF4444, #F97316);
     -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
@@ -82,12 +82,12 @@
     position: relative;
     width: 100%; max-width: 280px;
     aspect-ratio: 3 / 4;
-    background: #ffffff;
+    background: #18181b;
     border-radius: 1.25rem;
     border: 1px solid rgba(0, 0, 0, 0.08);
     box-shadow:
         0 20px 40px -12px rgba(0, 0, 0, 0.08),
-        0 8px 16px -8px rgba(0, 0, 0, 0.04);
+        0 8px 16px -8px rgba(255, 255, 255, 0.04);
     cursor: grab;
     overflow: visible;
     display: flex;
@@ -106,7 +106,7 @@
 .about__id-card:hover {
     box-shadow:
         0 24px 48px -12px rgba(79, 70, 229, 0.12),
-        0 12px 24px -8px rgba(0, 0, 0, 0.06);
+        0 12px 24px -8px rgba(255, 255, 255, 0.08);
 }
 
 /* ===== LANYARD ===== */
@@ -125,14 +125,14 @@
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    border: 3px solid #94a3b8;
+    border: 3px solid #71717a;
     background: transparent;
 }
 
 .about__id-lanyard-string {
     width: 2px;
     height: 20px;
-    background: linear-gradient(to bottom, #94a3b8, #cbd5e1);
+    background: linear-gradient(to bottom, #71717a, #cbd5e1);
     border-radius: 1px;
 }
 
@@ -163,14 +163,14 @@
 }
 
 .about__id-name {
-    color: #0f172a;
+    color: #f5f5f5;
     font-weight: 700;
     font-size: 1rem;
     letter-spacing: -0.02em;
 }
 
 .about__id-role {
-    color: #64748b;
+    color: #a1a1aa;
     font-size: 0.75rem;
     font-weight: 500;
     margin-top: 0.125rem;
@@ -179,13 +179,13 @@
 .about__id-divider {
     width: 2rem;
     height: 2px;
-    background: linear-gradient(135deg, #4f46e5, #f43f5e);
+    background: linear-gradient(135deg, #EF4444, #F97316);
     border-radius: 1px;
     margin: 0.5rem auto;
 }
 
 .about__id-org {
-    color: #94a3b8;
+    color: #71717a;
     font-size: 0.6875rem;
     font-weight: 500;
     letter-spacing: 0.02em;
@@ -200,7 +200,7 @@
     display: flex;
     align-items: center;
     gap: 0.375rem;
-    color: #94a3b8;
+    color: #71717a;
     font-size: 0.6875rem;
     font-weight: 500;
     white-space: nowrap;
@@ -232,9 +232,9 @@
     display: flex; flex-direction: column; align-items: center;
     padding: 0.875rem 0.75rem;
     border-radius: 0.75rem;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    background-color: #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: #18181b;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.04);
     transition: all 150ms ease;
 }
 .about__stat:hover {
@@ -243,14 +243,14 @@
 }
 
 .about__stat svg {
-    color: #4f46e5; margin-bottom: 0.375rem;
+    color: #EF4444; margin-bottom: 0.375rem;
 }
 
 .about__stat-value {
-    color: #0f172a; font-weight: 700; font-size: 1.125rem; line-height: 1;
+    color: #f5f5f5; font-weight: 700; font-size: 1.125rem; line-height: 1;
 }
 .about__stat-label {
-    color: #94a3b8; font-size: 10px; margin-top: 0.25rem; text-align: center;
+    color: #71717a; font-size: 10px; margin-top: 0.25rem; text-align: center;
 }
 
 /* ===== TEXT COLUMN ===== */
@@ -274,7 +274,7 @@
 @media (min-width: 1024px) { .about__bio p { margin-left: 0; margin-right: 0; } }
 
 .about__bio-lead { color: #334155; }
-.about__bio-muted { color: #64748b; }
+.about__bio-muted { color: #a1a1aa; }
 
 /* ===== HIGHLIGHTS ===== */
 .about__highlights {
@@ -286,9 +286,9 @@
 
 .about__highlight {
     padding: 1.5rem; border-radius: 1rem;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    background-color: #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: #18181b;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.03);
     transition: all 200ms ease;
 }
 @media (min-width: 640px) { .about__highlight { padding: 2rem; } }
@@ -307,19 +307,19 @@
 
 .about__highlight-num {
     flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 0.5rem;
-    background: linear-gradient(135deg, #4f46e5, #f43f5e);
+    background: linear-gradient(135deg, #EF4444, #F97316);
     display: flex; align-items: center; justify-content: center;
-    color: #ffffff; font-size: 0.875rem; font-weight: 700;
+    color: #18181b; font-size: 0.875rem; font-weight: 700;
 }
 
 .about__highlight-body { min-width: 0; }
 .about__highlight-title {
-    color: #0f172a; font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem;
+    color: #f5f5f5; font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem;
     transition: color 150ms ease;
 }
-.about__highlight:hover .about__highlight-title { color: #4f46e5; }
+.about__highlight:hover .about__highlight-title { color: #EF4444; }
 .about__highlight-desc {
-    color: #64748b; font-size: 0.875rem; line-height: 1.625;
+    color: #a1a1aa; font-size: 0.875rem; line-height: 1.625;
 }
 @media (min-width: 640px) { .about__highlight-desc { font-size: 1rem; } }
 
@@ -329,7 +329,7 @@
     box-sizing: border-box; display: inline-flex; align-items: center;
     justify-content: center; gap: 0.75rem; flex-shrink: 0; white-space: nowrap;
     padding: 1rem 2.5rem; min-height: 3.25rem; border-radius: 1rem;
-    background-image: linear-gradient(135deg, #4f46e5, #f43f5e);
+    background-image: linear-gradient(135deg, #EF4444, #F97316);
     color: #fff; font-weight: 600; font-size: 0.875rem; line-height: 1;
     text-decoration: none;
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);

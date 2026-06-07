@@ -93,7 +93,7 @@ export default function Contact() {
                                     <motion.div
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: "auto" }}
-                                        className="mb-4 flex items-center gap-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20 p-3 text-sm text-indigo-600"
+                                        className="mb-4 flex items-center gap-2 rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400"
                                     >
                                         <CheckCircle2 size={16} className="shrink-0" />
                                         <span>Thank you! Your message has been sent successfully.</span>
