@@ -1,9 +1,11 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, ChevronDown, ChevronUp } from "lucide-react";
 import { ScrollReveal } from "../utils/scroll";
 import CertificateCard from "./CertificateCard";
 import "../../css/components/certificates.css";
+
+const INITIAL_COUNT = 6;
 
 function CertificateSkeleton({ span2 }) {
     return (
@@ -22,6 +24,8 @@ function CertificateSkeleton({ span2 }) {
 
 export default function Certificates({ items = [], loading = false }) {
     const sectionRef = useRef(null);
+    const [showAll, setShowAll] = useState(false);
+    const visibleItems = showAll ? items : items.slice(0, INITIAL_COUNT);
 
     return (
         <section id="certificates" ref={sectionRef} className="certificates">
@@ -53,7 +57,7 @@ export default function Certificates({ items = [], loading = false }) {
                             <CertificateSkeleton />
                         </>
                     ) : (
-                        items.map((cert, i) => (
+                        visibleItems.map((cert, i) => (
                             <ScrollReveal
                                 key={cert.id || cert.credential}
                                 className={i < 2 ? "cert-bento__item cert-bento__item--wide" : "cert-bento__item"}
@@ -67,6 +71,28 @@ export default function Certificates({ items = [], loading = false }) {
                         ))
                     )}
                 </div>
+
+                {/* See More / See Less */}
+                {!loading && items.length > INITIAL_COUNT && (
+                    <motion.button
+                        onClick={() => setShowAll(!showAll)}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        style={{
+                            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                            margin: "2.5rem auto 0", padding: "0.75rem 2rem",
+                            borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)",
+                            background: "rgba(255,255,255,0.04)", color: "#a1a1aa",
+                            fontSize: "0.875rem", fontWeight: 600, cursor: "pointer",
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(79,70,229,0.2)"; e.currentTarget.style.color = "#EF4444"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#a1a1aa"; }}
+                    >
+                        <span>{showAll ? "Show Less" : `Show All (${items.length})`}</span>
+                        {showAll ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </motion.button>
+                )}
 
                 {!loading && items.length === 0 && (
                     <p className="mt-20 text-center text-[#94a3b8]">
