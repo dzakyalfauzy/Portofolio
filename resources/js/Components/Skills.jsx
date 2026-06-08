@@ -11,7 +11,7 @@ extend({ RoundedBoxGeometry });
 const ICON = (icon) => `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${icon}.svg`;
 
 const visualMap = {
-    react:            { label: "React",    color: "#5aabbd", icon: "react/react-original",            desc: "Frontend UI library",      prof: 90 },
+    react:            { label: "React",    color: "#5aabbd", icon: "react/react-original",             desc: "Frontend UI library",      prof: 90 },
     nextdotjs:        { label: "Next",     color: "#555555", icon: "nextjs/nextjs-original",           desc: "React meta-framework",      prof: 80 },
     vuejs:            { label: "Vue",      color: "#5a9e6f", icon: "vuejs/vuejs-original",             desc: "Progressive framework",     prof: 75 },
     html5:            { label: "HTML",     color: "#c46a3c", icon: "html5/html5-original",             desc: "Markup language",           prof: 95 },
@@ -63,12 +63,12 @@ function mapSkill(skill) {
 }
 
 /* ── KEY CONSTANTS ─────────────────────────────────── */
-const KEY_SIZE       = 0.60;   // ukuran keycap
-const KEY_GAP        = 0.10;   // jarak antar key
+const KEY_SIZE       = 0.60;   
+const KEY_GAP        = 0.10;   
 const KEYCAP_TOP     = 0.13;
 const CHASSIS_HEIGHT = 0.26;
-const CHASSIS_PAD    = 0.30;   // padding chassis lebih besar agar keliatan seperti foto
-const COLS           = 6;      // kolom per baris — FIXED, tidak berubah
+const CHASSIS_PAD    = 0.30;   
+const COLS           = 6;      
 
 /* ── Single keycap ─────────────────────────────────── */
 function Key3D({ skill, position, onPopup }) {
@@ -90,17 +90,14 @@ function Key3D({ skill, position, onPopup }) {
 
     return (
         <group position={position}>
-            {/* recess */}
             <mesh position={[0, KEYCAP_TOP - 0.015, 0]}>
                 <boxGeometry args={[KEY_SIZE + 0.015, 0.018, KEY_SIZE + 0.015]} />
                 <meshStandardMaterial color="#080810" roughness={0.95} />
             </mesh>
-            {/* side depth */}
             <mesh position={[0, KEYCAP_TOP / 2, 0]}>
                 <boxGeometry args={[KEY_SIZE, KEYCAP_TOP, KEY_SIZE]} />
                 <meshStandardMaterial color={darkClr} roughness={0.55} metalness={0.12} />
             </mesh>
-            {/* top face */}
             <mesh
                 ref={meshRef}
                 position={[0, KEYCAP_TOP + 0.01, 0]}
@@ -117,7 +114,6 @@ function Key3D({ skill, position, onPopup }) {
                     envMapIntensity={hovered ? 1.8 : 1.0}
                 />
             </mesh>
-            {/* icon + label */}
             <Html position={[0, KEYCAP_TOP + 0.09, 0]} center distanceFactor={4}
                 style={{ pointerEvents: "none", userSelect: "none" }} transform occlude={false}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: KEY_SIZE * 80 }}>
@@ -150,13 +146,11 @@ function KeyboardChassis({ cols, rows }) {
                 position={[0, CHASSIS_HEIGHT / 2 - 0.06, 0]} castShadow receiveShadow>
                 <meshStandardMaterial color="#181820" roughness={0.68} metalness={0.18} envMapIntensity={0.6} />
             </RoundedBox>
-            {/* inner bed */}
             <RoundedBox args={[w + 0.06, 0.04, d + 0.06]}
                 radius={0.05} smoothness={4}
                 position={[0, CHASSIS_HEIGHT - 0.035, 0]} receiveShadow>
                 <meshStandardMaterial color="#0c0c14" roughness={0.97} metalness={0} />
             </RoundedBox>
-            {/* edge highlight strip */}
             <mesh position={[0, CHASSIS_HEIGHT, 0]}>
                 <boxGeometry args={[w + CHASSIS_PAD * 2 - 0.02, 0.004, d + CHASSIS_PAD * 2 - 0.02]} />
                 <meshStandardMaterial color="#28283a" roughness={0.45} metalness={0.25} transparent opacity={0.55} />
@@ -165,11 +159,10 @@ function KeyboardChassis({ cols, rows }) {
     );
 }
 
-/* ── Full keyboard — PURE GRID, no stagger ────────── */
+/* ── Full keyboard ─────────────────────────────────── */
 function KeyboardScene({ skills, onPopup }) {
     const groupRef = useRef();
 
-    /* Pad ke kelipatan COLS agar grid persegi sempurna */
     const paddedSkills = useMemo(() => {
         const arr = [...skills];
         while (arr.length % COLS !== 0)
@@ -178,25 +171,15 @@ function KeyboardScene({ skills, onPopup }) {
     }, [skills]);
 
     const numRows = Math.ceil(paddedSkills.length / COLS);
-
-    /* Total dimensi keyboard */
     const kbW = COLS    * (KEY_SIZE + KEY_GAP) - KEY_GAP;
     const kbD = numRows * (KEY_SIZE + KEY_GAP) - KEY_GAP;
-
-    /* Titik awal X & Z (pojok kiri-atas grid) */
     const startX = -(kbW / 2) + KEY_SIZE / 2;
     const startZ = -(kbD / 2) + KEY_SIZE / 2;
 
     return (
-        /*
-         * rotation.x = -0.45 rad (~26°):
-         *   bagian belakang keyboard naik, memberi kesan perspektif trapezoid
-         *   persis seperti foto referensi
-         * scale 1.85: keyboard besar hampir memenuhi layar
-         */
-        <group ref={groupRef} position={[0, -0.2, 0]} rotation={[-0.72, 0, 0]} scale={[1.85, 1.85, 1.85]}>
+        <group ref={groupRef} position={[0, 0, 0]} rotation={[-0.25, 0, 0]} scale={[1.85, 1.85, 1.85]}>
             <KeyboardChassis cols={COLS} rows={numRows} />
-            {paddedSkills.map((skill, i) => {
+            ={paddedSkills.map((skill, i) => {
                 if (skill._empty) return null;
                 const col = i % COLS;
                 const row = Math.floor(i / COLS);
@@ -264,7 +247,7 @@ function DragCursor() {
     return null;
 }
 
-/* ── Zoom controller — gerakkan kamera sesuai zoomLevel ── */
+/* ── Zoom controller ───────────────────────────────── */
 function ZoomController({ zoomLevel }) {
     const { camera } = useThree();
 
@@ -280,7 +263,8 @@ function ZoomController({ zoomLevel }) {
 /* ── Main export ───────────────────────────────────── */
 export default function Skills({ items = [], loading = false }) {
     const [activeSkill, setActiveSkill] = useState(null);
-    const [zoomLevel, setZoomLevel] = useState(1.6);
+    
+    const [zoomLevel, setZoomLevel] = useState(0.8);
 
     const mappedSkills = useMemo(() => {
         if (items?.length > 0) return items.map(mapSkill);
@@ -299,7 +283,6 @@ export default function Skills({ items = [], loading = false }) {
             overflow: "visible",
             padding: 0,
         }}>
-            {/* ── Ambient glow — cahaya dari tengah ── */}
             <div style={{
                 position: "absolute", top: "40%", left: "50%",
                 transform: "translate(-50%,-50%)",
@@ -307,7 +290,6 @@ export default function Skills({ items = [], loading = false }) {
                 background: "radial-gradient(ellipse, rgba(255,255,255,0.08) 0%, rgba(180,160,255,0.06) 20%, rgba(80,60,180,0.04) 40%, transparent 65%)",
                 pointerEvents: "none", filter: "blur(50px)", zIndex: 0,
             }} />
-            {/* ── Warm light pool ── */}
             <div style={{
                 position: "absolute", top: "55%", left: "50%",
                 transform: "translate(-50%,-50%)",
@@ -318,12 +300,15 @@ export default function Skills({ items = [], loading = false }) {
 
             {/* title */}
             <ScrollReveal>
-                <div style={{ textAlign: "center", marginBottom: "1.5rem", position: "relative", zIndex: 2 }}>
+                <div style={{ textAlign: "center", marginBottom: "0.5rem", position: "relative", zIndex: 2 }}>
                     <h2 style={{ fontSize: "clamp(2.5rem,5vw,3.5rem)", fontWeight: 900, color: "#ccc", fontFamily: "'Courier New',monospace", letterSpacing: 12, textTransform: "uppercase", margin: 0, textShadow: "0 2px 0 #999,0 4px 0 #777,0 6px 12px rgba(0,0,0,0.4)" }}>
                         Skills
                     </h2>
                     <p style={{ fontSize: 14, color: "#555", letterSpacing: 4, textTransform: "uppercase", marginTop: 8, fontFamily: "'Courier New',monospace" }}>
                         Technologies & Tools
+                    </p>
+                    <p style={{ fontSize: 12, color: "#999", letterSpacing: "0.1em", fontFamily: "'Courier New',monospace", marginTop: 6, userSelect: "none", textShadow: "0 1px 6px rgba(0,0,0,0.9), 0 0 20px rgba(200,160,255,0.15)" }}>
+                        🖱 hold & drag to rotate · right-click + drag to pan
                     </p>
                 </div>
             </ScrollReveal>
@@ -340,7 +325,7 @@ export default function Skills({ items = [], loading = false }) {
             }}>
                 <Canvas
                     shadows
-                    camera={{ position: [0, 3.8, 7.0], fov: 58, near: 0.1, far: 100 }}
+                    camera={{ position: [0, 3.5, 6.5], fov: 55, near: 0.1, far: 100 }}
                     gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
                     style={{ width: "100%", height: "100%", background: "transparent" }}
                 >
@@ -353,7 +338,6 @@ export default function Skills({ items = [], loading = false }) {
                         <directionalLight position={[-4, 5, -3]} intensity={0.45} color="#8090ff" />
                         <pointLight position={[0, 4, 2]} intensity={0.35} color="#c8a0ff" />
 
-                        {/* ── Center spotlight — cahaya dari atas tengah ke keyboard ── */}
                         <spotLight
                             position={[0, 8, 0]}
                             angle={0.45}
@@ -364,7 +348,6 @@ export default function Skills({ items = [], loading = false }) {
                             distance={20}
                             decay={1.5}
                         />
-                        {/* ── Warm rim light dari belakang ── */}
                         <spotLight
                             position={[0, 3, -6]}
                             angle={0.5}
@@ -380,7 +363,6 @@ export default function Skills({ items = [], loading = false }) {
                         <ContactShadows position={[0, -1.5, 0]} opacity={0.55} scale={30} blur={4} far={10} color="#000020" />
                         <Environment preset="night" />
                         <ZoomController zoomLevel={zoomLevel} />
-                        {/* OrbitControls: drag putar, right-click geser */}
                         <OrbitControls
                             makeDefault
                             enableDamping
@@ -420,14 +402,16 @@ export default function Skills({ items = [], loading = false }) {
                 <span style={{ fontSize: 10, color: "#555", fontFamily: "'Courier New',monospace", letterSpacing: 1, userSelect: "none" }}>-</span>
                 <input
                     type="range"
-                    min="0.8"
+                    // 🔴 UBAH DI SINI: Nilai min diturunkan ke 0.5 agar selaras dengan state awal zoom level Anda
+                    min="0.5"
                     max="3.5"
                     step="0.05"
                     value={zoomLevel}
                     onChange={e => setZoomLevel(parseFloat(e.target.value))}
                     style={{
                         width: 120, height: 4, appearance: "none", WebkitAppearance: "none",
-                        background: `linear-gradient(to right, #c8a0ff ${(zoomLevel - 0.5) / 2 * 100}%, rgba(255,255,255,0.08) ${(zoomLevel - 0.5) / 2 * 100}%)`,
+                        // 🔴 UBAH DI SINI: Rumus progress warna track diubah agar presisi mulai dari batas bawah 0.5
+                        background: `linear-gradient(to right, #c8a0ff ${((zoomLevel - 0.5) / (3.5 - 0.5)) * 100}%, rgba(255,255,255,0.08) ${((zoomLevel - 0.5) / (3.5 - 0.5)) * 100}%)`,
                         borderRadius: 2, outline: "none", cursor: "pointer",
                     }}
                 />
@@ -436,11 +420,6 @@ export default function Skills({ items = [], loading = false }) {
                     {Math.round(zoomLevel * 100)}%
                 </span>
             </div>
-
-            {/* hint */}
-            <p style={{ fontSize: 11, color: "#333", letterSpacing: "0.15em", fontFamily: "'Courier New',monospace", marginTop: 10, position: "relative", zIndex: 2, userSelect: "none" }}>
-                🖱 drag to rotate · right-click to pan
-            </p>
 
             <AnimatePresence>
                 {activeSkill && (

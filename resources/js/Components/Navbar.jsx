@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+// 1. Tambahkan useScroll dan useMotionValueEvent ke import Framer Motion
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import "../../css/components/navbar.css";
 
@@ -33,6 +34,37 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [activeSection, setActiveSection] = useState("home");
     const isHome = location.pathname === "/";
+
+    // 2. State baru untuk nampilin/nyembunyiin Navbar
+    const [showNavbar, setShowNavbar] = useState(() => !isHome);
+    
+    // 3. Ambil posisi scroll menggunakan Framer Motion
+    const { scrollY } = useScroll();
+
+    // Pastikan jika pindah halaman (bukan home), navbar selalu muncul
+    useEffect(() => {
+        if (!isHome) {
+            setShowNavbar(true);
+        } else {
+            // Cek posisi awal saat mount kalau user kebetulan refresh di tengah jalan
+            const threshold = window.innerHeight * 4;
+            setShowNavbar(window.scrollY > threshold);
+        }
+    }, [isHome]);
+
+    // 4. Deteksi scroll untuk nampilin/nyembunyiin Navbar (Khusus di Home)
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        if (!isHome) return; // Kalau bukan di Home, abaikan efek sembunyi ini
+
+        const threshold = window.innerHeight * 4; // 400vh (saat IntroSequence / Hero mau beres)
+        
+        if (latest > threshold) {
+            setShowNavbar(true);
+        } else {
+            setShowNavbar(false);
+            if (isOpen) setIsOpen(false); // (Opsional) Tutup menu mobile jika user scroll naik ke Abyss
+        }
+    });
 
     useEffect(() => {
         if (!isHome) return undefined;
@@ -127,11 +159,16 @@ export default function Navbar() {
 
     return (
         <>
+            {/* 5. Update Animasi Header untuk Slide Up/Down berdasarkan state showNavbar */}
             <motion.header
                 initial={{ y: -80, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
+                animate={{ 
+                    y: showNavbar ? 0 : -100, // Sembunyi naik ke -100px
+                    opacity: showNavbar ? 1 : 0 
+                }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="navbar-wrap"
+                style={{ pointerEvents: showNavbar ? "auto" : "none" }} // Biar gak bisa di-klik pas ngumpet
             >
                 <nav className={`navbar ${scrolled ? "navbar--scrolled" : "navbar--top"}`}>
                     <div className="navbar__inner">

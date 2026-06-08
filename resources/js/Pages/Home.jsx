@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import api from "../api";
 import IntroSequence from "../Components/IntroSequence";
-import Hero from "../Components/Hero";
+// ❌ HAPUS: import Hero from "../Components/Hero"; (Sudah dipindah ke dalam IntroSequence)
 import About from "../Components/About";
 import Skills from "../Components/Skills";
 import Projects from "../Components/Projects";
@@ -21,7 +21,6 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Load dynamic data from the backend portfolio-data endpoint
         api.get("/portfolio-data")
             .then((res) => {
                 setData(res.data);
@@ -45,7 +44,7 @@ export default function Home() {
     return (
         <>
             <IntroSequence />
-            <Hero />
+            
             <About />
             <Skills items={data.skills} loading={loading} />
             <Projects items={data.projects} loading={loading} />

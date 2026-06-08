@@ -1,14 +1,14 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import Hero from "./Hero";
 
 const TOTAL = 191;
 const PREFIX = "/sequence/ezgif-frame-";
 const EXT = ".png";
 
-/* ===== Cover-fit draw ===== */
 function drawCover(ctx, canvas, img) {
-    if (!img) return;
+    if (!img || !img.complete || img.naturalWidth === 0) return;
     const imgRatio = img.naturalWidth / img.naturalHeight;
     const canvasRatio = canvas.width / canvas.height;
     let w, h, x, y;
@@ -21,23 +21,6 @@ function drawCover(ctx, canvas, img) {
     ctx.drawImage(img, x, y, w, h);
 }
 
-/**
- * IntroSequence — scroll-driven canvas + Hero slide-up
- *
- * Architecture:
- *   ┌──────────────────────────┐ ← scroll track (500vh)
- *   │  sticky viewport (100vh) │ ← pinned during scroll
- *   │  ┌──────────────────┐    │
- *   │  │ Canvas (z:1)     │    │ ← image sequence frames
- *   │  │ Text overlays    │    │ ← animated text
- *   │  └──────────────────┘    │
- *   └──────────────────────────┘
- *   ↓ scroll continues ↓
- *   ┌──────────────────────────┐
- *   │ Hero (z:10, fixed)       │ ← slides up from y:100vh
- *   │ (children prop)          │    covers canvas at phase 3
- *   └──────────────────────────┘
- */
 export default function IntroSequence() {
     const masterRef = useRef(null);
     const canvasRef = useRef(null);
@@ -46,25 +29,8 @@ export default function IntroSequence() {
     const rafRef = useRef(null);
 
     const [isReady, setIsReady] = useState(false);
+    const [frame0Ready, setFrame0Ready] = useState(false);
 
-    /* ── 1. Preload all frames ── */
-    useEffect(() => {
-        let loaded = 0;
-        const imgs = [];
-        for (let i = 0; i < TOTAL; i++) {
-            const padded = String(i + 1).padStart(3, "0");
-            const img = new Image();
-            img.src = `${PREFIX}${padded}${EXT}`;
-            img.onload = img.onerror = () => {
-                loaded++;
-                if (loaded === TOTAL) setIsReady(true);
-            };
-            imgs[i] = img;
-        }
-        imagesRef.current = imgs;
-    }, []);
-
-    /* ── 2. Canvas DPR + resize ── */
     const updateCanvasSize = useCallback(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -73,172 +39,295 @@ export default function IntroSequence() {
         canvas.height = window.innerHeight * dpr;
     }, []);
 
+    /* ── Preload Frame 01 ── */
     useEffect(() => {
-        if (!isReady) return;
         updateCanvasSize();
-        const ctx = canvasRef.current?.getContext("2d");
-        if (ctx) drawCover(ctx, canvasRef.current, imagesRef.current[0]);
-        lastFrameRef.current = 0;
+        const first = new Image();
+        first.src = `${PREFIX}001${EXT}`;
+        
+        first.onload = () => {
+            const canvas = canvasRef.current;
+            const ctx = canvas?.getContext("2d");
+            if (canvas && ctx) {
+                updateCanvasSize();
+                drawCover(ctx, canvas, first);
+                lastFrameRef.current = 0;
+                imagesRef.current[0] = first;
+                setFrame0Ready(true);
+            }
+        };
+        first.onerror = () => {
+            console.error("Gagal memuat frame pertama.");
+            setFrame0Ready(true); 
+        };
+    }, [updateCanvasSize]);
 
+    /* ── Preload Sisa Frame ── */
+    useEffect(() => {
+        if (!frame0Ready) return;
+        const imgs = imagesRef.current;
+        let loaded = 1;
+        for (let i = 1; i < TOTAL; i++) {
+            const padded = String(i + 1).padStart(3, "0");
+            const img = new Image();
+            img.src = `${PREFIX}${padded}${EXT}`;
+            img.onload = img.onerror = () => {
+                imgs[i] = img;
+                loaded++;
+                if (loaded === TOTAL) setIsReady(true);
+            };
+            imgs[i] = img;
+        }
+    }, [frame0Ready]);
+
+    /* ── Handle Window Resize ── */
+    useEffect(() => {
         const onResize = () => {
             updateCanvasSize();
-            const idx = lastFrameRef.current;
-            if (idx >= 0) {
-                const ctx = canvasRef.current?.getContext("2d");
-                if (ctx) drawCover(ctx, canvasRef.current, imagesRef.current[idx]);
+            const idx = Math.max(0, lastFrameRef.current);
+            const img = imagesRef.current[idx];
+            if (img) {
+                const canvas = canvasRef.current;
+                const ctx = canvas?.getContext("2d");
+                if (canvas && ctx) drawCover(ctx, canvas, img);
             }
         };
         window.addEventListener("resize", onResize);
         return () => window.removeEventListener("resize", onResize);
-    }, [isReady, updateCanvasSize]);
+    }, [updateCanvasSize]);
 
-    /* ── 3. Scroll timeline ── */
+    /* ── Scroll Setup ── */
     const { scrollYProgress } = useScroll({
         target: masterRef,
         offset: ["start start", "end end"],
     });
 
-    /* Phase 1 (0–78%): image sequence 0→191 */
-    const frameIndex = useTransform(scrollYProgress, [0, 0.78], [0, TOTAL - 1]);
+    // ── TIMELINE ANIMASI (Teratur & Anti Tumpang Tindih) ──
+    
+    // 1. Welcome Screen: Hilang di awal scroll (0.0 -> 0.08)
+    const welcomeOp = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
+    const welcomeY = useTransform(scrollYProgress, [0, 0.08], [0, -100]);
+    // Mencegah Welcome Screen memblokir klik/interaksi saat sudah transparan
+    const welcomePointer = useTransform(scrollYProgress, (v) => v > 0.08 ? "none" : "auto");
+    const welcomeVisibility = useTransform(scrollYProgress, (v) => v > 0.09 ? "hidden" : "visible");
 
-    /* Phase 3 (82–100%): canvas fades to black */
-    const fadeOut = useTransform(scrollYProgress, [0.88, 1.0], [1, 0]);
+    // 2. Jalannya Gambar Sequence: Berputar dari scroll 0.08 sampai 0.80
+    const frameIndex = useTransform(scrollYProgress, [0.08, 0.80], [0, TOTAL - 1]);
 
-    /* Render frame to canvas on scroll */
+    // 3. Teks Overlay Dzaky: Muncul setelah welcome screen bersih (0.15 -> 0.72)
+    const textOp = useTransform(scrollYProgress, [0.15, 0.23, 0.60, 0.72], [0, 1, 1, 0]);
+    const textY  = useTransform(scrollYProgress, [0.15, 0.23, 0.60, 0.72], [60, 0, 0, -40]);
+
+    // 4. Petunjuk Abyss: Muncul di akhir video (0.75 -> 0.82)
+    const hintOp = useTransform(scrollYProgress, [0.75, 0.82], [0, 1]);
+    const hintY  = useTransform(scrollYProgress, [0.75, 0.82], [10, 0]);
+
+    // 5. Hero Section: Meluncur naik menutup sequence di paling akhir (0.85 -> 1.0)
+    const heroY = useTransform(scrollYProgress, [0.85, 1.0], ["100vh", "0vh"]);
+
+    /* ── Loop Rerender Canvas via Scroll ── */
     useEffect(() => {
-        if (!isReady) return;
         const unsub = frameIndex.on("change", (val) => {
             const idx = Math.round(Math.max(0, Math.min(TOTAL - 1, val)));
             if (idx === lastFrameRef.current) return;
             lastFrameRef.current = idx;
+            
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
             rafRef.current = requestAnimationFrame(() => {
                 const canvas = canvasRef.current;
                 const ctx = canvas?.getContext("2d");
                 const img = imagesRef.current[idx];
-                if (canvas && ctx && img) drawCover(ctx, canvas, img);
+                
+                if (canvas && ctx && img && img.complete) {
+                    drawCover(ctx, canvas, img);
+                }
             });
         });
-        return () => { unsub(); if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-    }, [isReady, frameIndex]);
-
-    /* ── 4. Text transforms ── */
-    const textOp = useTransform(scrollYProgress, [0.05, 0.12, 0.60, 0.72], [0, 1, 1, 0]);
-    const textY = useTransform(scrollYProgress, [0.05, 0.12, 0.60, 0.72], [60, 0, 0, -40]);
-    const hintOp = useTransform(scrollYProgress, [0.85, 0.92], [0, 1]);
-    const hintY = useTransform(scrollYProgress, [0.85, 0.92], [10, 0]);
+        return () => {
+            unsub();
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        };
+    }, [frameIndex]);
 
     return (
-        <>
-            {/* ─── SCROLL TRACK ─── */}
+        <div
+            ref={masterRef}
+            style={{ position: "relative", height: "500vh", backgroundColor: "#000" }}
+        >
             <div
-                ref={masterRef}
-                style={{ position: "relative", height: "500vh", backgroundColor: "#000" }}
+                style={{
+                    position: "sticky",
+                    top: 0,
+                    height: "100vh",
+                    width: "100%",
+                    overflow: "hidden",
+                    backgroundColor: "#000",
+                }}
             >
-                {/* Pinned viewport — stays locked while scrolling */}
-                <div
+                {/* LAYER 1: Canvas Rangkaian Foto */}
+                <canvas
+                    ref={canvasRef}
                     style={{
-                        position: "sticky", top: 0,
-                        height: "100vh", width: "100%",
-                        overflow: "hidden", backgroundColor: "#000",
+                        display: "block",
+                        position: "absolute",
+                        top: 0, left: 0,
+                        width: "100%", height: "100%",
+                        zIndex: 1,
+                        backgroundColor: "#000",
+                    }}
+                />
+
+                {/* LAYER 2: Welcome Screen (Sekarang dikontrol penuh oleh Scroll Progress) */}
+                <motion.div
+                    style={{
+                        position: "absolute",
+                        inset: 0,
+                        zIndex: 15, // Di atas canvas, tapi di bawah Hero
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "#000",
+                        opacity: welcomeOp,
+                        y: welcomeY,
+                        pointerEvents: welcomePointer,
+                        visibility: welcomeVisibility,
                     }}
                 >
-                    {/* Canvas */}
-                    <canvas
-                        ref={canvasRef}
+                    <motion.div
+                        initial={{ scaleX: 0, opacity: 0 }}
+                        animate={{ scaleX: 1, opacity: 1 }}
+                        transition={{ duration: 1.0, delay: 0.2 }}
                         style={{
-                            display: "block", position: "absolute",
-                            top: 0, left: 0, width: "100%", height: "100%", zIndex: 1,
+                            width: "1px",
+                            height: "80px",
+                            background: "linear-gradient(to bottom, transparent, rgba(239,68,68,0.6))",
+                            marginBottom: "2.5rem",
                         }}
                     />
 
-                    {/* Text overlays */}
-                    <div style={{ position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none" }}>
-                        <div style={{
-                            position: "absolute", inset: 0,
-                            background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)",
-                        }} />
+                    <p style={{
+                        fontSize: "0.7rem", fontWeight: 500,
+                        color: "rgba(239,68,68,0.55)", letterSpacing: "0.35em",
+                        textTransform: "uppercase", fontFamily: "'Courier New', monospace",
+                        margin: "0 0 1.2rem 0",
+                    }}>
+                        Portfolio — 2026
+                    </p>
 
-                        <motion.div
-                            initial={{ opacity: 0, y: 80 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                            style={{
-                                position: "absolute", inset: 0,
-                                display: "flex", flexDirection: "column",
-                                alignItems: "center", justifyContent: "flex-end",
-                                paddingBottom: "15vh", padding: "2rem", textAlign: "center",
-                                opacity: textOp, y: textY,
-                            }}
-                        >
-                            <motion.p
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                                style={{
-                                    fontSize: "clamp(1.25rem, 2.5vw, 2rem)", fontWeight: 800,
-                                    color: "rgba(255,255,255,0.85)", letterSpacing: "0.05em",
-                                    lineHeight: 1.5, maxWidth: "48rem", margin: 0, textTransform: "uppercase",
-                                    fontFamily: "'Bebas Neue', 'Oswald', 'Impact', sans-serif",
-                                    textShadow: "0 0 10px rgba(239,68,68,0.4), 0 0 25px rgba(249,115,22,0.2)",
-                                }}
+                    <h1 style={{
+                        fontSize: "clamp(3rem, 8vw, 6.5rem)", fontWeight: 900,
+                        color: "rgba(255,255,255,0.92)", letterSpacing: "0.04em",
+                        lineHeight: 1.1, margin: 0, textTransform: "uppercase",
+                        fontFamily: "'Bebas Neue', sans-serif", textAlign: "center",
+                    }}>
+                        Welcome To
+                    </h1>
+
+                    <h1 style={{
+                        fontSize: "clamp(3rem, 8vw, 6.5rem)", fontWeight: 900,
+                        letterSpacing: "0.04em", lineHeight: 1.1, margin: "0 0 2rem 0",
+                        textTransform: "uppercase", fontFamily: "'Bebas Neue', sans-serif",
+                        textAlign: "center",
+                        background: "linear-gradient(90deg, #EF4444, #F97316)",
+                        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                    }}>
+                        My Portfolio
+                    </h1>
+
+                    <div style={{
+                        width: "120px", height: "2px",
+                        background: "linear-gradient(90deg, transparent, #EF4444, #F97316, transparent)",
+                        marginBottom: "2rem",
+                    }} />
+
+                    <p style={{
+                        fontSize: "clamp(0.75rem, 1.5vw, 0.9rem)", color: "rgba(255,255,255,0.3)",
+                        letterSpacing: "0.25em", textTransform: "uppercase",
+                        fontFamily: "'Courier New', monospace", margin: "0 0 3.5rem 0", textAlign: "center",
+                    }}>
+                        Scroll slowly downward to begin
+                    </p>
+
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        {[0, 1, 2].map((i) => (
+                            <motion.div
+                                key={i}
+                                animate={{ opacity: [0.15, 1, 0.15], y: [0, 6, 0] }}
+                                transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.18 }}
                             >
-                                <span style={{ color: "#EF4444" }}>Chaos</span> is tamed, and{" "}
-                                <span style={{ color: "#F97316" }}>ideas</span> are forged.
-                            </motion.p>
-
-                            <motion.p
-                                initial={{ opacity: 0, y: 50, scale: 0.85 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                transition={{ duration: 1, delay: 1, ease: [0.16, 1, 0.3, 1] }}
-                                style={{
-                                    fontSize: "clamp(4rem, 12vw, 10rem)", fontWeight: 900,
-                                    color: "#fff", letterSpacing: "0.08em", lineHeight: 0.9,
-                                    maxWidth: "56rem", margin: "1.5rem 0 0 0", textTransform: "uppercase",
-                                    fontFamily: "'Bebas Neue', 'Oswald', 'Impact', sans-serif",
-                                    textShadow: "0 0 20px rgba(239,68,68,0.7), 0 0 50px rgba(239,68,68,0.4), 0 0 80px rgba(249,115,22,0.25)",
-                                }}
-                            >
-                                Welcome
-                            </motion.p>
-
-                            <motion.span
-                                initial={{ opacity: 0, scaleX: 0 }}
-                                animate={{ opacity: 1, scaleX: 1 }}
-                                transition={{ duration: 0.6, delay: 1.4, ease: [0.16, 1, 0.3, 1] }}
-                                style={{
-                                    display: "block", marginTop: "1.5rem", width: "6rem", height: "3px",
-                                    background: "linear-gradient(90deg, transparent, #EF4444, #F97316, transparent)",
-                                }}
-                            />
-                        </motion.div>
-
-                        {/* Scroll hint */}
-                        <motion.div
-                            style={{
-                                position: "absolute", bottom: "2.5rem", left: 0, right: 0,
-                                display: "flex", flexDirection: "column",
-                                alignItems: "center", gap: "1rem",
-                                opacity: hintOp, y: hintY,
-                            }}
-                        >
-                            <p style={{
-                                fontWeight: 600, color: "rgba(239,68,68,0.6)",
-                                letterSpacing: "0.35em", textTransform: "uppercase",
-                                margin: 0, fontFamily: "'Bebas Neue', 'Oswald', 'Impact', sans-serif",
-                                fontSize: "1rem",
-                                textShadow: "0 0 12px rgba(239,68,68,0.3)",
-                            }}>
-                                Descend Into The Abyss
-                            </p>
-                            <motion.div animate={{ y: [0, 10, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}>
-                                <ChevronDown size={22} color="rgba(239,68,68,0.5)" />
+                                <ChevronDown
+                                    size={i === 2 ? 28 : i === 1 ? 24 : 20}
+                                    color={i === 2 ? "#F97316" : i === 1 ? "rgba(239,68,68,0.65)" : "rgba(239,68,68,0.3)"}
+                                    strokeWidth={2}
+                                />
                             </motion.div>
-                        </motion.div>
+                        ))}
                     </div>
-                </div>
-            </div>
+                </motion.div>
 
-        </>
+                {/* LAYER 3: Teks Overlay Dzaky & Petunjuk Abyss */}
+                <div style={{ position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none" }}>
+                    <div style={{
+                        position: "absolute", inset: 0,
+                        background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)",
+                    }} />
+
+                    {/* Nama Intro */}
+                    <motion.div
+                        style={{
+                            position: "absolute", inset: 0,
+                            display: "flex", flexDirection: "column",
+                            alignItems: "center", justifyContent: "flex-end",
+                            paddingBottom: "15vh", padding: "2rem", textAlign: "center",
+                            opacity: textOp, y: textY,
+                        }}
+                    >
+                        <p style={{
+                            fontSize: "clamp(3.5rem, 7.5vw, 7rem)", fontWeight: 900,
+                            color: "rgba(255,255,255,0.85)", letterSpacing: "0.05em",
+                            lineHeight: 1.2, maxWidth: "48rem", margin: 0, textTransform: "uppercase",
+                            fontFamily: "'Bebas Neue', sans-serif",
+                            textShadow: "0 0 10px rgba(239,68,68,0.4)",
+                        }}>
+                            <span style={{ color: "#EF4444" }}>This</span> is Me{" "}
+                            <span style={{ color: "#F97316" }}>Dzaky</span>
+                        </p>
+                    </motion.div>
+
+                    {/* Hint Menuju Hero */}
+                    <motion.div
+                        style={{
+                            position: "absolute", bottom: "2.5rem", left: 0, right: 0,
+                            display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem",
+                            opacity: hintOp, y: hintY,
+                        }}
+                    >
+                        <p style={{
+                            fontWeight: 600, color: "rgba(239,68,68,0.6)",
+                            letterSpacing: "0.35em", textTransform: "uppercase", margin: 0,
+                            fontFamily: "'Bebas Neue', sans-serif", fontSize: "1rem",
+                        }}>
+                            Descend Into The Abyss
+                        </p>
+                        <motion.div animate={{ y: [0, 10, 0] }} transition={{ duration: 2.5, repeat: Infinity }}>
+                            <ChevronDown size={22} color="rgba(239,68,68,0.5)" />
+                        </motion.div>
+                    </motion.div>
+                </div>
+
+                {/* LAYER 4: Komponen Hero (Meluncur Paling Atas di Akhir Scroll) */}
+                <motion.div
+                    style={{
+                        position: "absolute", top: 0, left: 0,
+                        width: "100%", height: "100vh",
+                        zIndex: 20, // Di atas segalanya saat slide up selesai
+                        y: heroY,
+                    }}
+                >
+                    <Hero />
+                </motion.div>
+            </div>
+        </div>
     );
 }

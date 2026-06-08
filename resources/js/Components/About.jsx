@@ -144,6 +144,19 @@ export default function About() {
                                 </motion.div>
                             ))}
                         </ScrollReveal>
+
+                        <ScrollReveal className="about__cv-wrap">
+                            <motion.a
+                                href="/cv.pdf"
+                                download
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="about__cv"
+                            >
+                                <Download size={18} />
+                                <span>Download CV</span>
+                            </motion.a>
+                        </ScrollReveal>
                     </div>
 
                     <div className="about__col-text">
@@ -176,19 +189,6 @@ export default function About() {
                                     </div>
                                 </motion.div>
                             ))}
-                        </ScrollReveal>
-
-                        <ScrollReveal className="about__cv-wrap">
-                            <motion.a
-                                href="/cv.pdf"
-                                download
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                className="about__cv"
-                            >
-                                <Download size={18} />
-                                <span>Download CV</span>
-                            </motion.a>
                         </ScrollReveal>
                     </div>
                 </div>
