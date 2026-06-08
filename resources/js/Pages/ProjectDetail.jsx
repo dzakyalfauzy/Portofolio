@@ -72,7 +72,7 @@ export default function ProjectDetail() {
                 {/* Back button */}
                 <ScrollReveal>
                     <motion.button
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate("/#projects")}
                         whileHover={{ x: -3 }}
                         whileTap={{ scale: 0.97 }}
                         style={{

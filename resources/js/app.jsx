@@ -32,8 +32,10 @@ function App() {
                         {/* Public Route Group with Navbar & Footer */}
                         <Route element={<PublicLayout />}>
                             <Route path="/" element={<Home />} />
-                            <Route path="/project/:id" element={<ProjectDetail />} />
                         </Route>
+
+                        {/* Project Detail — no Navbar/Footer */}
+                        <Route path="/project/:id" element={<ProjectDetail />} />
 
                         {/* Admin Route Group without public Navbar/Footer */}
                         <Route path="/admin/login" element={<AdminLogin />} />

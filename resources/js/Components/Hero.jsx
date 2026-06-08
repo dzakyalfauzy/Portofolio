@@ -141,12 +141,20 @@ function TiltPortrait({ children }) {
 
 export default function Hero() {
     const sectionRef = useRef(null);
+
+    /* Entrance: Hero slides up from below as it enters viewport */
+    const { scrollYProgress: enterProgress } = useScroll({
+        target: sectionRef,
+        offset: ["start end", "start 0.3"],
+    });
+    const heroY = useTransform(enterProgress, [0, 1], [80, 0]);
+    const heroOp = useTransform(enterProgress, [0, 0.6], [0, 1]);
+
+    /* Scroll parallax */
     const { scrollYProgress } = useScroll({
         target: sectionRef,
         offset: ["start start", "end start"],
     });
-
-    /* Scroll-driven parallax: content moves slower, portrait moves faster */
     const contentY = useTransform(scrollYProgress, [0, 1], [0, -60]);
     const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
     const portraitY = useTransform(scrollYProgress, [0, 1], [0, -120]);
@@ -154,7 +162,10 @@ export default function Hero() {
     const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
 
     return (
-        <section id="home" ref={sectionRef} className="hero">
+        <section id="home" ref={sectionRef} className="hero" style={{ position: "relative", zIndex: 100 }}>
+            <motion.div
+                style={{ y: heroY, opacity: heroOp }}
+            >
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
@@ -282,6 +293,7 @@ export default function Hero() {
                     transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
                     className="hero__scroll-line"
                 />
+            </motion.div>
             </motion.div>
         </section>
     );
