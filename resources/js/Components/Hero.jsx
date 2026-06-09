@@ -264,9 +264,9 @@ export default function Hero() {
                                 </div>
                                 <div className="hero__stats hero__stats--overlay">
                                     {[
-                                        { label: "Projects", value: "30+" },
-                                        { label: "Clients", value: "15+" },
-                                        { label: "Years", value: "3+" },
+                                        { label: "Projects", value: "7+" },
+                                        { label: "Clients", value: "5+" },
+                                        { label: "Years", value: "2+" },
                                     ].map(({ label, value }) => (
                                         <div key={label} className="hero__stat">
                                             <span className="hero__stat-value">{value}</span>

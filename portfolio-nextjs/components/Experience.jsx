@@ -3,7 +3,8 @@
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Briefcase, Calendar, MapPin, Users, Terminal, ChevronLeft, ChevronRight } from "lucide-react";
-import { ScrollReveal } from "@/lib/scroll";
+import { ScrollReveal as ScrollRevealOld } from "@/lib/scroll";
+import { ScrollAnimate } from "./GSAPAnimations";
 import "@/lib/css/experience.css";
 
 const defaultExperiences = [
@@ -154,8 +155,9 @@ function TimelineItem({ exp, index }) {
     const isReverse = index % 2 !== 0;
 
     return (
-        <ScrollReveal
-            perspective
+        <ScrollAnimate
+            animation={isReverse ? "fadeRight" : "fadeLeft"}
+            delay={index * 0.15}
             className={`experience-item ${isReverse ? "reverse" : ""}`}
         >
             {/* Timeline center line node */}
@@ -229,7 +231,7 @@ function TimelineItem({ exp, index }) {
                     )}
                 </div>
             </div>
-        </ScrollReveal>
+        </ScrollAnimate>
     );
 }
 
@@ -262,7 +264,7 @@ export default function Experience({ items = [], loading = false }) {
         <section id="experience" ref={sectionRef} className="experience">
             <div className="layout-shell">
                 {/* ===== HEADER ===== */}
-                <ScrollReveal className="experience__header">
+                <ScrollRevealOld className="experience__header">
                     <span className="experience__eyebrow">Experience</span>
                     <h2 className="experience__title">
                         My professional <span className="experience__title-accent">journey</span>
@@ -270,7 +272,7 @@ export default function Experience({ items = [], loading = false }) {
                     <p className="experience__lead">
                         A timeline of roles, challenges, and growth across different teams and projects.
                     </p>
-                </ScrollReveal>
+                </ScrollRevealOld>
 
                 {/* ===== TIMELINE ===== */}
                 <div className="experience__timeline">

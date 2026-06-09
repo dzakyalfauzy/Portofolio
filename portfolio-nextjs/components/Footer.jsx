@@ -5,7 +5,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUp } from "lucide-react";
 import { Github, Linkedin, Instagram } from "./Icons";
-import { ScrollReveal } from "@/lib/scroll";
+import { ScrollReveal as ScrollRevealOld } from "@/lib/scroll";
+import { ScrollAnimate } from "./GSAPAnimations";
 import "@/lib/css/footer.css";
 
 const navLinks = [
@@ -32,7 +33,7 @@ export default function Footer() {
     return (
         <footer className="footer">
             <div className="layout-shell footer__shell">
-                <ScrollReveal>
+                <ScrollAnimate animation="fadeUp" delay={0.1} duration={0.8}>
                     <div className="footer__row">
                         <div className="footer__brand-block">
                             <motion.div
@@ -102,9 +103,9 @@ export default function Footer() {
                             <span className="footer__top-label">Top</span>
                         </motion.button>
                     </div>
-                </ScrollReveal>
+                </ScrollAnimate>
 
-                <ScrollReveal>
+                <ScrollAnimate animation="fadeUp" delay={0.25} duration={0.8}>
                     <div className="footer__bottom">
                         <p className="footer__copyright">
                             &copy; {currentYear} Dzaky Al Fauzy. All rights reserved.
@@ -114,7 +115,7 @@ export default function Footer() {
                             <a href="#">Terms of Service</a>
                         </div>
                     </div>
-                </ScrollReveal>
+                </ScrollAnimate>
             </div>
 
             <div className="footer__accent-line" aria-hidden />

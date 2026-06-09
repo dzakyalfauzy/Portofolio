@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { getPortfolioData } from "@/lib/supabase-api";
 import IntroSequence from "@/components/IntroSequence";
 import About from "@/components/About";
@@ -9,6 +11,10 @@ import Projects from "@/components/Projects";
 import Certificates from "@/components/Certificates";
 import Experience from "@/components/Experience";
 import Contact from "@/components/Contact";
+import Footer from "@/components/Footer";
+
+/* Register GSAP plugins at the top level */
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
     const [data, setData] = useState<{
@@ -54,6 +60,7 @@ export default function Home() {
             <Certificates items={data.certificates as any} loading={loading} />
             <Experience items={data.experiences as any} loading={loading} />
             <Contact />
+            <Footer />
         </>
     );
 }

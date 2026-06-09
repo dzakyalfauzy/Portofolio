@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
-import { ScrollReveal } from "@/lib/scroll";
+import { ScrollReveal as ScrollRevealOld } from "@/lib/scroll";
 import "@/lib/css/testimonials.css";
 
 const testimonials = [
@@ -130,7 +130,7 @@ export default function Testimonials() {
     return (
         <section id="testimonials" ref={sectionRef} className="testimonials">
             <div className="layout-shell">
-                <ScrollReveal className="testimonials__header">
+                <ScrollRevealOld className="testimonials__header">
                     <span className="testimonials__eyebrow">Testimoni</span>
                     <h2 className="testimonials__title">
                         Apa kata <span className="testimonials__title-accent">klien saya</span>
@@ -138,9 +138,9 @@ export default function Testimonials() {
                     <p className="testimonials__lead">
                         Feedback dan ulasan dari klien yang pernah bekerja sama dengan saya di berbagai project.
                     </p>
-                </ScrollReveal>
+                </ScrollRevealOld>
 
-                <ScrollReveal className="testimonials__carousel">
+                <ScrollRevealOld className="testimonials__carousel">
                     <div
                         className="testimonials__carousel-inner"
                         onMouseEnter={() => setPaused(true)}
@@ -195,7 +195,7 @@ export default function Testimonials() {
                             transition={{ duration: paused ? 0 : 5, ease: "linear" }}
                         />
                     </div>
-                </ScrollReveal>
+                </ScrollRevealOld>
             </div>
         </section>
     );

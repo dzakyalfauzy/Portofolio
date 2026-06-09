@@ -3,7 +3,8 @@
 import { useRef, useState, useCallback } from "react";
 import { motion, useMotionValue, useTransform, useSpring, useScroll } from "framer-motion";
 import { Download, Briefcase, Code2, Users, Coffee, GripVertical } from "lucide-react";
-import { ScrollReveal } from "@/lib/scroll";
+import { ScrollReveal as ScrollRevealOld } from "@/lib/scroll";
+import { ScrollAnimate, Parallax, TextReveal, MagneticButton } from "./GSAPAnimations";
 import "@/lib/css/about.css";
 
 const stats = [
@@ -123,59 +124,78 @@ export default function About() {
             </div>
 
             <div className="layout-shell max-w-7xl mx-auto px-10 md:px-12 py-16 md:py-20">
-                <ScrollReveal className="about__header">
+                <ScrollRevealOld className="about__header">
                     <span className="about__eyebrow">About Me</span>
                     <h2 className="about__title">
                         Passionate about crafting{" "}
                         <span className="about__title-accent">digital experiences</span>
                     </h2>
-                </ScrollReveal>
+                </ScrollRevealOld>
 
                 <div className="about__grid">
                     <div className="about__col-visual">
-                        <ScrollReveal className="about__id-card-container">
-                            <IDCard />
-                        </ScrollReveal>
+                        <Parallax speed={-0.15}>
+                            <ScrollAnimate animation="scaleUp" duration={0.9}>
+                                <div className="about__id-card-container">
+                                    <IDCard />
+                                </div>
+                            </ScrollAnimate>
+                        </Parallax>
 
-                        <ScrollReveal className="about__stats">
-                            {stats.map(({ icon: Icon, value, label }) => (
-                                <motion.div key={label} whileHover={{ y: -3, scale: 1.03 }} className="about__stat">
+                        <div className="about__stats">
+                            {stats.map(({ icon: Icon, value, label }, i) => (
+                                <motion.div
+                                    key={label}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, amount: 0.5 }}
+                                    transition={{ duration: 0.6, delay: i * 0.1 }}
+                                    whileHover={{ y: -3, scale: 1.03 }}
+                                    className="about__stat"
+                                >
                                     <Icon size={14} />
                                     <span className="about__stat-value">{value}</span>
                                     <span className="about__stat-label">{label}</span>
                                 </motion.div>
                             ))}
-                        </ScrollReveal>
+                        </div>
 
-                        <ScrollReveal className="about__cv-wrap">
-                            <motion.a
-                                href="/cv.pdf"
-                                download
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                className="about__cv"
-                            >
-                                <Download size={18} />
-                                <span>Download CV</span>
-                            </motion.a>
-                        </ScrollReveal>
+                        <ScrollAnimate animation="fadeUp" delay={0.3}>
+                            <div className="about__cv-wrap">
+                                <MagneticButton strength={0.15}>
+                                    <motion.a
+                                        href="/cv.pdf"
+                                        download
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className="about__cv"
+                                    >
+                                        <Download size={18} />
+                                        <span>Download CV</span>
+                                    </motion.a>
+                                </MagneticButton>
+                            </div>
+                        </ScrollAnimate>
                     </div>
 
                     <div className="about__col-text">
-                        <ScrollReveal className="about__bio flex flex-col gap-6">
-                            <p className="about__bio-lead leading-relaxed">
-                                I&apos;m a full-stack developer with over 3 years of experience building modern web
-                                applications. I specialize in creating performant, accessible, and visually stunning
-                                digital products that solve real-world problems.
-                            </p>
-                            <p className="about__bio-muted leading-relaxed">
-                                When I&apos;m not coding, you&apos;ll find me exploring new technologies, contributing to
-                                open-source, or sketching UI concepts. I believe great software is built at the
-                                intersection of clean engineering and thoughtful design.
-                            </p>
-                        </ScrollReveal>
+                        <ScrollAnimate animation="blurReveal">
+                            <div className="about__bio flex flex-col gap-6">
+                                <p className="about__bio-lead leading-relaxed">
+                                    I&apos;m a full-stack developer with over 3 years of experience building modern web
+                                    applications. I specialize in creating performant, accessible, and visually stunning
+                                    digital products that solve real-world problems.
+                                </p>
+                                <p className="about__bio-muted leading-relaxed">
+                                    When I&apos;m not coding, you&apos;ll find me exploring new technologies, contributing to
+                                    open-source, or sketching UI concepts. I believe great software is built at the
+                                    intersection of clean engineering and thoughtful design.
+                                </p>
+                            </div>
+                        </ScrollAnimate>
 
-                        <ScrollReveal className="about__highlights">
+                        <ScrollAnimate animation="fadeRight" delay={0.2}>
+                        <div className="about__highlights">
                             {highlights.map((item, i) => (
                                 <motion.div
                                     key={item.title}
@@ -191,7 +211,8 @@ export default function About() {
                                     </div>
                                 </motion.div>
                             ))}
-                        </ScrollReveal>
+                        </div>
+                        </ScrollAnimate>
                     </div>
                 </div>
             </div>

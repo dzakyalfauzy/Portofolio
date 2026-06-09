@@ -3,7 +3,8 @@
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ShieldCheck, ChevronDown, ChevronUp } from "lucide-react";
-import { ScrollReveal } from "@/lib/scroll";
+import { ScrollReveal as ScrollRevealOld } from "@/lib/scroll";
+import { ScrollAnimate, Parallax } from "./GSAPAnimations";
 import CertificateCard from "./CertificateCard";
 import "@/lib/css/certificates.css";
 
@@ -33,7 +34,7 @@ export default function Certificates({ items = [], loading = false }) {
         <section id="certificates" ref={sectionRef} className="certificates">
             <div className="layout-shell">
                 {/* ===== HEADER ===== */}
-                <ScrollReveal className="certificates__header">
+                <ScrollAnimate animation="clipLeft">
                     <div className="certificates__eyebrow-wrap">
                         <span className="certificates__eyebrow">
                             <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -47,7 +48,7 @@ export default function Certificates({ items = [], loading = false }) {
                         A curated record of courses and certifications across frontend, backend, design, and
                         infrastructure — built to stay transparent and verifiable.
                     </p>
-                </ScrollReveal>
+                </ScrollAnimate>
 
                 {/* ===== BENTO GRID ===== */}
                 <div className="cert-bento">
@@ -60,8 +61,10 @@ export default function Certificates({ items = [], loading = false }) {
                         </>
                     ) : (
                         visibleItems.map((cert, i) => (
-                            <ScrollReveal
+                            <ScrollAnimate
                                 key={cert.id || cert.credential}
+                                animation="fadeUp"
+                                delay={i * 0.1}
                                 className={i < 2 ? "cert-bento__item cert-bento__item--wide" : "cert-bento__item"}
                             >
                                 <CertificateCard
@@ -69,7 +72,7 @@ export default function Certificates({ items = [], loading = false }) {
                                     index={i}
                                     isWide={i < 2}
                                 />
-                            </ScrollReveal>
+                            </ScrollAnimate>
                         ))
                     )}
                 </div>

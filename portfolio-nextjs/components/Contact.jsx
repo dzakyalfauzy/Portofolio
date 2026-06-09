@@ -4,7 +4,8 @@ import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Github, Linkedin, Instagram } from "./Icons";
-import { ScrollReveal } from "@/lib/scroll";
+import { ScrollReveal as ScrollRevealOld } from "@/lib/scroll";
+import { ScrollAnimate, Parallax } from "./GSAPAnimations";
 import { sendMessage } from "@/lib/supabase-api";
 import "@/lib/css/contact.css";
 
@@ -49,23 +50,24 @@ export default function Contact() {
             </div>
 
             <div className="layout-shell">
-                <ScrollReveal className="contact__intro">
+                <ScrollAnimate className="contact__intro">
                     <h2 className="contact__title">
                         Ready to start a{" "}
                         <span className="contact__title-accent">new project?</span>
                     </h2>
-                </ScrollReveal>
+                </ScrollAnimate>
 
                 <div className="contact__grid">
-                    <ScrollReveal className="contact__info">
-                        <div className="contact__info-text">
-                            <h3 className="contact__subtitle">Let&apos;s connect</h3>
-                            <p className="contact__description">
-                                I&apos;m currently open to new opportunities and collaborations. Feel free to reach out for a project or just a quick chat!
-                            </p>
-                        </div>
+                    <ScrollAnimate animation="fadeRight">
+                        <div className="contact__info">
+                            <div className="contact__info-text">
+                                <h3 className="contact__subtitle">Let&apos;s connect</h3>
+                                <p className="contact__description">
+                                    I&apos;m currently open to new opportunities and collaborations. Feel free to reach out for a project or just a quick chat!
+                                </p>
+                            </div>
 
-                        <div className="contact__socials">
+                            <div className="contact__socials">
                             {[
                                 { icon: Github, href: "https://github.com", label: "GitHub" },
                                 { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
@@ -86,9 +88,11 @@ export default function Contact() {
                                 </motion.a>
                             ))}
                         </div>
-                    </ScrollReveal>
+                        </div>
+                    </ScrollAnimate>
 
-                    <ScrollReveal className="contact__form-shell">
+                    <ScrollAnimate animation="fadeLeft" delay={0.2}>
+                        <div className="contact__form-shell">
                         <div className="contact__form-inner">
                             <form onSubmit={handleSubmit} className="contact__form">
                                 {success && (
@@ -159,7 +163,8 @@ export default function Contact() {
                                 </motion.button>
                             </form>
                         </div>
-                    </ScrollReveal>
+                        </div>
+                    </ScrollAnimate>
                 </div>
             </div>
         </section>

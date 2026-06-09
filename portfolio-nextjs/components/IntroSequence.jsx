@@ -3,11 +3,181 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import gsap from "gsap";
 import Hero from "./Hero";
 
-const TOTAL = 191;
+const TOTAL = 190;
 const PREFIX = "/sequence/ezgif-frame-";
 const EXT = ".png";
+
+/* ================================================================
+   WelcomeScreen — Animasi typing + slide + line expand
+   ================================================================ */
+function WelcomeScreen({ welcomeOp, welcomeY, welcomePointer, welcomeVisibility }) {
+    const containerRef = useRef(null);
+    const welcomeToRef = useRef(null);
+    const myPortfolioRef = useRef(null);
+    const lineRef = useRef(null);
+    const scrollHintRef = useRef(null);
+    const chevronRef = useRef(null);
+    const [welcomeToText, setWelcomeToText] = useState("");
+    const [showCursor, setShowCursor] = useState(true);
+
+    useEffect(() => {
+        const tl = gsap.timeline({ delay: 0.5 });
+
+        // 1. Typing "WELCOME TO" character by character
+        const text = "WELCOME TO";
+        let charIndex = 0;
+        const typeInterval = setInterval(() => {
+            if (charIndex <= text.length) {
+                setWelcomeToText(text.slice(0, charIndex));
+                charIndex++;
+            } else {
+                clearInterval(typeInterval);
+
+                // 2. After typing done, slide "MY PORTFOLIO" from below
+                gsap.fromTo(myPortfolioRef.current,
+                    { y: 80, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
+                );
+
+                // 3. Expand glowing line from center
+                gsap.fromTo(lineRef.current,
+                    { scaleX: 0 },
+                    { scaleX: 1, duration: 0.6, ease: "power2.out", delay: 0.3 }
+                );
+
+                // 4. Fade in scroll hint
+                gsap.fromTo(scrollHintRef.current,
+                    { opacity: 0, y: 20 },
+                    { opacity: 1, y: 0, duration: 0.8, ease: "power2.out", delay: 0.5 }
+                );
+
+                // 5. Fade in chevrons
+                gsap.fromTo(chevronRef.current,
+                    { opacity: 0, y: 10 },
+                    { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 0.7 }
+                );
+            }
+        }, 60);
+
+        // Cursor blink
+        const cursorBlink = setInterval(() => {
+            setShowCursor(prev => !prev);
+        }, 530);
+
+        return () => {
+            clearInterval(typeInterval);
+            clearInterval(cursorBlink);
+        };
+    }, []);
+
+    return (
+        <motion.div
+            ref={containerRef}
+            style={{
+                position: "absolute",
+                inset: 0,
+                zIndex: 15,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#000",
+                opacity: welcomeOp,
+                y: welcomeY,
+                pointerEvents: welcomePointer,
+                visibility: welcomeVisibility,
+            }}
+        >
+            {/* Vertical line */}
+            <div style={{
+                width: "1px",
+                height: "80px",
+                background: "linear-gradient(to bottom, transparent, rgba(239,68,68,0.6))",
+                marginBottom: "2rem",
+            }} />
+
+            {/* Portfolio — 2026 */}
+            <p style={{
+                fontSize: "0.7rem", fontWeight: 500,
+                color: "rgba(239,68,68,0.55)", letterSpacing: "0.35em",
+                textTransform: "uppercase", fontFamily: "'Courier New', monospace",
+                margin: "0 0 1.2rem 0",
+            }}>
+                Portfolio — 2026
+            </p>
+
+            {/* WELCOME TO — Typing animation */}
+            <h1 ref={welcomeToRef} style={{
+                fontSize: "clamp(3rem, 8vw, 6.5rem)", fontWeight: 900,
+                color: "rgba(255,255,255,0.92)", letterSpacing: "0.04em",
+                lineHeight: 1.1, margin: 0, textTransform: "uppercase",
+                fontFamily: "'Bebas Neue', sans-serif", textAlign: "center",
+                minHeight: "1.1em",
+            }}>
+                {welcomeToText}
+                <span style={{
+                    opacity: showCursor ? 1 : 0,
+                    color: "#EF4444",
+                    marginLeft: 2,
+                    transition: "opacity 0.1s",
+                }}>|</span>
+            </h1>
+
+            {/* MY PORTFOLIO — Slides up from below */}
+            <h1 ref={myPortfolioRef} style={{
+                fontSize: "clamp(3rem, 8vw, 6.5rem)", fontWeight: 900,
+                letterSpacing: "0.04em", lineHeight: 1.1, margin: "0 0 2rem 0",
+                textTransform: "uppercase", fontFamily: "'Bebas Neue', sans-serif",
+                textAlign: "center",
+                background: "linear-gradient(90deg, #EF4444, #F97316)",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                opacity: 0,
+            }}>
+                My Portfolio
+            </h1>
+
+            {/* Glowing line — expands from center */}
+            <div ref={lineRef} style={{
+                width: "200px", height: "3px",
+                background: "linear-gradient(90deg, transparent, #EF4444, #F97316, transparent)",
+                marginBottom: "2rem",
+                transform: "scaleX(0)",
+                boxShadow: "0 0 20px rgba(239,68,68,0.5), 0 0 40px rgba(249,115,22,0.3)",
+            }} />
+
+            {/* Scroll hint — fades in */}
+            <p ref={scrollHintRef} style={{
+                fontSize: "clamp(0.75rem, 1.5vw, 0.9rem)", color: "rgba(255,255,255,0.3)",
+                letterSpacing: "0.25em", textTransform: "uppercase",
+                fontFamily: "'Courier New', monospace", margin: "0 0 3.5rem 0", textAlign: "center",
+                opacity: 0,
+            }}>
+                Scroll slowly downward to begin
+            </p>
+
+            {/* Chevrons */}
+            <div ref={chevronRef} style={{ display: "flex", flexDirection: "column", alignItems: "center", opacity: 0 }}>
+                {[0, 1, 2].map((i) => (
+                    <motion.div
+                        key={i}
+                        animate={{ opacity: [0.15, 1, 0.15], y: [0, 6, 0] }}
+                        transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.18 }}
+                    >
+                        <ChevronDown
+                            size={i === 2 ? 28 : i === 1 ? 24 : 20}
+                            color={i === 2 ? "#F97316" : i === 1 ? "rgba(239,68,68,0.65)" : "rgba(239,68,68,0.3)"}
+                            strokeWidth={2}
+                        />
+                    </motion.div>
+                ))}
+            </div>
+        </motion.div>
+    );
+}
+const START_FRAME = 2;
 
 function drawCover(ctx, canvas, img) {
     if (!img || !img.complete || img.naturalWidth === 0) return;
@@ -41,11 +211,11 @@ export default function IntroSequence() {
         canvas.height = window.innerHeight * dpr;
     }, []);
 
-    /* -- Preload Frame 01 -- */
+    /* -- Preload Frame 02 (frame 01 doesn't exist) -- */
     useEffect(() => {
         updateCanvasSize();
         const first = new Image();
-        first.src = `${PREFIX}001${EXT}`;
+        first.src = `${PREFIX}002${EXT}`;
 
         first.onload = () => {
             const canvas = canvasRef.current;
@@ -70,7 +240,7 @@ export default function IntroSequence() {
         const imgs = imagesRef.current;
         let loaded = 1;
         for (let i = 1; i < TOTAL; i++) {
-            const padded = String(i + 1).padStart(3, "0");
+            const padded = String(i + START_FRAME).padStart(3, "0");
             const img = new Image();
             img.src = `${PREFIX}${padded}${EXT}`;
             img.onload = img.onerror = () => {
@@ -179,94 +349,8 @@ export default function IntroSequence() {
                     }}
                 />
 
-                {/* LAYER 2: Welcome Screen (Sekarang dikontrol penuh oleh Scroll Progress) */}
-                <motion.div
-                    style={{
-                        position: "absolute",
-                        inset: 0,
-                        zIndex: 15, // Di atas canvas, tapi di bawah Hero
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor: "#000",
-                        opacity: welcomeOp,
-                        y: welcomeY,
-                        pointerEvents: welcomePointer,
-                        visibility: welcomeVisibility,
-                    }}
-                >
-                    <motion.div
-                        initial={{ scaleX: 0, opacity: 0 }}
-                        animate={{ scaleX: 1, opacity: 1 }}
-                        transition={{ duration: 1.0, delay: 0.2 }}
-                        style={{
-                            width: "1px",
-                            height: "80px",
-                            background: "linear-gradient(to bottom, transparent, rgba(239,68,68,0.6))",
-                            marginBottom: "2.5rem",
-                        }}
-                    />
-
-                    <p style={{
-                        fontSize: "0.7rem", fontWeight: 500,
-                        color: "rgba(239,68,68,0.55)", letterSpacing: "0.35em",
-                        textTransform: "uppercase", fontFamily: "'Courier New', monospace",
-                        margin: "0 0 1.2rem 0",
-                    }}>
-                        Portfolio — 2026
-                    </p>
-
-                    <h1 style={{
-                        fontSize: "clamp(3rem, 8vw, 6.5rem)", fontWeight: 900,
-                        color: "rgba(255,255,255,0.92)", letterSpacing: "0.04em",
-                        lineHeight: 1.1, margin: 0, textTransform: "uppercase",
-                        fontFamily: "'Bebas Neue', sans-serif", textAlign: "center",
-                    }}>
-                        Welcome To
-                    </h1>
-
-                    <h1 style={{
-                        fontSize: "clamp(3rem, 8vw, 6.5rem)", fontWeight: 900,
-                        letterSpacing: "0.04em", lineHeight: 1.1, margin: "0 0 2rem 0",
-                        textTransform: "uppercase", fontFamily: "'Bebas Neue', sans-serif",
-                        textAlign: "center",
-                        background: "linear-gradient(90deg, #EF4444, #F97316)",
-                        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                    }}>
-                        My Portfolio
-                    </h1>
-
-                    <div style={{
-                        width: "120px", height: "2px",
-                        background: "linear-gradient(90deg, transparent, #EF4444, #F97316, transparent)",
-                        marginBottom: "2rem",
-                    }} />
-
-                    <p style={{
-                        fontSize: "clamp(0.75rem, 1.5vw, 0.9rem)", color: "rgba(255,255,255,0.3)",
-                        letterSpacing: "0.25em", textTransform: "uppercase",
-                        fontFamily: "'Courier New', monospace", margin: "0 0 3.5rem 0", textAlign: "center",
-                    }}>
-                        Scroll slowly downward to begin
-                    </p>
-
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        {[0, 1, 2].map((i) => (
-                            <motion.div
-                                key={i}
-                                animate={{ opacity: [0.15, 1, 0.15], y: [0, 6, 0] }}
-                                transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.18 }}
-                            >
-                                <ChevronDown
-                                    size={i === 2 ? 28 : i === 1 ? 24 : 20}
-                                    color={i === 2 ? "#F97316" : i === 1 ? "rgba(239,68,68,0.65)" : "rgba(239,68,68,0.3)"}
-                                    strokeWidth={2}
-                                />
-                            </motion.div>
-                        ))}
-                    </div>
-                </motion.div>
+                {/* LAYER 2: Welcome Screen */}
+                <WelcomeScreen welcomeOp={welcomeOp} welcomeY={welcomeY} welcomePointer={welcomePointer} welcomeVisibility={welcomeVisibility} />
 
                 {/* LAYER 3: Teks Overlay Dzaky & Petunjuk Abyss */}
                 <div style={{ position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none" }}>

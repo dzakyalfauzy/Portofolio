@@ -4,7 +4,8 @@ import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
 import { RoundedBox, Html, Environment, ContactShadows, OrbitControls } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
-import { ScrollReveal } from "@/lib/scroll";
+import { ScrollReveal as ScrollRevealOld } from "@/lib/scroll";
+import { ScrollAnimate, Parallax } from "./GSAPAnimations";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 
@@ -301,19 +302,21 @@ export default function Skills({ items = [], loading = false }) {
             }} />
 
             {/* title */}
-            <ScrollReveal>
-                <div style={{ textAlign: "center", marginBottom: "0.5rem", position: "relative", zIndex: 2 }}>
-                    <h2 style={{ fontSize: "clamp(2.5rem,5vw,3.5rem)", fontWeight: 900, color: "#ccc", fontFamily: "'Courier New',monospace", letterSpacing: 12, textTransform: "uppercase", margin: 0, textShadow: "0 2px 0 #999,0 4px 0 #777,0 6px 12px rgba(0,0,0,0.4)" }}>
-                        Skills
-                    </h2>
-                    <p style={{ fontSize: 14, color: "#555", letterSpacing: 4, textTransform: "uppercase", marginTop: 8, fontFamily: "'Courier New',monospace" }}>
-                        Technologies & Tools
-                    </p>
-                    <p style={{ fontSize: 12, color: "#999", letterSpacing: "0.1em", fontFamily: "'Courier New',monospace", marginTop: 6, userSelect: "none", textShadow: "0 1px 6px rgba(0,0,0,0.9), 0 0 20px rgba(200,160,255,0.15)" }}>
-                        Hold & drag to rotate · right-click + drag to pan
-                    </p>
-                </div>
-            </ScrollReveal>
+            <Parallax speed={-0.1}>
+                <ScrollAnimate animation="fadeUp" delay={0.1} duration={0.9}>
+                    <div style={{ textAlign: "center", marginBottom: "0.5rem", position: "relative", zIndex: 2 }}>
+                        <h2 style={{ fontSize: "clamp(2.5rem,5vw,3.5rem)", fontWeight: 900, color: "#ccc", fontFamily: "'Courier New',monospace", letterSpacing: 12, textTransform: "uppercase", margin: 0, textShadow: "0 2px 0 #999,0 4px 0 #777,0 6px 12px rgba(0,0,0,0.4)" }}>
+                            Skills
+                        </h2>
+                        <p style={{ fontSize: 14, color: "#555", letterSpacing: 4, textTransform: "uppercase", marginTop: 8, fontFamily: "'Courier New',monospace" }}>
+                            Technologies & Tools
+                        </p>
+                        <p style={{ fontSize: 12, color: "#999", letterSpacing: "0.1em", fontFamily: "'Courier New',monospace", marginTop: 6, userSelect: "none", textShadow: "0 1px 6px rgba(0,0,0,0.9), 0 0 20px rgba(200,160,255,0.15)" }}>
+                            Hold & drag to rotate · right-click + drag to pan
+                        </p>
+                    </div>
+                </ScrollAnimate>
+            </Parallax>
 
             {/* canvas */}
             <div style={{
@@ -397,29 +400,31 @@ export default function Skills({ items = [], loading = false }) {
                     box-shadow: 0 0 8px rgba(200,160,255,0.4);
                 }
             `}</style>
-            <div style={{
-                display: "flex", alignItems: "center", gap: 10,
-                marginTop: 14, position: "relative", zIndex: 2,
-            }}>
-                <span style={{ fontSize: 10, color: "#555", fontFamily: "'Courier New',monospace", letterSpacing: 1, userSelect: "none" }}>-</span>
-                <input
-                    type="range"
-                    min="0.5"
-                    max="3.5"
-                    step="0.05"
-                    value={zoomLevel}
-                    onChange={e => setZoomLevel(parseFloat(e.target.value))}
-                    style={{
-                        width: 120, height: 4, appearance: "none", WebkitAppearance: "none",
-                        background: `linear-gradient(to right, #c8a0ff ${((zoomLevel - 0.5) / (3.5 - 0.5)) * 100}%, rgba(255,255,255,0.08) ${((zoomLevel - 0.5) / (3.5 - 0.5)) * 100}%)`,
-                        borderRadius: 2, outline: "none", cursor: "pointer",
-                    }}
-                />
-                <span style={{ fontSize: 10, color: "#555", fontFamily: "'Courier New',monospace", letterSpacing: 1, userSelect: "none" }}>+</span>
-                <span style={{ fontSize: 10, color: "#666", fontFamily: "'Courier New',monospace", minWidth: 32, textAlign: "center", userSelect: "none" }}>
-                    {Math.round(zoomLevel * 100)}%
-                </span>
-            </div>
+            <ScrollAnimate animation="fadeUp" delay={0.25} duration={0.7}>
+                <div style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    marginTop: 14, position: "relative", zIndex: 2,
+                }}>
+                    <span style={{ fontSize: 10, color: "#555", fontFamily: "'Courier New',monospace", letterSpacing: 1, userSelect: "none" }}>-</span>
+                    <input
+                        type="range"
+                        min="0.5"
+                        max="3.5"
+                        step="0.05"
+                        value={zoomLevel}
+                        onChange={e => setZoomLevel(parseFloat(e.target.value))}
+                        style={{
+                            width: 120, height: 4, appearance: "none", WebkitAppearance: "none",
+                            background: `linear-gradient(to right, #c8a0ff ${((zoomLevel - 0.5) / (3.5 - 0.5)) * 100}%, rgba(255,255,255,0.08) ${((zoomLevel - 0.5) / (3.5 - 0.5)) * 100}%)`,
+                            borderRadius: 2, outline: "none", cursor: "pointer",
+                        }}
+                    />
+                    <span style={{ fontSize: 10, color: "#555", fontFamily: "'Courier New',monospace", letterSpacing: 1, userSelect: "none" }}>+</span>
+                    <span style={{ fontSize: 10, color: "#666", fontFamily: "'Courier New',monospace", minWidth: 32, textAlign: "center", userSelect: "none" }}>
+                        {Math.round(zoomLevel * 100)}%
+                    </span>
+                </div>
+            </ScrollAnimate>
 
             <AnimatePresence>
                 {activeSkill && (

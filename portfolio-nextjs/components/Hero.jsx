@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { motion, useMotionValue, useTransform, useSpring, useScroll, AnimatePresence } from "framer-motion";
 import { ArrowRight, Mail } from "lucide-react";
 import { Github, Linkedin, Instagram } from "./Icons";
+import { ScrollAnimate, Parallax, TextReveal, MagneticButton } from "./GSAPAnimations";
 import "@/lib/css/hero.css";
 
 const containerVariants = {
@@ -170,51 +171,62 @@ export default function Hero() {
             >
                 <motion.div className="hero__content" style={{ y: contentY, opacity: contentOpacity }}>
 
-                    <motion.h1 variants={fadeUp} className="hero__title">
-                        Hi, I&apos;m{" "}
-                        <span className="hero__name-wrap">
-                            <span className="hero__name">Dzaky Al Fauzy</span>
-                            <span className="hero__name-line" aria-hidden />
-                        </span>
-                        <br />
-                        <RotatingText />
-                    </motion.h1>
+                    <ScrollAnimate animation="clipLeft" duration={1.2}>
+                        <motion.h1 variants={fadeUp} className="hero__title">
+                            Hi, I&apos;m{" "}
+                            <span className="hero__name-wrap">
+                                <span className="hero__name">Dzaky Al Fauzy</span>
+                                <span className="hero__name-line" aria-hidden />
+                            </span>
+                            <br />
+                            <RotatingText />
+                        </motion.h1>
+                    </ScrollAnimate>
 
-                    <motion.p variants={fadeUp} className="hero__sub">
-                        I craft high performance digital experiences from elegant interfaces to robust back-end
-                        systems. Focused on clean code, delightful UX, and products that scale.
-                    </motion.p>
+                    <ScrollAnimate animation="fadeUp" delay={0.2} duration={1}>
+                        <motion.p variants={fadeUp} className="hero__sub">
+                            I craft high performance digital experiences from elegant interfaces to robust back-end
+                            systems. Focused on clean code, delightful UX, and products that scale.
+                        </motion.p>
+                    </ScrollAnimate>
 
+                    <ScrollAnimate animation="scaleUp" delay={0.4}>
                     <motion.div variants={fadeUp} className="hero__ctas">
-                        <motion.a
-                            href="#projects"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
-                            }}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="hero__cta-primary"
-                        >
-                            <span>View Projects</span>
-                            <ArrowRight size={18} className="hero__cta-arrow" />
-                        </motion.a>
+                        <MagneticButton strength={0.2}>
+                            <motion.a
+                                href="#projects"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+                                }}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="hero__cta-primary"
+                            >
+                                <span>View Projects</span>
+                                <ArrowRight size={18} className="hero__cta-arrow" />
+                            </motion.a>
+                        </MagneticButton>
 
-                        <motion.a
-                            href="#contact"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-                            }}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="hero__cta-secondary"
-                        >
-                            <Mail size={17} />
-                            <span>Contact Me</span>
-                        </motion.a>
+                        <MagneticButton strength={0.2}>
+                            <motion.a
+                                href="#contact"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                                }}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="hero__cta-secondary"
+                            >
+                                <Mail size={17} />
+                                <span>Contact Me</span>
+                            </motion.a>
+                        </MagneticButton>
                     </motion.div>
+                    </ScrollAnimate>
 
+                    <ScrollAnimate animation="fadeUp" delay={0.6} duration={0.9}>
                     <motion.div variants={fadeUp} className="hero__social-wrap">
                         <span className="hero__social-heading">Find me on</span>
                         <div className="hero__social-row">
@@ -234,9 +246,11 @@ export default function Hero() {
                             ))}
                         </div>
                     </motion.div>
+                    </ScrollAnimate>
                 </motion.div>
 
                 <motion.div variants={fadeIn} className="hero__visual" style={{ y: portraitY, scale: portraitScale }}>
+                    <Parallax speed={-0.2}>
                     <div className="hero__portrait-wrap">
                         <TiltPortrait>
                             <div className="hero__portrait-glow" aria-hidden />
@@ -260,9 +274,9 @@ export default function Hero() {
                                 </div>
                                 <div className="hero__stats hero__stats--overlay">
                                     {[
-                                        { label: "Projects", value: "30+" },
-                                        { label: "Clients", value: "15+" },
-                                        { label: "Years", value: "3+" },
+                                        { label: "Projects", value: "7+" },
+                                        { label: "Clients", value: "5+" },
+                                        { label: "Years", value: "2+" },
                                     ].map(({ label, value }) => (
                                         <div key={label} className="hero__stat">
                                             <span className="hero__stat-value">{value}</span>
@@ -273,6 +287,7 @@ export default function Hero() {
                             </div>
                         </TiltPortrait>
                     </div>
+                    </Parallax>
                 </motion.div>
             </motion.div>
 

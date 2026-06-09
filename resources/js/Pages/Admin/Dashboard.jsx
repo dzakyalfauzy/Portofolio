@@ -654,9 +654,10 @@ export default function Dashboard() {
                 <div className="admin-modal-overlay">
                     <div className="admin-modal">
                         <div className="admin-modal__gradient" aria-hidden />
-                        
-                        <div className="admin-card">
-                            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+
+                        <div className="admin-modal__inner">
+                            {/* Header — fixed, never shrinks */}
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
                                 <h3 className="text-lg font-bold tracking-tight text-white capitalize">
                                     {modalMode === "create" ? "Add New" : "Edit"} {activeTab.slice(0, -1)}
                                 </h3>
@@ -664,6 +665,9 @@ export default function Dashboard() {
                                     <X size={15} />
                                 </button>
                             </div>
+
+                            {/* Scrollable body */}
+                            <div className="admin-modal__scroll">
 
                             <form onSubmit={handleFormSubmit} className="space-y-4">
                                 {formError && (
@@ -719,54 +723,71 @@ export default function Dashboard() {
                                     </>
                                 )}
 
-                                {/* CERTIFICATE FORM FIELDS */}
+                                {/* CERTIFICATE FORM FIELDS — Landscape */}
                                 {activeTab === "certificates" && (
-                                    <>
-                                        <div className="admin-form-grid">
-                                            <div className="admin-field admin-field--full">
-                                                <label className="admin-label">Certificate Title</label>
-                                                <input type="text" name="title" required className="admin-input" value={formData.title} onChange={handleInputChange} />
-                                            </div>
-                                            <div className="admin-field">
-                                                <label className="admin-label">Issuer Agency</label>
-                                                <input type="text" name="issuer" required className="admin-input" value={formData.issuer} onChange={handleInputChange} />
-                                            </div>
-                                            <div className="admin-field">
-                                                <label className="admin-label">Issue Date</label>
-                                                <input type="text" name="date" required placeholder="May 2026" className="admin-input" value={formData.date} onChange={handleInputChange} />
-                                            </div>
-                                            <div className="admin-field">
-                                                <label className="admin-label">Credential ID</label>
-                                                <input type="text" name="credential" className="admin-input" value={formData.credential} onChange={handleInputChange} />
-                                            </div>
-                                            <div className="admin-field">
-                                                <label className="admin-label">Verification URL</label>
-                                                <input type="url" name="verify_url" className="admin-input" value={formData.verify_url} onChange={handleInputChange} />
-                                            </div>
-                                            <div className="admin-field admin-field--full">
-                                                <label className="admin-label">Skills Learned (comma‑separated)</label>
-                                                <input type="text" name="skills" placeholder="PHP, Security, REST" className="admin-input" value={formData.skills} onChange={handleInputChange} />
-                                            </div>
-                                            <div className="admin-field">
-                                                <label className="admin-label">Category</label>
-                                                <select name="category" className="admin-input" value={formData.category} onChange={handleInputChange}>
-                                                    <option value="Frontend">Frontend</option>
-                                                    <option value="Backend">Backend</option>
-                                                    <option value="UI/UX">UI/UX</option>
-                                                    <option value="DevOps">DevOps</option>
-                                                    <option value="Mobile">Mobile</option>
-                                                </select>
-                                            </div>
-                                            <div className="admin-field">
-                                                <label className="admin-label">Certificate Image</label>
-                                                <label className="admin-file-label">
-                                                    <Upload size={14} />
-                                                    <span>Choose File</span>
-                                                    <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-                                                </label>
+                                    <div className="flex gap-4 flex-col md:flex-row">
+                                        {/* Left: Form fields */}
+                                        <div className="admin-modal__form-section">
+                                            <div className="admin-form-grid">
+                                                <div className="admin-field admin-field--full">
+                                                    <label className="admin-label">Certificate Title</label>
+                                                    <input type="text" name="title" required className="admin-input" value={formData.title} onChange={handleInputChange} />
+                                                </div>
+                                                <div className="admin-field">
+                                                    <label className="admin-label">Issuer Agency</label>
+                                                    <input type="text" name="issuer" required className="admin-input" value={formData.issuer} onChange={handleInputChange} />
+                                                </div>
+                                                <div className="admin-field">
+                                                    <label className="admin-label">Issue Date</label>
+                                                    <input type="text" name="date" required placeholder="May 2026" className="admin-input" value={formData.date} onChange={handleInputChange} />
+                                                </div>
+                                                <div className="admin-field">
+                                                    <label className="admin-label">Credential ID</label>
+                                                    <input type="text" name="credential" className="admin-input" value={formData.credential} onChange={handleInputChange} />
+                                                </div>
+                                                <div className="admin-field">
+                                                    <label className="admin-label">Verification URL</label>
+                                                    <input type="url" name="verify_url" className="admin-input" value={formData.verify_url} onChange={handleInputChange} />
+                                                </div>
+                                                <div className="admin-field admin-field--full">
+                                                    <label className="admin-label">Skills Learned (comma‑separated)</label>
+                                                    <input type="text" name="skills" placeholder="PHP, Security, REST" className="admin-input" value={formData.skills} onChange={handleInputChange} />
+                                                </div>
+                                                <div className="admin-field">
+                                                    <label className="admin-label">Category</label>
+                                                    <select name="category" className="admin-input" value={formData.category} onChange={handleInputChange}>
+                                                        <option value="Frontend">Frontend</option>
+                                                        <option value="Backend">Backend</option>
+                                                        <option value="UI/UX">UI/UX</option>
+                                                        <option value="DevOps">DevOps</option>
+                                                        <option value="Mobile">Mobile</option>
+                                                    </select>
+                                                </div>
+                                                <div className="admin-field">
+                                                    <label className="admin-label">Certificate Image</label>
+                                                    <label className="admin-file-label">
+                                                        <Upload size={14} />
+                                                        <span>Choose File</span>
+                                                        <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
-                                    </>
+
+                                        {/* Right: Image Preview */}
+                                        <div className="admin-modal__preview-section">
+                                            <p className="text-xs text-zinc-500 uppercase tracking-widest font-bold mb-2">Preview</p>
+                                            {imagePreviews.length > 0 ? (
+                                                <div className="rounded-xl overflow-hidden border border-white/10 w-full">
+                                                    <img src={imagePreviews[0]} alt="Preview" className="w-full h-auto object-cover" />
+                                                </div>
+                                            ) : (
+                                                <div className="rounded-xl border border-dashed border-white/10 w-full aspect-[4/3] flex items-center justify-center text-zinc-600 text-xs">
+                                                    No image
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 )}
 
                                 {/* EXPERIENCE FORM FIELDS */}
@@ -893,7 +914,7 @@ export default function Dashboard() {
                                     </div>
                                 )}
 
-                                <div className="flex items-center justify-end gap-3 border-t border-white/10 pt-4 mt-6">
+                                <div className="flex items-center justify-end gap-3 border-t border-white/10 pt-4 mt-6 flex-shrink-0">
                                     <button type="button" onClick={() => setShowModal(false)} className="admin-btn">
                                         Cancel
                                     </button>
@@ -907,6 +928,7 @@ export default function Dashboard() {
                                     </button>
                                 </div>
                             </form>
+                            </div>
                         </div>
                     </div>
                 </div>

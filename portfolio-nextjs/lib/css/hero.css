@@ -292,11 +292,11 @@
     padding: 1rem 2.5rem;
     min-height: 3.25rem;
     border-radius: 1rem;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background-color: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    color: #a1a1aa;
+    color: #e4e4e7;
     font-weight: 600;
     font-size: 0.875rem;
     line-height: 1;
@@ -305,9 +305,9 @@
 }
 
 .hero__cta-secondary:hover {
-    color: #EF4444;
-    border-color: rgba(79, 70, 229, 0.3);
-    background-color: rgba(79, 70, 229, 0.06);
+    color: #fff;
+    border-color: rgba(239, 68, 68, 0.5);
+    background-color: rgba(239, 68, 68, 0.1);
 }
 
 .hero__cta-secondary svg {
@@ -332,7 +332,7 @@
 
 .hero__social-heading {
     font-size: 0.75rem;
-    color: #71717a;
+    color: #a1a1aa;
     text-transform: uppercase;
     letter-spacing: 0.1em;
 }
@@ -364,9 +364,9 @@
     align-items: center;
     justify-content: center;
     border-radius: 0.75rem;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background-color: rgba(255, 255, 255, 0.5);
-    color: #a1a1aa;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #d4d4d8;
     text-decoration: none;
     transition: all 200ms ease;
 }
@@ -380,12 +380,13 @@
 
 .hero__social-link:hover {
     color: #EF4444;
-    border-color: rgba(79, 70, 229, 0.3);
-    background-color: rgba(79, 70, 229, 0.06);
+    border-color: rgba(239, 68, 68, 0.4);
+    background-color: rgba(239, 68, 68, 0.1);
 }
 
 .hero__social-link svg {
     flex-shrink: 0;
+    color: inherit;
 }
 
 /* ===== PORTRAIT / VISUAL ===== */

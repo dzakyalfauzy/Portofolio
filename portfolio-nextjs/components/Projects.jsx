@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Folder, ChevronLeft, ChevronRight } from "lucide-react";
 import { Github } from "./Icons";
-import { ScrollReveal } from "@/lib/scroll";
+import { ScrollReveal as ScrollRevealOld } from "@/lib/scroll";
+import { ScrollAnimate, Parallax } from "./GSAPAnimations";
 import "@/lib/css/projects.css";
 
 /* ===== Obsidian Canvas Reveal Variants ===== */
@@ -36,7 +37,7 @@ const getColor = (project) => themeColorMap[project?.color] || project?.color ||
 function FeaturedHero({ project, onViewDetail }) {
     if (!project) return null;
     const c = getColor(project);
-    const hasImage = !!project.image_path;
+    const hasImage = !!(project.thumbnail || project.image_path);
 
     return (
         <motion.div
@@ -53,7 +54,7 @@ function FeaturedHero({ project, onViewDetail }) {
                 <div className="projects__media-grid" aria-hidden />
                 {hasImage ? (
                     <img
-                        src={project.image_path}
+                        src={project.thumbnail || project.image_path}
                         alt={project.title}
                         className="projects__hero-img"
                     />
@@ -71,7 +72,7 @@ function FeaturedHero({ project, onViewDetail }) {
                 <h3 className="projects__hero-title">{project.title}</h3>
                 <p className="projects__hero-desc">{project.description}</p>
                 <div className="projects__tags projects__tags--left">
-                    {Array.isArray(project.stack) && project.stack.map((tech) => (
+                    {Array.isArray(project.tags) && project.tags.map((tech) => (
                         <span key={tech} className="projects__tag">{tech}</span>
                     ))}
                 </div>
@@ -109,7 +110,7 @@ function FeaturedHero({ project, onViewDetail }) {
 
 function ThumbnailCard({ project, isActive, onClick, index }) {
     const c = getColor(project);
-    const hasImage = !!project.image_path;
+    const hasImage = !!(project.thumbnail || project.image_path);
 
     return (
         <motion.div
@@ -122,7 +123,7 @@ function ThumbnailCard({ project, isActive, onClick, index }) {
             <div className={`projects__thumb-media projects__thumb-media--${c}`}>
                 <div className={`projects__media-grad projects__media-grad--${c}`} />
                 {hasImage ? (
-                    <img src={project.image_path} alt={project.title} className="projects__thumb-img" />
+                    <img src={project.thumbnail || project.image_path} alt={project.title} className="projects__thumb-img" />
                 ) : (
                     <div className="projects__thumb-icon">
                         <Folder size={20} />
@@ -132,7 +133,7 @@ function ThumbnailCard({ project, isActive, onClick, index }) {
             <div className="projects__thumb-info">
                 <h4 className="projects__thumb-title">{project.title}</h4>
                 <div className="projects__thumb-tags">
-                    {Array.isArray(project.stack) && project.stack.slice(0, 3).map((tech) => (
+                    {Array.isArray(project.tags) && project.tags.slice(0, 3).map((tech) => (
                         <span key={tech} className="projects__thumb-tag">{tech}</span>
                     ))}
                 </div>
@@ -211,7 +212,7 @@ export default function Projects({ items = [], loading = false }) {
 
             <div className="layout-shell">
                 {/* ===== HEADER ===== */}
-                <ScrollReveal className="projects__header">
+                <ScrollAnimate animation="fadeUp">
                     <span className="projects__eyebrow">Projects</span>
                     <h2 className="projects__title">
                         Featured <span className="projects__title-accent">work</span>
@@ -219,18 +220,18 @@ export default function Projects({ items = [], loading = false }) {
                     <p className="projects__lead">
                         A selection of projects I&apos;ve built — from full-stack apps to polished front-end experiences.
                     </p>
-                </ScrollReveal>
+                </ScrollAnimate>
 
                 {loading ? (
                     <ProjectSkeleton />
                 ) : (
                     <>
                         {/* ===== HERO / FEATURED ===== */}
-                        <ScrollReveal>
+                        <ScrollRevealOld>
                             <AnimatePresence mode="wait">
                                 <FeaturedHero project={activeProject} onViewDetail={handleViewDetail} />
                             </AnimatePresence>
-                        </ScrollReveal>
+                        </ScrollRevealOld>
 
                         {/* ===== THUMBNAIL CAROUSEL (staggered 3D reveal) ===== */}
                         {items.length > 1 && (
@@ -245,8 +246,7 @@ export default function Projects({ items = [], loading = false }) {
                                     </button>
                                 )}
 
-                                <ScrollReveal
-                                    as="div"
+                                <div
                                     ref={carouselRef}
                                     className="projects__carousel"
                                     onScroll={checkCarouselScroll}
@@ -260,7 +260,7 @@ export default function Projects({ items = [], loading = false }) {
                                             onClick={() => setActiveProject(project)}
                                         />
                                     ))}
-                                </ScrollReveal>
+                                </div>
 
                                 {canScrollRight && (
                                     <button

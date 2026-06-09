@@ -1,6 +1,28 @@
 import { supabase } from "./supabase";
 
 // ============================================
+// File Upload to Supabase Storage
+// ============================================
+
+export async function uploadFile(file: File, folder: string = "uploads") {
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+    const { data, error } = await supabase.storage
+        .from("portfolio")
+        .upload(fileName, file);
+
+    if (error) throw error;
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+        .from("portfolio")
+        .getPublicUrl(data.path);
+
+    return urlData.publicUrl;
+}
+
+// ============================================
 // Portfolio Data API (Public - Read Only)
 // ============================================
 

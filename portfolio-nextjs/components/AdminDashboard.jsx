@@ -22,6 +22,7 @@ import {
 import {
     getCurrentUser,
     signOut,
+    uploadFile,
     getProjects,
     getCertificates,
     getExperiences,
@@ -160,23 +161,24 @@ export default function Dashboard() {
             setFormData({
                 title: item.title,
                 description: item.description,
-                stack: Array.isArray(item.stack) ? item.stack.join(", ") : "",
+                stack: Array.isArray(item.tags) ? item.tags.join(", ") : "",
                 github: item.github || "",
-                demo: item.demo || "",
-                color: item.color || "emerald"
+                demo: item.live_url || "",
+                thumbnail: item.thumbnail || ""
             });
-            setImagePreview(item.image_path);
+            setImagePreview(item.thumbnail);
         } else if (activeTab === "certificates") {
             setFormData({
                 title: item.title,
                 issuer: item.issuer,
                 date: item.date,
-                credential: item.credential || "",
-                skills: Array.isArray(item.skills) ? item.skills.join(", ") : "",
+                credential: item.credential_id || "",
+                skills: Array.isArray(item.tags) ? item.tags.join(", ") : "",
                 verify_url: item.verify_url || "",
-                category: item.category || "Frontend"
+                category: item.category || "Frontend",
+                image: item.image || ""
             });
-            setImagePreview(item.image_path);
+            setImagePreview(item.image);
         } else if (activeTab === "experiences") {
             setFormData({
                 title: item.title,
@@ -244,51 +246,57 @@ export default function Dashboard() {
         setFormError(null);
 
         try {
-            // Build Form Data payload (needed for file upload support)
-            const payload = new FormData();
-            
-            // Map values
-            Object.keys(formData).forEach((key) => {
-                if (key === "stack" || key === "skills") {
-                    // Turn CSV string to an array for JSON cast column
-                    const arr = formData[key]
-                        .split(",")
-                        .map((s) => s.trim())
-                        .filter((s) => s !== "");
-                    arr.forEach((item, index) => {
-                        payload.append(`${key}[${index}]`, item);
-                    });
-                } else if (key === "current") {
-                    payload.append(key, formData[key] ? "1" : "0");
-                } else {
-                    payload.append(key, formData[key]);
-                }
-            });
-
-            if (imageFile) {
-                payload.append("image", imageFile);
-            }
-
-            // Multi-image for experiences
-            if (activeTab === "experiences") {
-                imageFiles.forEach((file) => {
-                    payload.append("images[]", file);
-                });
-                existingImages.forEach((url) => {
-                    payload.append("existing_images[]", url);
-                });
-            }
-
-            // Convert FormData to plain object for Supabase
+            // Build clean data object for Supabase
             const data = {};
-            for (const [key, value] of payload.entries()) {
-                if (key.endsWith("[]")) {
-                    const cleanKey = key.replace("[]", "");
-                    if (!data[cleanKey]) data[cleanKey] = [];
-                    data[cleanKey].push(value);
-                } else {
-                    data[key] = value;
+
+            if (activeTab === "projects") {
+                data.title = formData.title;
+                data.description = formData.description;
+                data.github = formData.github || "";
+                data.live_url = formData.demo || "";
+                if (formData.stack) {
+                    data.tags = formData.stack.split(",").map(s => s.trim()).filter(s => s);
                 }
+                // Upload thumbnail if file selected
+                if (imageFile) {
+                    data.thumbnail = await uploadFile(imageFile, "projects");
+                } else {
+                    data.thumbnail = formData.thumbnail || "";
+                }
+            }
+
+            if (activeTab === "certificates") {
+                data.title = formData.title;
+                data.issuer = formData.issuer;
+                data.date = formData.date;
+                data.credential_id = formData.credential || "";
+                data.verify_url = formData.verify_url || "";
+                data.category = formData.category || "";
+                if (formData.skills) {
+                    data.tags = formData.skills.split(",").map(s => s.trim()).filter(s => s);
+                }
+                // Upload image if file selected
+                if (imageFile) {
+                    data.image = await uploadFile(imageFile, "certificates");
+                } else {
+                    data.image = formData.image || "";
+                }
+            }
+
+            if (activeTab === "experiences") {
+                data.title = formData.title;
+                data.company = formData.company;
+                data.description = formData.description;
+                if (formData.stack) {
+                    data.tags = formData.stack.split(",").map(s => s.trim()).filter(s => s);
+                }
+            }
+
+            if (activeTab === "skills") {
+                data.name = formData.name;
+                data.slug = formData.slug || "";
+                data.category = formData.category || "";
+                data.lucide_icon = formData.lucide_icon || "";
             }
 
             if (modalMode === "create") {
@@ -466,11 +474,11 @@ export default function Dashboard() {
                                                     </a>
                                                 </div>
                                             )}
-                                            {p.demo && (
+                                            {p.live_url && (
                                                 <div className="admin-truncate">
                                                     <span className="text-zinc-400 font-semibold">Live:</span>{" "}
-                                                    <a href={p.demo} target="_blank" rel="noopener noreferrer">
-                                                        {p.demo.replace(/^https?:\/\/(www\.)?/, "")}
+                                                    <a href={p.live_url} target="_blank" rel="noopener noreferrer">
+                                                        {p.live_url.replace(/^https?:\/\/(www\.)?/, "")}
                                                     </a>
                                                 </div>
                                             )}
@@ -697,8 +705,9 @@ export default function Dashboard() {
                     <div className="admin-modal">
                         <div className="admin-modal__gradient" aria-hidden />
                         
-                        <div className="admin-card">
-                            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                        <div className="admin-modal__inner">
+                            {/* Header — fixed, never shrinks */}
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
                                 <h3 className="text-lg font-bold tracking-tight text-white capitalize">
                                     {modalMode === "create" ? "Add New" : "Edit"} {activeTab.slice(0, -1)}
                                 </h3>
@@ -706,6 +715,9 @@ export default function Dashboard() {
                                     <X size={15} />
                                 </button>
                             </div>
+
+                            {/* Scrollable body */}
+                            <div className="admin-modal__scroll">
 
                             <form onSubmit={handleFormSubmit} className="space-y-4">
                                 {formError && (
@@ -791,13 +803,24 @@ export default function Dashboard() {
                                             </div>
                                             <div className="admin-field">
                                                 <label className="admin-label">Category</label>
-                                                <select name="category" className="admin-input" value={formData.category} onChange={handleInputChange}>
+                                                <select name="category" className="admin-input" value={["Frontend", "Backend", "UI/UX", "DevOps", "Mobile"].includes(formData.category) ? formData.category : "Other"} onChange={handleInputChange}>
                                                     <option value="Frontend">Frontend</option>
                                                     <option value="Backend">Backend</option>
                                                     <option value="UI/UX">UI/UX</option>
                                                     <option value="DevOps">DevOps</option>
                                                     <option value="Mobile">Mobile</option>
+                                                    <option value="Other">Other</option>
                                                 </select>
+                                                {!["Frontend", "Backend", "UI/UX", "DevOps", "Mobile"].includes(formData.category) && (
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Type your category..."
+                                                        className="admin-input"
+                                                        style={{ marginTop: 8 }}
+                                                        value={formData.category === "Other" ? "" : formData.category}
+                                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                                    />
+                                                )}
                                             </div>
                                             <div className="admin-field">
                                                 <label className="admin-label">Certificate Image</label>
@@ -949,6 +972,7 @@ export default function Dashboard() {
                                     </button>
                                 </div>
                             </form>
+                            </div>
                         </div>
                     </div>
                 </div>

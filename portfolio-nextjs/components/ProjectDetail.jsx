@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft, ExternalLink, Calendar, Layers } from "lucide-react";
 import { Github } from "./Icons";
-import { ScrollReveal } from "@/lib/scroll";
+import { ScrollReveal as ScrollRevealOld } from "@/lib/scroll";
 import { getProject } from "@/lib/supabase-api";
 
 export default function ProjectDetail() {
@@ -51,7 +51,13 @@ export default function ProjectDetail() {
         <div style={{ minHeight: "100vh", backgroundColor: "#0a0a0a", padding: "2rem" }}>
             <div className="layout-shell" style={{ maxWidth: 900, margin: "0 auto" }}>
                 <motion.button
-                    onClick={() => router.push("/")}
+                    onClick={() => {
+                        router.push("/#projects");
+                        // Wait for navigation then scroll
+                        setTimeout(() => {
+                            document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+                        }, 100);
+                    }}
                     whileHover={{ x: -4 }}
                     whileTap={{ scale: 0.95 }}
                     style={{
@@ -66,7 +72,7 @@ export default function ProjectDetail() {
                     <span>Back</span>
                 </motion.button>
 
-                <ScrollReveal>
+                <ScrollRevealOld>
                     <h1 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, color: "#f5f5f5", marginBottom: "1rem" }}>
                         {project.title}
                     </h1>
@@ -130,7 +136,7 @@ export default function ProjectDetail() {
                             </a>
                         )}
                     </div>
-                </ScrollReveal>
+                </ScrollRevealOld>
             </div>
         </div>
     );

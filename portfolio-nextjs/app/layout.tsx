@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import CustomCursor from "@/components/CustomCursor";
 
 export const metadata: Metadata = {
     title: "Dzaky Al Fauzy — Full-Stack Developer",
@@ -18,7 +19,8 @@ export default function RootLayout({
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet" />
             </head>
-            <body className="min-h-full flex flex-col" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
+            <body className="min-h-full flex flex-col font-sans">
+                <CustomCursor />
                 {children}
             </body>
         </html>
