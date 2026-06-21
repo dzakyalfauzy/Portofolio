@@ -1,16 +1,17 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
-import { motion, useMotionValue, useTransform, useSpring, useScroll } from "framer-motion";
-import { Download, Briefcase, Code2, Users, Coffee, GripVertical } from "lucide-react";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { Download, Briefcase, Code2, Users, Coffee } from "lucide-react";
 import { ScrollReveal as ScrollRevealOld } from "@/lib/scroll";
-import { ScrollAnimate, Parallax, TextReveal, MagneticButton } from "./GSAPAnimations";
+import { ScrollAnimate, Parallax, MagneticButton } from "./GSAPAnimations";
+import Lanyard from "./Lanyard";
 import "@/lib/css/about.css";
 
 const stats = [
-    { icon: Briefcase, value: "3+", label: "Years Exp." },
-    { icon: Code2, value: "30+", label: "Projects" },
-    { icon: Users, value: "15+", label: "Clients" },
+    { icon: Briefcase, value: "2+", label: "Years Exp." },
+    { icon: Code2, value: "7+", label: "Projects" },
+    { icon: Users, value: "5+", label: "Clients" },
     { icon: Coffee, value: "1k+", label: "Coffees" },
 ];
 
@@ -134,13 +135,15 @@ export default function About() {
 
                 <div className="about__grid">
                     <div className="about__col-visual">
-                        <Parallax speed={-0.15}>
-                            <ScrollAnimate animation="scaleUp" duration={0.9}>
-                                <div className="about__id-card-container">
-                                    <IDCard />
-                                </div>
-                            </ScrollAnimate>
-                        </Parallax>
+                        <div className="about__id-card-container" style={{ width: "100%", height: "700px", marginTop: "-100px" }}>
+                            <Lanyard
+                                position={[0, -1, 20]}
+                                gravity={[0, -40, 0]}
+                                fov={18}
+                                transparent={true}
+                                frontImage="/images/foto_aboutme.png"
+                            />
+                        </div>
 
                         <div className="about__stats">
                             {stats.map(({ icon: Icon, value, label }, i) => (
@@ -164,7 +167,7 @@ export default function About() {
                             <div className="about__cv-wrap">
                                 <MagneticButton strength={0.15}>
                                     <motion.a
-                                        href="/cv.pdf"
+                                        href="https://dfuprxqhyvpelekncuzv.supabase.co/storage/v1/object/public/portfolio/cv/CV%20Dzaky%20Alfauzy%20Naw-waf%20Inggris.pdf"
                                         download
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
@@ -182,7 +185,7 @@ export default function About() {
                         <ScrollAnimate animation="blurReveal">
                             <div className="about__bio flex flex-col gap-6">
                                 <p className="about__bio-lead leading-relaxed">
-                                    I&apos;m a full-stack developer with over 3 years of experience building modern web
+                                    I&apos;m a full-stack developer with over 2 years of experience building modern web
                                     applications. I specialize in creating performant, accessible, and visually stunning
                                     digital products that solve real-world problems.
                                 </p>

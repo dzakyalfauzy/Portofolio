@@ -70,7 +70,6 @@ function FeaturedHero({ project, onViewDetail }) {
 
             <div className="projects__hero-body">
                 <h3 className="projects__hero-title">{project.title}</h3>
-                <p className="projects__hero-desc">{project.description}</p>
                 <div className="projects__tags projects__tags--left">
                     {Array.isArray(project.tags) && project.tags.map((tech) => (
                         <span key={tech} className="projects__tag">{tech}</span>
@@ -171,21 +170,32 @@ function ProjectSkeleton() {
 
 /* ======================== MAIN COMPONENT ======================== */
 
+function dedup(arr) {
+    const seen = new Set();
+    return arr.filter((item) => {
+        const key = item.id || item.title;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
+}
+
 export default function Projects({ items = [], loading = false }) {
     const sectionRef = useRef(null);
     const carouselRef = useRef(null);
     const router = useRouter();
-    const [activeProject, setActiveProject] = useState(items[0] || null);
+    const uniqueItems = dedup(items);
+    const [activeProject, setActiveProject] = useState(uniqueItems[0] || null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
 
     const handleViewDetail = (project) => {
-        router.push(`/project/${project.id}`);
+        router.push(`/project?id=${project.id}`);
     };
 
     useEffect(() => {
-        if (items.length > 0 && !activeProject) {
-            setActiveProject(items[0]);
+        if (uniqueItems.length > 0 && !activeProject) {
+            setActiveProject(uniqueItems[0]);
         }
     }, [items]);
 
@@ -234,7 +244,7 @@ export default function Projects({ items = [], loading = false }) {
                         </ScrollRevealOld>
 
                         {/* ===== THUMBNAIL CAROUSEL (staggered 3D reveal) ===== */}
-                        {items.length > 1 && (
+                        {uniqueItems.length > 1 && (
                             <div className="projects__carousel-wrap">
                                 {canScrollLeft && (
                                     <button
@@ -251,7 +261,7 @@ export default function Projects({ items = [], loading = false }) {
                                     className="projects__carousel"
                                     onScroll={checkCarouselScroll}
                                 >
-                                    {items.map((project, i) => (
+                                    {uniqueItems.map((project, i) => (
                                         <ThumbnailCard
                                             key={project.id || project.title}
                                             project={project}

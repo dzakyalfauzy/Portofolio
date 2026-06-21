@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Briefcase, Calendar, MapPin, Users, Terminal, ChevronLeft, ChevronRight } from "lucide-react";
+
 import { ScrollReveal as ScrollRevealOld } from "@/lib/scroll";
 import { ScrollAnimate } from "./GSAPAnimations";
 import "@/lib/css/experience.css";
@@ -24,7 +25,7 @@ const defaultExperiences = [
             "Pancasila (Team Creative)",
             "Tangan Brawijaya (PJ Fakultas Vokasi)"
         ],
-        images: ["/images/experience/emub.jpg"],
+        images: [],
         current: true
     },
     {
@@ -39,7 +40,7 @@ const defaultExperiences = [
             "PKM BOOST (Steering Committee)",
             "VOCUS (Steering Committee)"
         ],
-        images: ["/images/experience/penalaran.jpg"],
+        images: [],
         current: false
     },
     {
@@ -55,7 +56,7 @@ const defaultExperiences = [
             "Tech Hunt (Wakil Ketua Pelaksana)",
             "PKKMB Prodi TI (Co Acara)"
         ],
-        images: ["/images/experience/hmpsti.jpg"],
+        images: [],
         current: false
     }
 ];
@@ -67,6 +68,12 @@ function ImageCarousel({ images, company }) {
     const [canScrollRight, setCanScrollRight] = useState(false);
 
     const validImages = images.filter((_, i) => !failedImages.has(i));
+
+    // Check scroll state on mount dan saat images load
+    useEffect(() => {
+        const timer = setTimeout(() => checkScroll(), 100);
+        return () => clearTimeout(timer);
+    }, [validImages.length]);
 
     const checkScroll = () => {
         const el = scrollRef.current;
@@ -195,26 +202,18 @@ function TimelineItem({ exp, index }) {
 
                     <p className="experience-item__desc">{exp.description}</p>
 
-                    {Array.isArray(exp.prokers) && exp.prokers.length > 0 && (
+                    {Array.isArray(exp.tags) && exp.tags.length > 0 && (
                         <div className="experience-item__prokers">
                             <h4 className="experience-item__prokers-title">Programs & Roles:</h4>
                             <div className="experience-item__proker-tags">
-                                {exp.prokers.map((proker) => (
-                                    <span key={proker} className="experience-item__proker-tag">
-                                        {proker}
+                                {exp.tags.map((tag) => (
+                                    <span key={tag} className="experience-item__proker-tag">
+                                        {tag}
                                     </span>
                                 ))}
                             </div>
                         </div>
                     )}
-
-                    <div className="experience-item__tags">
-                        {Array.isArray(exp.stack) && exp.stack.map((tech) => (
-                            <span key={tech} className="experience-item__tag">
-                                {tech}
-                            </span>
-                        ))}
-                    </div>
                 </motion.div>
             </div>
 
@@ -256,8 +255,19 @@ function ExperienceSkeleton() {
     );
 }
 
+function dedup(arr) {
+    const seen = new Set();
+    return arr.filter((item) => {
+        const key = item.id || item.title;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
+}
+
 export default function Experience({ items = [], loading = false }) {
     const sectionRef = useRef(null);
+    // Pakai data Supabase jika ada, fallback ke defaultExperiences
     const displayItems = items && items.length > 0 ? items : defaultExperiences;
 
     return (
@@ -267,7 +277,7 @@ export default function Experience({ items = [], loading = false }) {
                 <ScrollRevealOld className="experience__header">
                     <span className="experience__eyebrow">Experience</span>
                     <h2 className="experience__title">
-                        My professional <span className="experience__title-accent">journey</span>
+                        My <span className="experience__title-accent">journey</span>
                     </h2>
                     <p className="experience__lead">
                         A timeline of roles, challenges, and growth across different teams and projects.

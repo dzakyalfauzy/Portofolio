@@ -11,6 +11,82 @@ const PREFIX = "/sequence/ezgif-frame-";
 const EXT = ".png";
 
 /* ================================================================
+   LoadingScreen — Loading animation saat images preload
+   ================================================================ */
+function LoadingScreen({ progress }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 9999,
+                backgroundColor: "#000",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "2rem",
+            }}
+        >
+            {/* Logo / Title */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                style={{
+                    fontSize: "clamp(1.5rem, 4vw, 2.5rem)",
+                    fontWeight: 900,
+                    color: "#fff",
+                    fontFamily: "'Bebas Neue', sans-serif",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                }}
+            >
+                Dzaky Al Fauzy
+            </motion.div>
+
+            {/* Progress Bar */}
+            <div style={{
+                width: "200px",
+                height: "3px",
+                backgroundColor: "rgba(255,255,255,0.1)",
+                borderRadius: "2px",
+                overflow: "hidden",
+            }}>
+                <motion.div
+                    initial={{ width: "0%" }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    style={{
+                        height: "100%",
+                        background: "linear-gradient(90deg, #EF4444, #F97316)",
+                        borderRadius: "2px",
+                    }}
+                />
+            </div>
+
+            {/* Progress Text */}
+            <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                style={{
+                    fontSize: "0.75rem",
+                    color: "rgba(255,255,255,0.4)",
+                    fontFamily: "'Courier New', monospace",
+                    letterSpacing: "0.15em",
+                }}
+            >
+                Loading... {Math.round(progress)}%
+            </motion.p>
+        </motion.div>
+    );
+}
+
+/* ================================================================
    WelcomeScreen — Animasi typing + slide + line expand
    ================================================================ */
 function WelcomeScreen({ welcomeOp, welcomeY, welcomePointer, welcomeVisibility }) {
@@ -202,6 +278,7 @@ export default function IntroSequence() {
 
     const [isReady, setIsReady] = useState(false);
     const [frame0Ready, setFrame0Ready] = useState(false);
+    const [loadProgress, setLoadProgress] = useState(0);
 
     const updateCanvasSize = useCallback(() => {
         const canvas = canvasRef.current;
@@ -246,6 +323,7 @@ export default function IntroSequence() {
             img.onload = img.onerror = () => {
                 imgs[i] = img;
                 loaded++;
+                setLoadProgress((loaded / TOTAL) * 100);
                 if (loaded === TOTAL) setIsReady(true);
             };
             imgs[i] = img;
@@ -322,10 +400,14 @@ export default function IntroSequence() {
     }, [frameIndex]);
 
     return (
-        <div
-            ref={masterRef}
-            style={{ position: "relative", height: "500vh", backgroundColor: "#000" }}
-        >
+        <>
+            {/* Loading Screen */}
+            {!isReady && <LoadingScreen progress={loadProgress} />}
+
+            <div
+                ref={masterRef}
+                style={{ position: "relative", height: "500vh", backgroundColor: "#000" }}
+            >
             <div
                 style={{
                     position: "sticky",
@@ -414,6 +496,7 @@ export default function IntroSequence() {
                     <Hero />
                 </motion.div>
             </div>
-        </div>
+            </div>
+        </>
     );
 }
